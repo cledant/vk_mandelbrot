@@ -5,7 +5,7 @@
 
 #include "IOEvents.hpp"
 #include "IOManager.hpp"
-#include "VulkanRenderer.hpp"
+//#include "VulkanRenderer.hpp"
 
 class EventHandler final
 {
@@ -18,7 +18,7 @@ class EventHandler final
     EventHandler &operator=(EventHandler &&rhs) = delete;
 
     void setIOManager(IOManager *io_manager);
-    void setVkRenderer(VulkanRenderer *renderer);
+    // void setVkRenderer(VulkanRenderer *renderer);
 
     void processEvents(IOEvents const &ioEvents);
 
@@ -43,7 +43,6 @@ class EventHandler final
         ET_LEFT_MOUSE,
         ET_MIDDLE_MOUSE,
         ET_RIGHT_MOUSE,
-        ET_CAMERA,
         ET_KEYBOARD_CONTROLS,
         ET_NB_EVENT_TIMER_TYPES
     };
@@ -59,8 +58,7 @@ class EventHandler final
         std::array<double, ET_NB_EVENT_TIMER_TYPES> timer_values = {
             SYSTEM_TIMER_SECONDS,      CONFIG_TIMER_SECONDS,
             FAST_ACTION_TIMER_SECONDS, FAST_ACTION_TIMER_SECONDS,
-            FAST_ACTION_TIMER_SECONDS, TARGET_PLAYER_TICK_DURATION,
-            ACTION_TIMER_SECONDS
+            FAST_ACTION_TIMER_SECONDS, ACTION_TIMER_SECONDS
         };
     };
 
@@ -68,62 +66,23 @@ class EventHandler final
     inline void _mouse_exclusive();
     inline void _close_win_event();
     inline void _toggle_fullscreen();
-    inline void _jump();
-    inline void _crouch();
-    inline void _front();
-    inline void _back();
+    inline void _up();
+    inline void _down();
     inline void _right();
     inline void _left();
     inline void _left_mouse();
     inline void _middle_mouse();
     inline void _right_mouse();
-    inline void _show_fps();
-    inline void _position_info();
-    inline void _display_ui();
-    inline void _help();
-    inline void _invert_camera_y_axis();
-    inline void _particle_position_update();
-    inline void _reset_particles();
 
-    // UI Event handling functions
-    inline void _ui_close_app();
-    inline void _ui_mouse_exclusive();
-    inline void _ui_invert_mouse_y_axis();
-    inline void _ui_fullscreen();
-    inline void _ui_pause_start_particles();
-    inline void _ui_reset_simulation();
-    inline void _ui_generate_sphere();
-    inline void _ui_generate_cube();
-    inline void _ui_particle_number();
-    inline void _ui_particle_color();
-    inline void _ui_generate_disk();
-    inline void _ui_particle_max_speed();
-
-    // Camera Related
-    inline void _update_camera(glm::vec2 const &mouse_pos);
-
-    // Interaction related
-    inline void _compute_mouse_3d_coordinate(glm::vec2 const &mouse_pos_2d);
-    [[nodiscard]] inline float _compute_particle_mass() const;
-
-    IOManager *_io_manager{};
-    VulkanRenderer *_renderer{};
-    Ui *_ui{};
+    IOManager *_ioManager{};
+    // VulkanRenderer *_renderer{};
 
     EventTimers _timers{};
 
     glm::ivec3 _movements{};
-    glm::vec2 _mouse_pos{};
-    glm::vec2 _previous_mouse_pos{};
-    bool _mouse_pos_skip = true;
-
-    bool _invert_y_axis = false;
-
-    // Mouse Interaction
-    glm::vec2 _mouse_pos_window{};
-    glm::vec3 _mouse_pos_3d{};
-    glm::vec3 _gravity_center{};
-    int32_t _particle_mass_multiplier{};
+    glm::vec2 _mousePos{};
+    glm::vec2 _previousMousePos{};
+    bool _mousePosSkip = true;
 };
 
 #endif // VK_MANDELBROT_VULKAN_EVENTHANDLER_HPP

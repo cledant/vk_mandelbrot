@@ -1,5 +1,7 @@
 #include "Engine.hpp"
 
+#include "fmt/core.h"
+
 int
 main()
 {
@@ -9,7 +11,7 @@ main()
         engine.init();
         engine.run();
     } catch (std::exception const &e) {
-        std::cout << e.what() << std::endl;
+        fmt::print("Exiting app: {}", e.what());
     }
     return (0);
 }

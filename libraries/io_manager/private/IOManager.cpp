@@ -36,8 +36,7 @@ IOManager::createWindow(IOManagerWindowCreationOption &&opts)
         }
         glfwSetWindowPos(_win, 100, 100);
         glfwGetWindowSize(_win, &_winSize.x, &_winSize.y);
-        glfwGetFramebufferSize(
-          _win, &_framebufferSize.x, &_framebufferSize.y);
+        glfwGetFramebufferSize(_win, &_framebufferSize.x, &_framebufferSize.y);
         glfwSetWindowUserPointer(_win, this);
         _initCallbacks();
         if (opts.fullscreen) {
@@ -157,7 +156,7 @@ IOManager::getEvents() const
 
     glfwPollEvents();
     io.events[IOET_MOUSE_EXCLUSIVE] = _keys[GLFW_KEY_F4];
-    io.events[IOET_QUIT] = _keys[GLFW_KEY_F10];
+    io.events[IOET_QUIT] = _keys[GLFW_KEY_ESCAPE];
     io.events[IOET_FULLSCREEN] = _keys[GLFW_KEY_F8];
     io.events[IOET_UP] = _keys[GLFW_KEY_W];
     io.events[IOET_DOWN] = _keys[GLFW_KEY_S];
@@ -166,7 +165,6 @@ IOManager::getEvents() const
     io.events[IOET_LEFT_MOUSE] = _mouseButton[GLFW_MOUSE_BUTTON_LEFT];
     io.events[IOET_MIDDLE_MOUSE] = _mouseButton[GLFW_MOUSE_BUTTON_MIDDLE];
     io.events[IOET_RIGHT_MOUSE] = _mouseButton[GLFW_MOUSE_BUTTON_RIGHT];
-    io.events[IOET_HELP] = _keys[GLFW_KEY_F1];
     io.mousePosition = _mousePosition;
     io.mouseScroll = _mouseScroll;
     return (io);

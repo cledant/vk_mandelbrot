@@ -72,7 +72,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/fmt ${CMAKE_BINARY_DIR}/ex
 #Project libs
 add_subdirectory(libraries/io_manager)
 add_subdirectory(libraries/engine)
-add_subdirectory(libraries/vulkan_renderer)
+#add_subdirectory(libraries/vulkan_renderer)
 add_subdirectory(libraries/app_info)
 
 #Main binary
@@ -81,8 +81,8 @@ add_executable(${APP_BINARY_NAME}
 target_include_directories(${APP_BINARY_NAME}
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/binary/private)
-target_link_libraries(${APP_BINARY_NAME} iomanager engine vulkan)
-add_dependencies(${APP_BINARY_NAME} iomanager engine)
+target_link_libraries(${APP_BINARY_NAME} fmt iomanager engine vulkan)
+add_dependencies(${APP_BINARY_NAME} fmt iomanager engine)
 set_target_properties(${APP_BINARY_NAME} PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES

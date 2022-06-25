@@ -18,7 +18,6 @@ enum IOEventsTypes
     IOET_LEFT_MOUSE,
     IOET_MIDDLE_MOUSE,
     IOET_RIGHT_MOUSE,
-    IOET_HELP,
     IOET_NB,
 };
 

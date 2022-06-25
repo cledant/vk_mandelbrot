@@ -3,7 +3,7 @@
 
 #include "IOManager.hpp"
 #include "EventHandler.hpp"
-#include "VulkanRenderer.hpp"
+//#include "VulkanRenderer.hpp"
 
 class Engine final
 {
@@ -20,7 +20,7 @@ class Engine final
 
   private:
     IOManager _io_manager;
-    VulkanRenderer _vk_renderer;
+    // VulkanRenderer _vk_renderer;
     EventHandler _event_handler;
 };
 
