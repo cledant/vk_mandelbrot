@@ -1,5 +1,5 @@
-#ifndef PARTICLE_SYS_VULKAN_VULKANRENDERER_HPP
-#define PARTICLE_SYS_VULKAN_VULKANRENDERER_HPP
+#ifndef VK_MANDELBROT_VULKAN_VULKANRENDERER_HPP
+#define VK_MANDELBROT_VULKAN_VULKANRENDERER_HPP
 
 #include "glm/glm.hpp"
 
@@ -89,4 +89,4 @@ class VulkanRenderer final
                              glm::mat4 const &view_proj_mat);
 };
 
-#endif // PARTICLE_SYS_VULKAN_VULKANRENDERER_HPP
+#endif // VK_MANDELBROT_VULKAN_VULKANRENDERER_HPP

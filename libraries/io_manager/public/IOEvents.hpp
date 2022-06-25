@@ -1,5 +1,5 @@
-#ifndef PARTICLE_SYS_IOEVENTS_HPP
-#define PARTICLE_SYS_IOEVENTS_HPP
+#ifndef VK_MANDELBROT_IOEVENTS_HPP
+#define VK_MANDELBROT_IOEVENTS_HPP
 
 #include <cstdint>
 #include <array>
@@ -29,4 +29,4 @@ struct IOEvents final
     float mouseScroll{};
 };
 
-#endif // PARTICLE_SYS_IOEVENTS_HPP
+#endif // VK_MANDELBROT_IOEVENTS_HPP

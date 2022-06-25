@@ -1,5 +1,5 @@
-#ifndef PARTICLE_SYS_VULKAN_ENGINE_HPP
-#define PARTICLE_SYS_VULKAN_ENGINE_HPP
+#ifndef VK_MANDELBROT_VULKAN_ENGINE_HPP
+#define VK_MANDELBROT_VULKAN_ENGINE_HPP
 
 #include "IOManager.hpp"
 #include "EventHandler.hpp"
@@ -24,4 +24,4 @@ class Engine final
     EventHandler _event_handler;
 };
 
-#endif // PARTICLE_SYS_VULKAN_ENGINE_HPP
+#endif // VK_MANDELBROT_VULKAN_ENGINE_HPP

@@ -1,5 +1,5 @@
-#ifndef PARTICLE_SYS_VULKAN_VULKANMEMORY_HPP
-#define PARTICLE_SYS_VULKAN_VULKANMEMORY_HPP
+#ifndef VK_MANDELBROT_VULKAN_VULKANMEMORY_HPP
+#define VK_MANDELBROT_VULKAN_VULKANMEMORY_HPP
 
 #include <cstdint>
 #include <vulkan/vulkan.h>
@@ -41,4 +41,4 @@ void copyCpuBufferToGpu(VkDevice device,
                         void *srcData,
                         VkBufferCopy copyRegion);
 
-#endif // PARTICLE_SYS_VULKAN_VULKANMEMORY_HPP
+#endif // VK_MANDELBROT_VULKAN_VULKANMEMORY_HPP

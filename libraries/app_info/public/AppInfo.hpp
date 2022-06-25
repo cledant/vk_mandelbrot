@@ -1,5 +1,5 @@
-#ifndef PARTICLE_SYS_APP_VERSION_HPP
-#define PARTICLE_SYS_APP_VERSION_HPP
+#ifndef VK_MANDELBROT_APP_VERSION_HPP
+#define VK_MANDELBROT_APP_VERSION_HPP
 
 #include <cstdint>
 
@@ -31,4 +31,4 @@ constexpr char const *APP_COMMIT_HASH = COMMIT_HASH;
 constexpr char const *APP_NAME = BINARY_NAME;
 }
 
-#endif // PARTICLE_SYS_APP_VERSION_HPP
+#endif // VK_MANDELBROT_APP_VERSION_HPP

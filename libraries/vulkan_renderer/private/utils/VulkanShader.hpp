@@ -1,5 +1,5 @@
-#ifndef PARTICLE_SYS_VULKAN_VULKANSHADER_HPP
-#define PARTICLE_SYS_VULKAN_VULKANSHADER_HPP
+#ifndef VK_MANDELBROT_VULKAN_VULKANSHADER_HPP
+#define VK_MANDELBROT_VULKAN_VULKANSHADER_HPP
 
 #include <vector>
 #include <string>
@@ -11,4 +11,4 @@ VkShaderModule createShaderModule(VkDevice device,
                                   std::string const &shaderName);
 VkShaderModule loadShader(VkDevice device, std::string const &filepath);
 
-#endif // PARTICLE_SYS_VULKAN_VULKANSHADER_HPP
+#endif // VK_MANDELBROT_VULKAN_VULKANSHADER_HPP
