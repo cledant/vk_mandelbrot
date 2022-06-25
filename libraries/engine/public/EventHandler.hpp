@@ -23,18 +23,11 @@ class EventHandler final
     void processEvents(IOEvents const &ioEvents);
 
   private:
-    static constexpr double const MOVEMENT_SPEED = 0.70;
-    static constexpr double const MOUSE_SENSITIVITY = 0.25;
-    static constexpr double const TARGET_PLAYER_TICK = 20.0f;
-    static constexpr float const SCALING_PER_SCROLL = 0.05f;
-
     // Timer related
     static constexpr double const SYSTEM_TIMER_SECONDS = 1.0;
     static constexpr double const CONFIG_TIMER_SECONDS = 0.5;
     static constexpr double const ACTION_TIMER_SECONDS = 0.15;
     static constexpr double const FAST_ACTION_TIMER_SECONDS = 0.01;
-    static constexpr double const TARGET_PLAYER_TICK_DURATION =
-      1 / TARGET_PLAYER_TICK;
 
     enum EventTimersTypes
     {
@@ -63,16 +56,16 @@ class EventHandler final
     };
 
     // IO Event handling functions
-    inline void _mouse_exclusive();
-    inline void _close_win_event();
-    inline void _toggle_fullscreen();
+    inline void _mouseExclusive();
+    inline void _closeWinEvent();
+    inline void _toggleFullscreen();
     inline void _up();
     inline void _down();
     inline void _right();
     inline void _left();
-    inline void _left_mouse();
-    inline void _middle_mouse();
-    inline void _right_mouse();
+    inline void _leftMouse();
+    inline void _middleMouse();
+    inline void _rightMouse();
 
     IOManager *_ioManager{};
     // VulkanRenderer *_renderer{};

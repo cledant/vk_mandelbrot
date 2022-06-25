@@ -28,16 +28,16 @@ EventHandler::processEvents(IOEvents const &ioEvents)
 
     static const std::array<void (EventHandler::*)(), IOET_NB>
       keyboard_events = {
-          &EventHandler::_mouse_exclusive,
-          &EventHandler::_close_win_event,
-          &EventHandler::_toggle_fullscreen,
+          &EventHandler::_mouseExclusive,
+          &EventHandler::_closeWinEvent,
+          &EventHandler::_toggleFullscreen,
           &EventHandler::_up,
           &EventHandler::_down,
           &EventHandler::_right,
           &EventHandler::_left,
-          &EventHandler::_left_mouse,
-          &EventHandler::_middle_mouse,
-          &EventHandler::_right_mouse,
+          &EventHandler::_leftMouse,
+          &EventHandler::_middleMouse,
+          &EventHandler::_rightMouse,
       };
 
     // Checking Timers
@@ -72,7 +72,7 @@ EventHandler::processEvents(IOEvents const &ioEvents)
 }
 
 void
-EventHandler::_mouse_exclusive()
+EventHandler::_mouseExclusive()
 {
     if (_timers.accept_event[ET_SYSTEM]) {
         _ioManager->toggleMouseExclusive();
@@ -83,7 +83,7 @@ EventHandler::_mouse_exclusive()
 }
 
 void
-EventHandler::_close_win_event()
+EventHandler::_closeWinEvent()
 {
     if (_timers.accept_event[ET_SYSTEM]) {
         _ioManager->triggerClose();
@@ -93,7 +93,7 @@ EventHandler::_close_win_event()
 }
 
 void
-EventHandler::_toggle_fullscreen()
+EventHandler::_toggleFullscreen()
 {
     if (_timers.accept_event[ET_SYSTEM]) {
         _ioManager->toggleFullscreen();
@@ -127,13 +127,13 @@ EventHandler::_left()
 }
 
 void
-EventHandler::_left_mouse()
+EventHandler::_leftMouse()
 {
     _timers.updated[ET_LEFT_MOUSE] = 1;
 }
 
 void
-EventHandler::_middle_mouse()
+EventHandler::_middleMouse()
 {
     if (_timers.accept_event[ET_MIDDLE_MOUSE]) {
         _timers.accept_event[ET_MIDDLE_MOUSE] = 0;
@@ -142,7 +142,7 @@ EventHandler::_middle_mouse()
 }
 
 void
-EventHandler::_right_mouse()
+EventHandler::_rightMouse()
 {
     if (_timers.accept_event[ET_RIGHT_MOUSE]) {
         _timers.accept_event[ET_RIGHT_MOUSE] = 0;
