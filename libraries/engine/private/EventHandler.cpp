@@ -56,7 +56,7 @@ EventHandler::processEvents(IOEvents const &ioEvents, UiEvent const &uiEvent)
     // Resetting movement tracking
     _movements = glm::ivec3(0);
 
-    static const std::array<void (EventHandler::*)(), NB_IO_EVENTS>
+    static const std::array<void (EventHandler::*)(), IOET_NB>
       keyboard_events = {
           &EventHandler::_mouse_exclusive,
           &EventHandler::_close_win_event,
@@ -104,7 +104,7 @@ EventHandler::processEvents(IOEvents const &ioEvents, UiEvent const &uiEvent)
     }
 
     // Looping over io events types
-    for (uint32_t i = 0; i < NB_IO_EVENTS; ++i) {
+    for (uint32_t i = 0; i < IOET_NB; ++i) {
         if (ioEvents.events[i]) {
             std::invoke(keyboard_events[i], this);
         }
@@ -119,7 +119,7 @@ EventHandler::processEvents(IOEvents const &ioEvents, UiEvent const &uiEvent)
 
     // Camera updating
     if (_io_manager->isMouseExclusive()) {
-        _update_camera(ioEvents.mouse_position);
+        _update_camera(ioEvents.mousePosition);
     }
     _timers.updated[ET_CAMERA] = 1;
 
@@ -146,7 +146,7 @@ EventHandler::processEvents(IOEvents const &ioEvents, UiEvent const &uiEvent)
     }
 
     // Interaction
-    _compute_mouse_3d_coordinate(ioEvents.mouse_position);
+    _compute_mouse_3d_coordinate(ioEvents.mousePosition);
     if (_timers.updated[ET_LEFT_MOUSE] && !_ui->isUiHovered()) {
         _gravity_center = _mouse_pos_3d;
         _renderer->setParticleGravityCenter(_gravity_center);
@@ -154,9 +154,9 @@ EventHandler::processEvents(IOEvents const &ioEvents, UiEvent const &uiEvent)
 
     // Change player block
     if (_timers.accept_event[ET_MIDDLE_MOUSE]) {
-        if (ioEvents.mouse_scroll > 0.001f) {
+        if (ioEvents.mouseScroll > 0.001f) {
             ++_particle_mass_multiplier;
-        } else if (ioEvents.mouse_scroll < -0.001f) {
+        } else if (ioEvents.mouseScroll < -0.001f) {
             --_particle_mass_multiplier;
             _particle_mass_multiplier =
               std::max(-10, _particle_mass_multiplier);

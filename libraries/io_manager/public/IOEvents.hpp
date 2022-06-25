@@ -8,33 +8,25 @@
 
 enum IOEventsTypes
 {
-    MOUSE_EXCLUSIVE = 0,
-    QUIT,
-    FULLSCREEN,
-    JUMP,
-    CROUCH,
-    FRONT,
-    BACK,
-    RIGHT,
-    LEFT,
-    LEFT_MOUSE,
-    MIDDLE_MOUSE,
-    RIGHT_MOUSE,
-    SHOW_FPS,
-    POSITION_INFO,
-    DISPLAY_UI,
-    HELP,
-    INVERSE_Y_AXIS,
-    PARTICLE_POSITION_UPDATE,
-    RESET_PARTICLES,
-    NB_IO_EVENTS,
+    IOET_MOUSE_EXCLUSIVE = 0,
+    IOET_QUIT,
+    IOET_FULLSCREEN,
+    IOET_UP,
+    IOET_DOWN,
+    IOET_RIGHT,
+    IOET_LEFT,
+    IOET_LEFT_MOUSE,
+    IOET_MIDDLE_MOUSE,
+    IOET_RIGHT_MOUSE,
+    IOET_HELP,
+    IOET_NB,
 };
 
 struct IOEvents final
 {
-    std::array<uint8_t, NB_IO_EVENTS> events{};
-    glm::vec2 mouse_position{};
-    float mouse_scroll{};
+    std::array<uint8_t, IOET_NB> events{};
+    glm::vec2 mousePosition{};
+    float mouseScroll{};
 };
 
 #endif // PARTICLE_SYS_IOEVENTS_HPP

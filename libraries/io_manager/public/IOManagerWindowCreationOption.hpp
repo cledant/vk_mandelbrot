@@ -11,11 +11,11 @@ static constexpr glm::ivec2 const DEFAULT_WIN_SIZE = glm::ivec2(1280, 720);
 struct IOManagerWindowCreationOption final
 {
     bool resizable{};
-    bool cursor_hidden_on_window{};
+    bool cursorHiddenOnWindow{};
     bool fullscreen{};
-    bool mouse_exclusive{};
+    bool mouseExclusive{};
     glm::ivec2 size{};
-    std::string win_name;
+    std::string winName;
 };
 
 #endif // PARTICLE_SYS_VULKAN_IOMANAGERWINDOWCREATIONOPTION_HPP

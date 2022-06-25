@@ -8,8 +8,6 @@ add_library(vulkan_renderer STATIC
         private/VulkanSwapChain.cpp
         private/VulkanSync.cpp
         private/renderPass/VulkanSceneRenderPass.cpp
-#[[        private/ui/VulkanUiRenderPass.cpp
-        private/ui/VulkanUi.cpp]]
         private/utils/VulkanPhysicalDevice.cpp
         private/utils/VulkanSwapChainUtils.cpp
         private/utils/VulkanShader.cpp
@@ -32,11 +30,8 @@ set_target_properties(vulkan_renderer PROPERTIES
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO)
 add_dependencies(vulkan_renderer
-        fmt
-        imgui_glfw_vulkan)
+        fmt)
 target_link_libraries(vulkan_renderer
         glm
-        fmt
-        stb
-        imgui_glfw_vulkan)
+        fmt)
 target_compile_options(vulkan_renderer PRIVATE -Wall -Wextra -Werror)

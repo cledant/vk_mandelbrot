@@ -24,26 +24,26 @@ IOManager::createWindow(IOManagerWindowCreationOption &&opts)
         if (!glfwVulkanSupported()) {
             throw std::runtime_error("Glfw : Vulkan not supported !");
         }
-        _win_size = opts.size;
-        _mouse_exclusive = opts.mouse_exclusive;
-        _cursor_hidden_on_window = opts.cursor_hidden_on_window;
+        _winSize = opts.size;
+        _mouseExclusive = opts.mouseExclusive;
+        _cursorHiddenOnWindow = opts.cursorHiddenOnWindow;
         glfwWindowHint(GLFW_RESIZABLE, opts.resizable);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         _win = glfwCreateWindow(
-          _win_size.x, _win_size.y, opts.win_name.c_str(), nullptr, nullptr);
+          _winSize.x, _winSize.y, opts.winName.c_str(), nullptr, nullptr);
         if (!_win) {
             throw std::runtime_error("Glfw : failed to create window");
         }
         glfwSetWindowPos(_win, 100, 100);
-        glfwGetWindowSize(_win, &_win_size.x, &_win_size.y);
+        glfwGetWindowSize(_win, &_winSize.x, &_winSize.y);
         glfwGetFramebufferSize(
-          _win, &_framebuffer_size.x, &_framebuffer_size.y);
+          _win, &_framebufferSize.x, &_framebufferSize.y);
         glfwSetWindowUserPointer(_win, this);
         _initCallbacks();
         if (opts.fullscreen) {
             toggleFullscreen();
         }
-        _apply_mouse_visibility();
+        _applyMouseVisibility();
     }
 }
 
@@ -114,39 +114,39 @@ IOManager::triggerClose() const
 void
 IOManager::toggleMouseExclusive()
 {
-    _mouse_exclusive = !_mouse_exclusive;
-    _apply_mouse_visibility();
+    _mouseExclusive = !_mouseExclusive;
+    _applyMouseVisibility();
 }
 
 void
 IOManager::toggleMouseVisibility()
 {
-    _cursor_hidden_on_window = !_cursor_hidden_on_window;
-    _apply_mouse_visibility();
+    _cursorHiddenOnWindow = !_cursorHiddenOnWindow;
+    _applyMouseVisibility();
 }
 
 bool
 IOManager::isMouseExclusive() const
 {
-    return (_mouse_exclusive);
+    return (_mouseExclusive);
 }
 
 float
 IOManager::getWindowRatio() const
 {
-    return (static_cast<float>(_win_size.x) / static_cast<float>(_win_size.y));
+    return (static_cast<float>(_winSize.x) / static_cast<float>(_winSize.y));
 }
 
 glm::ivec2
 IOManager::getWindowSize() const
 {
-    return (_win_size);
+    return (_winSize);
 }
 
 glm::ivec2
 IOManager::getFramebufferSize() const
 {
-    return (_framebuffer_size);
+    return (_framebufferSize);
 }
 
 // Keyboard / Mouse Input related
@@ -156,34 +156,26 @@ IOManager::getEvents() const
     IOEvents io{};
 
     glfwPollEvents();
-    io.events[MOUSE_EXCLUSIVE] = _keys[GLFW_KEY_F4];
-    io.events[QUIT] = _keys[GLFW_KEY_F10];
-    io.events[FULLSCREEN] = _keys[GLFW_KEY_F8];
-    io.events[JUMP] = _keys[GLFW_KEY_SPACE];
-    io.events[CROUCH] = _keys[GLFW_KEY_LEFT_SHIFT];
-    io.events[FRONT] = _keys[GLFW_KEY_W];
-    io.events[BACK] = _keys[GLFW_KEY_S];
-    io.events[RIGHT] = _keys[GLFW_KEY_D];
-    io.events[LEFT] = _keys[GLFW_KEY_A];
-    io.events[LEFT_MOUSE] = _mouse_button[GLFW_MOUSE_BUTTON_LEFT];
-    io.events[MIDDLE_MOUSE] = _mouse_button[GLFW_MOUSE_BUTTON_MIDDLE];
-    io.events[RIGHT_MOUSE] = _mouse_button[GLFW_MOUSE_BUTTON_RIGHT];
-    io.events[SHOW_FPS] = _keys[GLFW_KEY_F7];
-    io.events[POSITION_INFO] = _keys[GLFW_KEY_F6];
-    io.events[DISPLAY_UI] = _keys[GLFW_KEY_F9];
-    io.events[HELP] = _keys[GLFW_KEY_F1];
-    io.events[INVERSE_Y_AXIS] = _keys[GLFW_KEY_F5];
-    io.events[PARTICLE_POSITION_UPDATE] = _keys[GLFW_KEY_F2];
-    io.events[RESET_PARTICLES] = _keys[GLFW_KEY_F3];
-    io.mouse_position = _mouse_position;
-    io.mouse_scroll = _mouse_scroll;
+    io.events[IOET_MOUSE_EXCLUSIVE] = _keys[GLFW_KEY_F4];
+    io.events[IOET_QUIT] = _keys[GLFW_KEY_F10];
+    io.events[IOET_FULLSCREEN] = _keys[GLFW_KEY_F8];
+    io.events[IOET_UP] = _keys[GLFW_KEY_W];
+    io.events[IOET_DOWN] = _keys[GLFW_KEY_S];
+    io.events[IOET_RIGHT] = _keys[GLFW_KEY_D];
+    io.events[IOET_LEFT] = _keys[GLFW_KEY_A];
+    io.events[IOET_LEFT_MOUSE] = _mouseButton[GLFW_MOUSE_BUTTON_LEFT];
+    io.events[IOET_MIDDLE_MOUSE] = _mouseButton[GLFW_MOUSE_BUTTON_MIDDLE];
+    io.events[IOET_RIGHT_MOUSE] = _mouseButton[GLFW_MOUSE_BUTTON_RIGHT];
+    io.events[IOET_HELP] = _keys[GLFW_KEY_F1];
+    io.mousePosition = _mousePosition;
+    io.mouseScroll = _mouseScroll;
     return (io);
 }
 
 void
 IOManager::resetMouseScroll()
 {
-    _mouse_scroll = 0.0f;
+    _mouseScroll = 0.0f;
 }
 
 // Vulkan related
@@ -231,7 +223,7 @@ IOManager::_initCallbacks()
     // Mouse position
     auto cursor_position_callback =
       [](GLFWwindow *win, double xpos, double ypos) {
-          THIS_WIN_PTR->_mouse_position = glm::vec2(xpos, ypos);
+          THIS_WIN_PTR->_mousePosition = glm::vec2(xpos, ypos);
       };
     glfwSetCursorPosCallback(_win, cursor_position_callback);
 
@@ -241,9 +233,9 @@ IOManager::_initCallbacks()
           static_cast<void>(mods);
           if (button >= 0 && button < MOUSE_KEYS_BUFF_SIZE) {
               if (action == GLFW_PRESS)
-                  THIS_WIN_PTR->_mouse_button[button] = GLFW_PRESS;
+                  THIS_WIN_PTR->_mouseButton[button] = GLFW_PRESS;
               else if (action == GLFW_RELEASE)
-                  THIS_WIN_PTR->_mouse_button[button] = GLFW_RELEASE;
+                  THIS_WIN_PTR->_mouseButton[button] = GLFW_RELEASE;
           }
       };
     glfwSetMouseButtonCallback(_win, mouse_button_callback);
@@ -252,8 +244,8 @@ IOManager::_initCallbacks()
     auto mouse_scroll_callback =
       [](GLFWwindow *win, double xoffset, double yoffset) {
           static_cast<void>(win);
-          THIS_WIN_PTR->_mouse_scroll += xoffset;
-          THIS_WIN_PTR->_mouse_scroll += yoffset;
+          THIS_WIN_PTR->_mouseScroll += xoffset;
+          THIS_WIN_PTR->_mouseScroll += yoffset;
       };
     glfwSetScrollCallback(_win, mouse_scroll_callback);
 
@@ -265,10 +257,10 @@ IOManager::_initCallbacks()
 
     // Window
     auto window_size_callback = [](GLFWwindow *win, int w, int h) {
-        auto prev_size = THIS_WIN_PTR->_win_size;
+        auto prev_size = THIS_WIN_PTR->_winSize;
 
-        THIS_WIN_PTR->_win_size = glm::ivec2(w, h);
-        if (prev_size != THIS_WIN_PTR->_win_size) {
+        THIS_WIN_PTR->_winSize = glm::ivec2(w, h);
+        if (prev_size != THIS_WIN_PTR->_winSize) {
             THIS_WIN_PTR->_resized = true;
         }
     };
@@ -276,17 +268,17 @@ IOManager::_initCallbacks()
 
     // Framebuffer
     auto framebuffer_size_callback = [](GLFWwindow *win, int w, int h) {
-        THIS_WIN_PTR->_framebuffer_size = glm::ivec2(w, h);
+        THIS_WIN_PTR->_framebufferSize = glm::ivec2(w, h);
     };
     glfwSetFramebufferSizeCallback(_win, framebuffer_size_callback);
 }
 
 void
-IOManager::_apply_mouse_visibility() const
+IOManager::_applyMouseVisibility() const
 {
-    if (_mouse_exclusive) {
+    if (_mouseExclusive) {
         glfwSetInputMode(_win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    } else if (_cursor_hidden_on_window) {
+    } else if (_cursorHiddenOnWindow) {
         glfwSetInputMode(_win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     } else {
         glfwSetInputMode(_win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);

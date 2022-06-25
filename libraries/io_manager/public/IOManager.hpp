@@ -23,10 +23,6 @@ class IOManager final
     IOManager(IOManager &&src) = delete;
     IOManager &operator=(IOManager &&rhs) = delete;
 
-    // Constants
-    static constexpr uint16_t const KEYS_BUFF_SIZE = 1024;
-    static constexpr uint16_t const MOUSE_KEYS_BUFF_SIZE = 32;
-
     // Window related
     void createWindow(IOManagerWindowCreationOption &&opts);
     [[nodiscard]] GLFWwindow *getWindow() const;
@@ -52,27 +48,31 @@ class IOManager final
     getRequiredInstanceExtension();
 
   private:
+    // Constants
+    static constexpr uint16_t const KEYS_BUFF_SIZE = 1024;
+    static constexpr uint16_t const MOUSE_KEYS_BUFF_SIZE = 32;
+
     // Input
     std::array<uint8_t, KEYS_BUFF_SIZE> _keys{};
-    std::array<uint8_t, MOUSE_KEYS_BUFF_SIZE> _mouse_button{};
-    glm::vec2 _mouse_position{};
-    float _mouse_scroll{};
+    std::array<uint8_t, MOUSE_KEYS_BUFF_SIZE> _mouseButton{};
+    glm::vec2 _mousePosition{};
+    float _mouseScroll{};
 
     // Window related
     GLFWwindow *_win{};
     bool _fullscreen{};
     bool _resized{};
-    glm::ivec2 _win_size{};
-    glm::ivec2 _framebuffer_size{};
+    glm::ivec2 _winSize{};
+    glm::ivec2 _framebufferSize{};
 
-    bool _mouse_exclusive{};
-    bool _cursor_hidden_on_window{};
+    bool _mouseExclusive{};
+    bool _cursorHiddenOnWindow{};
 
     // Callbacks
     inline void _initCallbacks();
 
     // Mouse
-    inline void _apply_mouse_visibility() const;
+    inline void _applyMouseVisibility() const;
 };
 
 #endif // PARTICLE_SYS_VULKAN_IOMANAGER_HPP

@@ -9,20 +9,10 @@
 #include <vulkan/vulkan.h>
 
 #include "VulkanInstance.hpp"
-#include "tex/VulkanTextureManager.hpp"
 #include "VulkanSwapChain.hpp"
 #include "VulkanSync.hpp"
 #include "ui/VulkanUi.hpp"
-#include "skybox/VulkanSkyboxPipeline.hpp"
-#include "particle/VulkanParticlePipeline.hpp"
 #include "renderPass/VulkanSceneRenderPass.hpp"
-
-enum class VulkanParticleGenerationType
-{
-    CUBE,
-    SPHERE,
-    DISK,
-};
 
 class VulkanRenderer final
 {
@@ -74,19 +64,15 @@ class VulkanRenderer final
     uint32_t _engineVersion{};
 
     VulkanInstance _vkInstance;
-    VulkanTextureManager _texManager;
     VulkanSwapChain _swapChain;
     VulkanSync _sync;
     VulkanUi _ui;
     VulkanSceneRenderPass _sceneRenderPass;
-    VulkanSkyboxPipeline _skybox;
-    VulkanParticlePipeline _particle;
 
     // Compute shader control
     bool _doParticleGeneration = true;
     bool _doParticleMvt = false;
     bool _updateComputeCmds = true;
-    VulkanParticleComputeShaderType _randomCompShader = VPCST_RANDOM_CUBE;
 
     // Renderer global uniform
     VulkanBuffer _systemUniform{};

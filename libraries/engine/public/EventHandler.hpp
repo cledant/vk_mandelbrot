@@ -4,12 +4,8 @@
 #include <chrono>
 
 #include "IOEvents.hpp"
-#include "Camera.hpp"
 #include "IOManager.hpp"
-#include "Perspective.hpp"
 #include "VulkanRenderer.hpp"
-#include "Ui.hpp"
-#include "ModelInstanceInfo.hpp"
 
 class EventHandler final
 {
@@ -21,14 +17,10 @@ class EventHandler final
     EventHandler(EventHandler &&src) = delete;
     EventHandler &operator=(EventHandler &&rhs) = delete;
 
-    void setCamera(Camera *camera);
     void setIOManager(IOManager *io_manager);
-    void setPerspectiveData(Perspective *perspective);
     void setVkRenderer(VulkanRenderer *renderer);
-    void setUi(Ui *ui);
-    void setSkybox(ModelInstanceInfo *skybox);
 
-    void processEvents(IOEvents const &ioEvents, UiEvent const &uiEvent);
+    void processEvents(IOEvents const &ioEvents);
 
   private:
     static constexpr double const MOVEMENT_SPEED = 0.70;
@@ -114,12 +106,9 @@ class EventHandler final
     inline void _compute_mouse_3d_coordinate(glm::vec2 const &mouse_pos_2d);
     [[nodiscard]] inline float _compute_particle_mass() const;
 
-    Camera *_camera{};
     IOManager *_io_manager{};
-    Perspective *_perspective{};
     VulkanRenderer *_renderer{};
     Ui *_ui{};
-    ModelInstanceInfo *_skybox{};
 
     EventTimers _timers{};
 
