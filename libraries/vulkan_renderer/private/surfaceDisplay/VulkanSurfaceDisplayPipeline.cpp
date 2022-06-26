@@ -27,7 +27,6 @@ void
 VulkanSurfaceDisplayPipeline::resize(VulkanSwapChain const &swapChain,
                                      VulkanSceneRenderPass const &renderPass)
 {
-    _skyboxUniform.clear();
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
     createDescriptorPool(swapChain.currentSwapChainNbImg);
@@ -38,7 +37,6 @@ VulkanSurfaceDisplayPipeline::resize(VulkanSwapChain const &swapChain,
 void
 VulkanSurfaceDisplayPipeline::clear()
 {
-    _skyboxUniform.clear();
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
     _pipelineDescription.clear();

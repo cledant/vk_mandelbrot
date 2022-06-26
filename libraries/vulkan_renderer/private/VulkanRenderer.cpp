@@ -8,7 +8,6 @@
 #include "VulkanDebug.hpp"
 #include "utils/VulkanCommandBuffer.hpp"
 #include "utils/VulkanMemory.hpp"
-#include "constants/VulkanConstants.hpp"
 
 void
 VulkanRenderer::createInstance(std::string &&appName,
@@ -172,13 +171,6 @@ VulkanRenderer::emitDrawCmds(uint32_t imgIndex)
     submit_info.signalSemaphoreCount = 1;
     submit_info.pCommandBuffers = &_renderCommandBuffers[imgIndex];
     submit_info.commandBufferCount = 1;
-    if (vkQueueSubmit(
-          _vkInstance.queues.graphicQueue, 1, &submit_info, nullptr) !=
-        VK_SUCCESS) {
-        throw std::runtime_error(
-          "VulkanRenderer: Failed to submit render draw command buffer");
-    }
-
     vkResetFences(
       _vkInstance.devices.device, 1, &_sync.inflightFence[_sync.currentFrame]);
     if (vkQueueSubmit(_vkInstance.queues.graphicQueue,
@@ -186,7 +178,7 @@ VulkanRenderer::emitDrawCmds(uint32_t imgIndex)
                       &submit_info,
                       _sync.inflightFence[_sync.currentFrame]) != VK_SUCCESS) {
         throw std::runtime_error(
-          "VulkanRenderer: Failed to submit ui draw command buffer");
+          "VulkanRenderer: Failed to submit render draw command buffer");
     }
 }
 

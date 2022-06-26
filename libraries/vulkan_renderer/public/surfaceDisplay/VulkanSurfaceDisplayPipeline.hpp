@@ -43,7 +43,6 @@ class VulkanSurfaceDisplayPipeline final
     VulkanQueues _queues;
 
     // Vertex / Fragment shaders related
-    VulkanBuffer _skyboxUniform;
     VulkanSurfaceDisplayPipelineDescription _pipelineDescription;
     VkPipeline _gfxPipeline{};
 
