@@ -3,7 +3,7 @@
 
 #include "IOManager.hpp"
 #include "EventHandler.hpp"
-//#include "VulkanRenderer.hpp"
+#include "VulkanRenderer.hpp"
 
 class Engine final
 {
@@ -19,9 +19,9 @@ class Engine final
     void run();
 
   private:
-    IOManager _io_manager;
-    // VulkanRenderer _vk_renderer;
-    EventHandler _event_handler;
+    IOManager _ioManager;
+    VulkanRenderer _vkRenderer;
+    EventHandler _eventHandler;
 };
 
 #endif // VK_MANDELBROT_VULKAN_ENGINE_HPP

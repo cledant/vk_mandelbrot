@@ -9,23 +9,24 @@
 #include "VulkanSwapChainUtils.hpp"
 
 bool
-DeviceRequirement::isValid() const
+DeviceRequirement::isValid(VulkanInstanceOptions const &requiredOptions) const
 {
-    return (graphic_family_index.has_value() &&
-            present_family_index.has_value() &&
-            compute_family_index.has_value() && sampler_aniso &&
-            fill_mode_non_solid && all_extension_supported);
+    return (graphicFamilyIndex.has_value() && presentFamilyIndex.has_value() &&
+            computeFamilyIndex.has_value() &&
+            requiredOptions.hasRequiredOptions(options) &&
+            allExtensionSupported);
 }
 
 VkPhysicalDevice
 selectBestDevice(std::vector<VkPhysicalDevice> const &devices,
-                 VkSurfaceKHR surface)
+                 VkSurfaceKHR surface,
+                 VulkanInstanceOptions const &requiredOptions)
 {
     auto best_device = std::make_pair<VkPhysicalDevice, int>(VK_NULL_HANDLE, 0);
     std::multimap<VkPhysicalDevice, int> rating;
 
     for (auto const &it : devices) {
-        auto score = rateDevice(it, surface);
+        auto score = rateDevice(it, surface, requiredOptions);
         rating.insert(std::make_pair(it, score));
     }
 
@@ -38,10 +39,12 @@ selectBestDevice(std::vector<VkPhysicalDevice> const &devices,
 }
 
 int
-rateDevice(VkPhysicalDevice device, VkSurfaceKHR surface)
+rateDevice(VkPhysicalDevice device,
+           VkSurfaceKHR surface,
+           VulkanInstanceOptions const &requiredOptions)
 {
     auto dfr = getDeviceRequirement(device, surface);
-    if (!dfr.isValid()) {
+    if (!dfr.isValid(requiredOptions)) {
         return (0);
     }
 
@@ -112,13 +115,13 @@ checkDeviceFeaturesSupport(VkPhysicalDevice device, DeviceRequirement &dr)
     VkPhysicalDeviceFeatures features;
     vkGetPhysicalDeviceFeatures(device, &features);
     if (features.geometryShader) {
-        dr.geometry_shader = VK_TRUE;
+        dr.options.geometryShader = VK_TRUE;
     }
     if (features.samplerAnisotropy) {
-        dr.sampler_aniso = VK_TRUE;
+        dr.options.samplerAniso = VK_TRUE;
     }
     if (features.fillModeNonSolid) {
-        dr.fill_mode_non_solid = VK_TRUE;
+        dr.options.fillModeNonSolid = VK_TRUE;
     }
 }
 
@@ -138,7 +141,7 @@ checkDeviceExtensionSupport(VkPhysicalDevice device, DeviceRequirement &dr)
     for (auto const &supported_ext : vec_ext_prop) {
         req_extension.erase(supported_ext.extensionName);
     }
-    dr.all_extension_supported = (req_extension.empty()) ? VK_TRUE : VK_FALSE;
+    dr.allExtensionSupported = (req_extension.empty()) ? VK_TRUE : VK_FALSE;
 }
 
 void
@@ -155,22 +158,22 @@ getDeviceQueues(VkPhysicalDevice device,
     uint32_t index = 0;
     for (auto const &it : families) {
         if (it.queueFlags & VK_QUEUE_GRAPHICS_BIT && it.queueCount > 0) {
-            dr.graphic_family_index = index;
+            dr.graphicFamilyIndex = index;
         }
         if (it.queueFlags & VK_QUEUE_COMPUTE_BIT && it.queueCount > 0) {
-            dr.compute_family_index = index;
+            dr.computeFamilyIndex = index;
         }
 
         VkBool32 present_support = false;
         vkGetPhysicalDeviceSurfaceSupportKHR(
           device, index, surface, &present_support);
         if (present_support) {
-            dr.present_family_index = index;
+            dr.presentFamilyIndex = index;
         }
 
-        if (dr.graphic_family_index.has_value() &&
-            dr.present_family_index.has_value() &&
-            dr.compute_family_index.has_value()) {
+        if (dr.graphicFamilyIndex.has_value() &&
+            dr.presentFamilyIndex.has_value() &&
+            dr.computeFamilyIndex.has_value()) {
             break;
         }
         ++index;
@@ -178,11 +181,11 @@ getDeviceQueues(VkPhysicalDevice device,
 
     // Check for dedicated compute queue family
     index = 0;
-    if (dr.compute_family_index == dr.graphic_family_index) {
+    if (dr.computeFamilyIndex == dr.graphicFamilyIndex) {
         for (auto const &it : families) {
             if (it.queueFlags & VK_QUEUE_COMPUTE_BIT && it.queueCount > 0 &&
-                index != dr.compute_family_index) {
-                dr.compute_family_index = index;
+                index != dr.computeFamilyIndex) {
+                dr.computeFamilyIndex = index;
                 break;
             }
             ++index;

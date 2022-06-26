@@ -11,17 +11,17 @@ EventHandler::setIOManager(IOManager *io_manager)
     _ioManager = io_manager;
 }
 
-/*void
+void
 EventHandler::setVkRenderer(VulkanRenderer *renderer)
 {
     _renderer = renderer;
-}*/
+}
 
 void
 EventHandler::processEvents(IOEvents const &ioEvents)
 {
     assert(_ioManager);
-    // assert(_renderer);
+    assert(_renderer);
 
     // Resetting movement tracking
     _movements = glm::ivec3(0);
@@ -56,11 +56,11 @@ EventHandler::processEvents(IOEvents const &ioEvents)
     }
 
     // Resized window case
-    /*    if (_io_manager->wasResized()) {
-            // VK Renderer related
-            auto fb_size = _io_manager->getFramebufferSize();
-            _renderer->resize(fb_size.x, fb_size.y);
-        }*/
+    if (_ioManager->wasResized()) {
+        // VK Renderer related
+        auto fb_size = _ioManager->getFramebufferSize();
+        _renderer->resize(fb_size.x, fb_size.y);
+    }
 
     // Setting timers origin
     for (uint32_t i = 0; i < ET_NB_EVENT_TIMER_TYPES; ++i) {

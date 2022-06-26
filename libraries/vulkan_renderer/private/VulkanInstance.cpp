@@ -17,7 +17,7 @@ VulkanInstance::createInstance(std::string const &app_name,
                                uint32_t engine_version,
                                std::vector<char const *> &&required_extensions)
 {
-    if (ENABLE_VALIDATION_LAYER && !_check_validation_layer_support()) {
+    if (ENABLE_VALIDATION_LAYER && !checkValidationLayerSupport()) {
         throw std::runtime_error(
           "VulkanInstance: Validation layer not available");
     }
@@ -58,12 +58,13 @@ VulkanInstance::createInstance(std::string const &app_name,
 }
 
 void
-VulkanInstance::init(VkSurfaceKHR windowSurface)
+VulkanInstance::init(VkSurfaceKHR windowSurface,
+                     VulkanInstanceOptions const &options)
 {
     surface = windowSurface;
-    _setup_vk_debug_msg();
-    _select_physical_device();
-    _create_queues();
+    setupVkDebugMsg();
+    selectPhysicalDevice(options);
+    createQueues();
     cmdPools.renderCommandPool =
       createCommandPool(devices.device, queues.graphicFamilyIndex, 0);
     cmdPools.computeCommandPool =
@@ -95,7 +96,7 @@ VulkanInstance::clear()
 }
 
 void
-VulkanInstance::_setup_vk_debug_msg()
+VulkanInstance::setupVkDebugMsg()
 {
     if constexpr (!ENABLE_VALIDATION_LAYER) {
         return;
@@ -107,7 +108,8 @@ VulkanInstance::_setup_vk_debug_msg()
 }
 
 void
-VulkanInstance::_select_physical_device()
+VulkanInstance::selectPhysicalDevice(
+  VulkanInstanceOptions const &instanceOptions)
 {
     uint32_t nb_physical_device = 0;
     vkEnumeratePhysicalDevices(instance, &nb_physical_device, nullptr);
@@ -119,7 +121,8 @@ VulkanInstance::_select_physical_device()
     vkEnumeratePhysicalDevices(
       instance, &nb_physical_device, phy_devices.data());
 
-    devices.physicalDevice = selectBestDevice(phy_devices, surface);
+    devices.physicalDevice =
+      selectBestDevice(phy_devices, surface, instanceOptions);
     if (devices.physicalDevice == VK_NULL_HANDLE) {
         throw std::runtime_error("VulkanInstance: No Suitable device found");
     }
@@ -128,12 +131,12 @@ VulkanInstance::_select_physical_device()
 }
 
 void
-VulkanInstance::_create_queues()
+VulkanInstance::createQueues()
 {
     auto dfr = getDeviceRequirement(devices.physicalDevice, surface);
-    std::set<uint32_t> queue_families = { dfr.graphic_family_index.value(),
-                                          dfr.present_family_index.value(),
-                                          dfr.compute_family_index.value() };
+    std::set<uint32_t> queue_families = { dfr.graphicFamilyIndex.value(),
+                                          dfr.presentFamilyIndex.value(),
+                                          dfr.computeFamilyIndex.value() };
     std::vector<VkDeviceQueueCreateInfo> vec_queue_create_info;
 
     // Graphic queue info
@@ -175,26 +178,20 @@ VulkanInstance::_create_queues()
         throw std::runtime_error(
           "VulkanInstance: Failed to create logical device");
     }
-    vkGetDeviceQueue(devices.device,
-                     dfr.graphic_family_index.value(),
-                     0,
-                     &queues.graphicQueue);
-    vkGetDeviceQueue(devices.device,
-                     dfr.present_family_index.value(),
-                     0,
-                     &queues.presentQueue);
-    vkGetDeviceQueue(devices.device,
-                     dfr.compute_family_index.value(),
-                     0,
-                     &queues.computeQueue);
-    queues.graphicFamilyIndex = dfr.graphic_family_index.value();
-    queues.presentFamilyIndex = dfr.present_family_index.value();
-    queues.computeFamilyIndex = dfr.compute_family_index.value();
+    vkGetDeviceQueue(
+      devices.device, dfr.graphicFamilyIndex.value(), 0, &queues.graphicQueue);
+    vkGetDeviceQueue(
+      devices.device, dfr.presentFamilyIndex.value(), 0, &queues.presentQueue);
+    vkGetDeviceQueue(
+      devices.device, dfr.computeFamilyIndex.value(), 0, &queues.computeQueue);
+    queues.graphicFamilyIndex = dfr.graphicFamilyIndex.value();
+    queues.presentFamilyIndex = dfr.presentFamilyIndex.value();
+    queues.computeFamilyIndex = dfr.computeFamilyIndex.value();
 }
 
 // Dbg related
 bool
-VulkanInstance::_check_validation_layer_support()
+VulkanInstance::checkValidationLayerSupport()
 {
     uint32_t nb_avail_layers;
     vkEnumerateInstanceLayerProperties(&nb_avail_layers, nullptr);

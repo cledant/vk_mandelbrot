@@ -8,28 +8,28 @@
 #include "VulkanDebug.hpp"
 #include "utils/VulkanCommandBuffer.hpp"
 #include "utils/VulkanMemory.hpp"
-#include "ubo/VulkanUboStructs.hpp"
+#include "constants/VulkanConstants.hpp"
 
 void
-VulkanRenderer::createInstance(std::string &&app_name,
-                               std::string &&engine_name,
-                               uint32_t app_version,
-                               uint32_t engine_version,
-                               std::vector<char const *> &&required_extensions)
+VulkanRenderer::createInstance(std::string &&appName,
+                               std::string &&engineName,
+                               uint32_t appVersion,
+                               uint32_t engineVersion,
+                               std::vector<char const *> &&requiredExtensions)
 {
     if constexpr (ENABLE_VALIDATION_LAYER) {
-        required_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+        requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
-    _appName = std::move(app_name);
-    _appVersion = app_version;
-    _engineName = std::move(engine_name);
-    _engineVersion = engine_version;
+    _appName = std::move(appName);
+    _appVersion = appVersion;
+    _engineName = std::move(engineName);
+    _engineVersion = engineVersion;
     _vkInstance.instance =
       VulkanInstance::createInstance(_appName,
                                      _engineName,
                                      _appVersion,
                                      _engineVersion,
-                                     std::move(required_extensions));
+                                     std::move(requiredExtensions));
 }
 
 VkInstance
@@ -39,72 +39,41 @@ VulkanRenderer::getVkInstance() const
 }
 
 void
-VulkanRenderer::init(VkSurfaceKHR surface, uint32_t win_w, uint32_t win_h)
+VulkanRenderer::init(VkSurfaceKHR surface,
+                     VulkanInstanceOptions const &options,
+                     uint32_t winW,
+                     uint32_t winH)
 {
     assert(surface);
 
-    _vkInstance.init(surface);
-    _texManager.init(_vkInstance);
-    _swapChain.init(_vkInstance, win_w, win_h);
+    _vkInstance.init(surface, options);
+    _swapChain.init(_vkInstance, winW, winH);
     _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
-    _systemUniform.allocate(_vkInstance.devices,
-                            sizeof(SystemUbo) *
-                              _swapChain.currentSwapChainNbImg,
-                            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                              VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     _sceneRenderPass.init(_vkInstance, _swapChain);
-    _ui.init(_vkInstance, _swapChain);
-    _skybox.init(_vkInstance,
-                 _swapChain,
-                 _sceneRenderPass,
-                 "resources/textures/skybox",
-                 "jpg",
-                 _texManager,
-                 _systemUniform.buffer);
-    _particle.init(
-      _vkInstance, _swapChain, _sceneRenderPass, _systemUniform.buffer);
     recordRenderCmds();
-    _updateComputeCmds = true;
 }
 
 void
-VulkanRenderer::resize(uint32_t win_w, uint32_t win_h)
+VulkanRenderer::resize(uint32_t winW, uint32_t winH)
 {
     vkDeviceWaitIdle(_vkInstance.devices.device);
-    if (win_w <= 0 || win_h <= 0) {
+    if (winW <= 0 || winH <= 0) {
         return;
     }
 
-    _swapChain.resize(win_w, win_h);
+    _swapChain.resize(winW, winH);
     _sync.resize(_swapChain.currentSwapChainNbImg);
-    _systemUniform.clear();
-    _systemUniform.allocate(_vkInstance.devices,
-                            sizeof(SystemUbo) *
-                              _swapChain.currentSwapChainNbImg,
-                            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                              VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-    _ui.resize(_swapChain);
     _sceneRenderPass.resize(_swapChain);
-    _skybox.resize(_swapChain, _sceneRenderPass, _systemUniform.buffer);
-    _particle.resize(_swapChain, _sceneRenderPass, _systemUniform.buffer);
     recordRenderCmds();
-    _updateComputeCmds = true;
 }
 
 void
 VulkanRenderer::clear()
 {
     vkDeviceWaitIdle(_vkInstance.devices.device);
-    _skybox.clear();
-    _particle.clear();
-    _ui.clear();
     _sceneRenderPass.clear();
     _sync.clear();
     _swapChain.clear();
-    _texManager.clear();
-    _systemUniform.clear();
     _vkInstance.clear();
 }
 
@@ -133,86 +102,9 @@ VulkanRenderer::getEngineVersion() const
     return (_engineVersion);
 }
 
-// Skybox related
-void
-VulkanRenderer::setSkyboxInfo(glm::mat4 const &skyboxInfo)
-{
-    _skybox.setSkyboxInfo(skyboxInfo);
-}
-
-// Particles related
-void
-VulkanRenderer::toggleParticlesMvt()
-{
-    _doParticleMvt = !_doParticleMvt;
-    _updateComputeCmds = true;
-}
-
-void
-VulkanRenderer::setParticleGenerationType(VulkanParticleGenerationType type)
-{
-    switch (type) {
-        case VulkanParticleGenerationType::CUBE:
-            _randomCompShader = VPCST_RANDOM_CUBE;
-            break;
-        case VulkanParticleGenerationType::SPHERE:
-            _randomCompShader = VPCST_RANDOM_SPHERE;
-            break;
-        case VulkanParticleGenerationType::DISK:
-            _randomCompShader = VPCST_RANDOM_DISK;
-            break;
-        default:
-            _randomCompShader = VPCST_RANDOM_CUBE;
-    }
-    _doParticleMvt = false;
-    _doParticleGeneration = true;
-    _updateComputeCmds = true;
-}
-
-void
-VulkanRenderer::setParticlesNumber(uint32_t nbParticles)
-{
-    vkDeviceWaitIdle(_vkInstance.devices.device);
-    _particle.setParticleNumber(nbParticles, _swapChain, _systemUniform.buffer);
-    recordRenderCmds();
-    _doParticleMvt = false;
-    _doParticleGeneration = true;
-    _updateComputeCmds = true;
-}
-
-void
-VulkanRenderer::setParticlesMaxSpeed(uint32_t maxSpeed)
-{
-    _particle.setParticleMaxSpeed(maxSpeed);
-}
-
-void
-VulkanRenderer::setParticlesColor(glm::vec3 const &particlesColor)
-{
-    _particle.setParticlesColor(particlesColor);
-}
-
-void
-VulkanRenderer::setParticleMass(float mass)
-{
-    _particle.setParticleMass(mass);
-}
-
-void
-VulkanRenderer::setParticleGravityCenter(glm::vec3 const &particleGravityCenter)
-{
-    _particle.setParticleGravityCenter(particleGravityCenter);
-}
-
-void
-VulkanRenderer::setDeltaT(float deltaT)
-{
-    _particle.setDeltaT(deltaT);
-}
-
 // Render Related
 void
-VulkanRenderer::draw(glm::mat4 const &view_proj_mat)
+VulkanRenderer::draw()
 {
     vkWaitForFences(_vkInstance.devices.device,
                     1,
@@ -242,8 +134,7 @@ VulkanRenderer::draw(glm::mat4 const &view_proj_mat)
     _sync.imgsInflightFence[img_index] =
       _sync.inflightFence[_sync.currentFrame];
 
-    selectComputeCase();
-    emitDrawCmds(img_index, view_proj_mat);
+    emitDrawCmds(img_index);
 
     VkSwapchainKHR swap_chains[] = { _swapChain.swapChain };
     VkSemaphore present_wait_sems[] = {
@@ -260,6 +151,40 @@ VulkanRenderer::draw(glm::mat4 const &view_proj_mat)
     vkQueuePresentKHR(_vkInstance.queues.presentQueue, &present_info);
     _sync.currentFrame =
       (_sync.currentFrame + 1) % VulkanSync::MAX_FRAME_INFLIGHT;
+}
+
+void
+VulkanRenderer::emitDrawCmds(uint32_t imgIndex)
+{
+    // Send scene rendering
+    VkSemaphore finish_scene_sig_sems[] = {
+        _sync.allRenderFinishedSem[_sync.currentFrame],
+    };
+    VkSubmitInfo submit_info{};
+    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submit_info.pWaitSemaphores = nullptr;
+    submit_info.pWaitDstStageMask = nullptr;
+    submit_info.waitSemaphoreCount = 0;
+    submit_info.pSignalSemaphores = finish_scene_sig_sems;
+    submit_info.signalSemaphoreCount = 1;
+    submit_info.pCommandBuffers = &_renderCommandBuffers[imgIndex];
+    submit_info.commandBufferCount = 1;
+    if (vkQueueSubmit(
+          _vkInstance.queues.graphicQueue, 1, &submit_info, nullptr) !=
+        VK_SUCCESS) {
+        throw std::runtime_error(
+          "VulkanRenderer: Failed to submit render draw command buffer");
+    }
+
+    vkResetFences(
+      _vkInstance.devices.device, 1, &_sync.inflightFence[_sync.currentFrame]);
+    if (vkQueueSubmit(_vkInstance.queues.graphicQueue,
+                      1,
+                      &submit_info,
+                      _sync.inflightFence[_sync.currentFrame]) != VK_SUCCESS) {
+        throw std::runtime_error(
+          "VulkanRenderer: Failed to submit ui draw command buffer");
+    }
 }
 
 void
@@ -294,8 +219,7 @@ VulkanRenderer::recordRenderCmds()
         rp_begin_info.clearValueCount = clear_vals.size();
         rp_begin_info.pClearValues = clear_vals.data();
         vkCmdBeginRenderPass(it, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
-        _skybox.generateCommands(it, i);
-        _particle.generateCommands(it, i);
+        // TODO:ADD CMD GENERATION HERE
         vkCmdEndRenderPass(it);
 
         if (vkEndCommandBuffer(it) != VK_SUCCESS) {
@@ -303,147 +227,5 @@ VulkanRenderer::recordRenderCmds()
               "VulkanRenderer: Failed to record render command Buffer");
         }
         ++i;
-    }
-}
-
-void
-VulkanRenderer::recordComputeCmds(VulkanParticleComputeShaderType type,
-                                  bool registerCmd)
-{
-    allocateCommandBuffers(_vkInstance.devices.device,
-                           _vkInstance.cmdPools.computeCommandPool,
-                           _computeCommandBuffers,
-                           _swapChain.swapChainImageViews.size());
-
-    VkCommandBufferBeginInfo cb_begin_info{};
-    cb_begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    cb_begin_info.flags = 0;
-    cb_begin_info.pInheritanceInfo = nullptr;
-
-    for (auto &it : _computeCommandBuffers) {
-        if (vkBeginCommandBuffer(it, &cb_begin_info) != VK_SUCCESS) {
-            throw std::runtime_error("VulkanRenderer: Failed to begin "
-                                     "recording compute command buffer");
-        }
-        if (registerCmd) {
-            _particle.generateComputeCommands(it, type);
-        }
-        vkEndCommandBuffer(it);
-    }
-}
-
-void
-VulkanRenderer::selectComputeCase()
-{
-    if (_updateComputeCmds) {
-        if (_doParticleGeneration) {
-            recordComputeCmds(_randomCompShader, true);
-            _doParticleGeneration = false;
-            return;
-        }
-        if (_doParticleMvt) {
-            recordComputeCmds(VPCST_GRAVITY, true);
-            _updateComputeCmds = false;
-            return;
-        }
-        if (!_doParticleMvt) {
-            recordComputeCmds(VPCST_GRAVITY, false);
-            _updateComputeCmds = false;
-            return;
-        }
-    }
-}
-
-void
-VulkanRenderer::emitDrawCmds(uint32_t img_index, glm::mat4 const &view_proj_mat)
-{
-    // Update UBOs
-    copyOnCpuCoherentMemory(_vkInstance.devices.device,
-                            _systemUniform.memory,
-                            img_index * sizeof(SystemUbo) +
-                              offsetof(SystemUbo, view_proj),
-                            sizeof(glm::mat4),
-                            &view_proj_mat);
-    _skybox.setSkyboxModelMatOnGpu(img_index);
-    _particle.setGfxUboOnGpu(img_index);
-    _particle.setCompUboOnGpu();
-
-    // Send Compute rendering
-    VkSemaphore finish_compute_sig_sems[] = {
-        _sync.computeFinishedSem[_sync.currentFrame],
-    };
-    VkSubmitInfo compute_submit_info{};
-    compute_submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    compute_submit_info.pWaitSemaphores = nullptr;
-    compute_submit_info.pWaitDstStageMask = nullptr;
-    compute_submit_info.waitSemaphoreCount = 0;
-    compute_submit_info.pSignalSemaphores = finish_compute_sig_sems;
-    compute_submit_info.signalSemaphoreCount = 1;
-    compute_submit_info.pCommandBuffers = &_computeCommandBuffers[img_index];
-    compute_submit_info.commandBufferCount = 1;
-    if (vkQueueSubmit(
-          _vkInstance.queues.computeQueue, 1, &compute_submit_info, nullptr) !=
-        VK_SUCCESS) {
-        throw std::runtime_error(
-          "VulkanRenderer: Failed to submit compute draw command buffer");
-    }
-
-    // Send scene rendering
-    VkSemaphore scene_world_sems[] = {
-        _sync.computeFinishedSem[_sync.currentFrame],
-    };
-    VkPipelineStageFlags scene_wait_stages[] = {
-        VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
-    };
-    VkSemaphore finish_model_sig_sems[] = {
-        _sync.sceneFinishedSem[_sync.currentFrame],
-    };
-    VkSubmitInfo submit_info{};
-    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submit_info.pWaitSemaphores = scene_world_sems;
-    submit_info.pWaitDstStageMask = scene_wait_stages;
-    submit_info.waitSemaphoreCount = 1;
-    submit_info.pSignalSemaphores = finish_model_sig_sems;
-    submit_info.signalSemaphoreCount = 1;
-    submit_info.pCommandBuffers = &_renderCommandBuffers[img_index];
-    submit_info.commandBufferCount = 1;
-    if (vkQueueSubmit(
-          _vkInstance.queues.graphicQueue, 1, &submit_info, nullptr) !=
-        VK_SUCCESS) {
-        throw std::runtime_error(
-          "VulkanRenderer: Failed to submit render draw command buffer");
-    }
-
-    // Send Ui rendering
-    VkSemaphore wait_ui_sems[] = {
-        _sync.sceneFinishedSem[_sync.currentFrame],
-        _sync.imageAvailableSem[_sync.currentFrame],
-    };
-    VkPipelineStageFlags world_ui_stages[] = {
-        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-    };
-    VkSemaphore finish_ui_sig_sems[] = {
-        _sync.allRenderFinishedSem[_sync.currentFrame],
-    };
-    VkSubmitInfo ui_submit_info{};
-    ui_submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    ui_submit_info.pWaitSemaphores = wait_ui_sems;
-    ui_submit_info.pWaitDstStageMask = world_ui_stages;
-    ui_submit_info.waitSemaphoreCount = 2;
-    ui_submit_info.pSignalSemaphores = finish_ui_sig_sems;
-    ui_submit_info.signalSemaphoreCount = 1;
-    auto ui_cmd_buffer =
-      _ui.generateCommandBuffer(img_index, _swapChain.swapChainExtent, false);
-    ui_submit_info.commandBufferCount = 1;
-    ui_submit_info.pCommandBuffers = &ui_cmd_buffer;
-    vkResetFences(
-      _vkInstance.devices.device, 1, &_sync.inflightFence[_sync.currentFrame]);
-    if (vkQueueSubmit(_vkInstance.queues.graphicQueue,
-                      1,
-                      &ui_submit_info,
-                      _sync.inflightFence[_sync.currentFrame]) != VK_SUCCESS) {
-        throw std::runtime_error(
-          "VulkanRenderer: Failed to submit ui draw command buffer");
     }
 }

@@ -43,28 +43,6 @@ struct VulkanBuffer final
     VulkanDevices _devices{};
 };
 
-struct VulkanTextureStaging final
-{
-    VulkanBuffer stagingBuffer{};
-    int32_t width{};
-    int32_t height{};
-    uint32_t mipLevel{};
-    bool isCubemap{};
-
-    VkDeviceSize stageTexture(VulkanDevices const &devices,
-                              std::string const &filepath);
-    VkDeviceSize stageTexture(VulkanDevices const &devices,
-                              std::string const &cubemapFolder,
-                              std::string const &filetype);
-    VkDeviceSize stageTexture(VulkanDevices const &devices,
-                              uint8_t const *buff,
-                              int32_t texW,
-                              int32_t texH,
-                              int32_t nbChan,
-                              bool cubemap);
-    void clear();
-};
-
 struct VulkanTexture final
 {
     VkImage textureImg{};
@@ -77,11 +55,6 @@ struct VulkanTexture final
     VkFormat textureFormat{};
     bool isCubemap{};
 
-    void loadTextureOnGPU(VulkanDevices const &devices,
-                          VulkanCommandPools const &cmdPools,
-                          VulkanQueues const &queues,
-                          VulkanTextureStaging const &stagingTexture,
-                          VkFormat format);
     void createDepthTexture(VulkanDevices const &devices,
                             VulkanCommandPools const &cmdPools,
                             VulkanQueues const &queues,

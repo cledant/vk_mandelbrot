@@ -72,7 +72,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/fmt ${CMAKE_BINARY_DIR}/ex
 #Project libs
 add_subdirectory(libraries/io_manager)
 add_subdirectory(libraries/engine)
-#add_subdirectory(libraries/vulkan_renderer)
+add_subdirectory(libraries/vulkan_renderer)
 add_subdirectory(libraries/app_info)
 
 #Main binary

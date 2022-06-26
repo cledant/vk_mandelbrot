@@ -8,22 +8,22 @@
 
 void
 VulkanSwapChain::init(VulkanInstance const &vkInstance,
-                      uint32_t fb_w,
-                      uint32_t fb_h)
+                      uint32_t fbW,
+                      uint32_t fbH)
 {
     _devices = vkInstance.devices;
     _surface = vkInstance.surface;
-    _create_swap_chain(fb_w, fb_h);
-    _create_image_view();
+    createSwapChain(fbW, fbH);
+    createImageView();
 }
 
 void
-VulkanSwapChain::resize(uint32_t fb_w, uint32_t fb_h)
+VulkanSwapChain::resize(uint32_t fbW, uint32_t fbH)
 {
     oldSwapChainNbImg = currentSwapChainNbImg;
     clean();
-    _create_swap_chain(fb_w, fb_h);
-    _create_image_view();
+    createSwapChain(fbW, fbH);
+    createImageView();
 }
 
 void
@@ -44,10 +44,10 @@ VulkanSwapChain::clear()
 }
 
 void
-VulkanSwapChain::_create_swap_chain(uint32_t fb_w, uint32_t fb_h)
+VulkanSwapChain::createSwapChain(uint32_t framebufferW, uint32_t framebufferH)
 {
     // Creating swap chain
-    VkExtent2D actual_extent = { fb_w, fb_h };
+    VkExtent2D actual_extent = { framebufferW, framebufferH };
 
     auto scs =
       getSwapChainSupport(_devices.physicalDevice, _surface, actual_extent);
@@ -73,9 +73,9 @@ VulkanSwapChain::_create_swap_chain(uint32_t fb_w, uint32_t fb_h)
 
     DeviceRequirement dr{};
     getDeviceQueues(_devices.physicalDevice, _surface, dr);
-    uint32_t queue_family_indices[] = { dr.present_family_index.value(),
-                                        dr.graphic_family_index.value() };
-    if (dr.present_family_index.value() != dr.graphic_family_index.value()) {
+    uint32_t queue_family_indices[] = { dr.presentFamilyIndex.value(),
+                                        dr.graphicFamilyIndex.value() };
+    if (dr.presentFamilyIndex.value() != dr.graphicFamilyIndex.value()) {
         create_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
         create_info.queueFamilyIndexCount = 2;
         create_info.pQueueFamilyIndices = queue_family_indices;
@@ -107,7 +107,7 @@ VulkanSwapChain::_create_swap_chain(uint32_t fb_w, uint32_t fb_h)
 }
 
 void
-VulkanSwapChain::_create_image_view()
+VulkanSwapChain::createImageView()
 {
     swapChainImageViews.resize(swapChainImages.size());
     for (size_t i = 0; i < swapChainImages.size(); ++i) {

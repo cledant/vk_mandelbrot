@@ -8,17 +8,18 @@
 
 #include <vulkan/vulkan.h>
 
+#include "VulkanInstanceOptions.hpp"
+
 struct DeviceRequirement final
 {
-    std::optional<uint32_t> graphic_family_index;
-    std::optional<uint32_t> present_family_index;
-    std::optional<uint32_t> compute_family_index;
-    VkBool32 geometry_shader{};
-    VkBool32 sampler_aniso{};
-    VkBool32 fill_mode_non_solid{};
-    VkBool32 all_extension_supported{};
+    std::optional<uint32_t> graphicFamilyIndex;
+    std::optional<uint32_t> presentFamilyIndex;
+    std::optional<uint32_t> computeFamilyIndex;
+    VkBool32 allExtensionSupported{};
+    VulkanInstanceOptions options{};
 
-    [[nodiscard]] bool isValid() const;
+    [[nodiscard]] bool isValid(
+      VulkanInstanceOptions const &requiredOptions) const;
 };
 
 [[maybe_unused]] constexpr std::array const DEVICE_EXTENSIONS{
@@ -26,8 +27,11 @@ struct DeviceRequirement final
 };
 
 VkPhysicalDevice selectBestDevice(std::vector<VkPhysicalDevice> const &devices,
-                                  VkSurfaceKHR surface);
-int rateDevice(VkPhysicalDevice device, VkSurfaceKHR surface);
+                                  VkSurfaceKHR surface,
+                                  VulkanInstanceOptions const &requiredOptions);
+int rateDevice(VkPhysicalDevice device,
+               VkSurfaceKHR surface,
+               VulkanInstanceOptions const &requiredOptions);
 char *getDeviceName(char *dst, VkPhysicalDevice device);
 DeviceRequirement getDeviceRequirement(VkPhysicalDevice device,
                                        VkSurfaceKHR surface);

@@ -7,6 +7,7 @@
 #include <vulkan/vulkan.h>
 
 #include "common/VulkanCommonStruct.hpp"
+#include "VulkanInstanceOptions.hpp"
 
 class VulkanInstance final
 {
@@ -24,7 +25,7 @@ class VulkanInstance final
       uint32_t app_version,
       uint32_t engine_version,
       std::vector<char const *> &&required_extensions);
-    void init(VkSurfaceKHR windowSurface);
+    void init(VkSurfaceKHR windowSurface, VulkanInstanceOptions const &options);
     void clear();
 
     VkInstance instance{};
@@ -38,12 +39,13 @@ class VulkanInstance final
     VulkanCommandPools cmdPools;
 
   private:
-    inline void _setup_vk_debug_msg();
-    inline void _select_physical_device();
-    inline void _create_queues();
+    inline void setupVkDebugMsg();
+    inline void selectPhysicalDevice(
+      VulkanInstanceOptions const &instanceOptions);
+    inline void createQueues();
 
     // Dbg related
-    static inline bool _check_validation_layer_support();
+    static inline bool checkValidationLayerSupport();
 };
 
 #endif // VK_MANDELBROT_VULKAN_VULKANINSTANCE_HPP

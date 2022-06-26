@@ -7,6 +7,7 @@ add_library(vulkan_renderer STATIC
         private/VulkanInstance.cpp
         private/VulkanSwapChain.cpp
         private/VulkanSync.cpp
+        private/VulkanInstanceOptions.cpp
         private/renderPass/VulkanSceneRenderPass.cpp
         private/utils/VulkanPhysicalDevice.cpp
         private/utils/VulkanSwapChainUtils.cpp
@@ -18,7 +19,6 @@ add_library(vulkan_renderer STATIC
         private/utils/VulkanDescriptorUtils.cpp
         private/utils/VulkanPipelineUtils.cpp
         private/common/VulkanBuffer.cpp
-        private/common/VulkanTextureStaging.cpp
         private/common/VulkanTexture.cpp)
 target_include_directories(vulkan_renderer
         PUBLIC

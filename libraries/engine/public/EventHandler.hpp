@@ -5,7 +5,7 @@
 
 #include "IOEvents.hpp"
 #include "IOManager.hpp"
-//#include "VulkanRenderer.hpp"
+#include "VulkanRenderer.hpp"
 
 class EventHandler final
 {
@@ -18,7 +18,7 @@ class EventHandler final
     EventHandler &operator=(EventHandler &&rhs) = delete;
 
     void setIOManager(IOManager *io_manager);
-    // void setVkRenderer(VulkanRenderer *renderer);
+    void setVkRenderer(VulkanRenderer *renderer);
 
     void processEvents(IOEvents const &ioEvents);
 
@@ -68,7 +68,7 @@ class EventHandler final
     inline void _rightMouse();
 
     IOManager *_ioManager{};
-    // VulkanRenderer *_renderer{};
+    VulkanRenderer *_renderer{};
 
     EventTimers _timers{};
 
