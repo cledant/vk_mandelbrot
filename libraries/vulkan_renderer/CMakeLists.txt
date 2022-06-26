@@ -18,6 +18,9 @@ add_library(vulkan_renderer STATIC
         private/utils/VulkanTextureUtils.cpp
         private/utils/VulkanDescriptorUtils.cpp
         private/utils/VulkanPipelineUtils.cpp
+        private/surfaceDisplay/VulkanSurfaceDisplayPipeline.cpp
+        private/surfaceDisplay/VulkanSurfaceDisplayPipelineData.cpp
+        private/surfaceDisplay/VulkanSurfaceDisplayPipelineDescription.cpp
         private/common/VulkanBuffer.cpp
         private/common/VulkanTexture.cpp)
 target_include_directories(vulkan_renderer

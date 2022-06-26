@@ -74,6 +74,7 @@ add_subdirectory(libraries/io_manager)
 add_subdirectory(libraries/engine)
 add_subdirectory(libraries/vulkan_renderer)
 add_subdirectory(libraries/app_info)
+add_subdirectory(shaders/mandelbrot)
 
 #Main binary
 add_executable(${APP_BINARY_NAME}
@@ -82,7 +83,7 @@ target_include_directories(${APP_BINARY_NAME}
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/binary/private)
 target_link_libraries(${APP_BINARY_NAME} fmt iomanager engine vulkan)
-add_dependencies(${APP_BINARY_NAME} fmt iomanager engine)
+add_dependencies(${APP_BINARY_NAME} fmt iomanager engine mandelbrot_shader)
 set_target_properties(${APP_BINARY_NAME} PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES

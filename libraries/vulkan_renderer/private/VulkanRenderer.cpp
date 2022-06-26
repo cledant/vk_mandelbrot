@@ -50,6 +50,7 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _swapChain.init(_vkInstance, winW, winH);
     _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
     _sceneRenderPass.init(_vkInstance, _swapChain);
+    _surfaceDisplay.init(_vkInstance, _swapChain, _sceneRenderPass);
     recordRenderCmds();
 }
 
@@ -64,6 +65,7 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH)
     _swapChain.resize(winW, winH);
     _sync.resize(_swapChain.currentSwapChainNbImg);
     _sceneRenderPass.resize(_swapChain);
+    _surfaceDisplay.resize(_swapChain, _sceneRenderPass);
     recordRenderCmds();
 }
 
@@ -71,6 +73,7 @@ void
 VulkanRenderer::clear()
 {
     vkDeviceWaitIdle(_vkInstance.devices.device);
+    _surfaceDisplay.clear();
     _sceneRenderPass.clear();
     _sync.clear();
     _swapChain.clear();
@@ -219,7 +222,7 @@ VulkanRenderer::recordRenderCmds()
         rp_begin_info.clearValueCount = clear_vals.size();
         rp_begin_info.pClearValues = clear_vals.data();
         vkCmdBeginRenderPass(it, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
-        // TODO:ADD CMD GENERATION HERE
+        _surfaceDisplay.generateCommands(it, i);
         vkCmdEndRenderPass(it);
 
         if (vkEndCommandBuffer(it) != VK_SUCCESS) {

@@ -12,6 +12,7 @@
 #include "VulkanSwapChain.hpp"
 #include "VulkanSync.hpp"
 #include "renderPass/VulkanSceneRenderPass.hpp"
+#include "surfaceDisplay/VulkanSurfaceDisplayPipeline.hpp"
 
 class VulkanRenderer final
 {
@@ -63,6 +64,7 @@ class VulkanRenderer final
     VulkanSwapChain _swapChain;
     VulkanSync _sync;
     VulkanSceneRenderPass _sceneRenderPass;
+    VulkanSurfaceDisplayPipeline _surfaceDisplay;
 
     // Cmd Buffers
     std::vector<VkCommandBuffer> _renderCommandBuffers;
