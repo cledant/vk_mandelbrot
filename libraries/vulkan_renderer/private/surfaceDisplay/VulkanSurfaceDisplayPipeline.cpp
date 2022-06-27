@@ -16,7 +16,7 @@ VulkanSurfaceDisplayPipeline::init(VulkanInstance const &vkInstance,
     _cmdPools = vkInstance.cmdPools;
     _queues = vkInstance.queues;
 
-    _pipelineData.init(_devices, _cmdPools, _queues);
+    _pipelineData.init(_devices, _cmdPools, _queues, swapChain.swapChainExtent);
     _pipelineDescription.init(_devices);
     createDescriptorPool(swapChain.currentSwapChainNbImg);
     createGfxPipeline(swapChain, renderPass);
@@ -29,6 +29,8 @@ VulkanSurfaceDisplayPipeline::resize(VulkanSwapChain const &swapChain,
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
+    _pipelineData.clear();
+    _pipelineData.init(_devices, _cmdPools, _queues, swapChain.swapChainExtent);
     createDescriptorPool(swapChain.currentSwapChainNbImg);
     createGfxPipeline(swapChain, renderPass);
     createDescriptorSets(_pipelineData, swapChain.currentSwapChainNbImg);
