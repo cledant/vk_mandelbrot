@@ -13,6 +13,7 @@
 #include "VulkanSurfaceDisplayPipelineData.hpp"
 #include "VulkanSurfaceDisplayPipelineDescription.hpp"
 #include "renderPass/VulkanSceneRenderPass.hpp"
+#include "constants/VulkanConstants.hpp"
 
 class VulkanSurfaceDisplayPipeline final
 {
@@ -26,6 +27,8 @@ class VulkanSurfaceDisplayPipeline final
     VulkanSurfaceDisplayPipeline(VulkanSurfaceDisplayPipeline &&src) = delete;
     VulkanSurfaceDisplayPipeline &operator=(
       VulkanSurfaceDisplayPipeline &&rhs) = delete;
+
+    mandelbrotConstants pushConstants{};
 
     void init(VulkanInstance const &vkInstance,
               VulkanSwapChain const &swapChain,

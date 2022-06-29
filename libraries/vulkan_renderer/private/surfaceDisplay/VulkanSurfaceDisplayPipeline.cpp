@@ -55,6 +55,15 @@ void
 VulkanSurfaceDisplayPipeline::generateCommands(VkCommandBuffer cmdBuffer,
                                                size_t descriptorSetIndex)
 {
+    // Push constants
+    static constexpr glm::vec4 const COLOR{ 0.0f, 0.1f, 0.5f, 1.0f };
+    vkCmdPushConstants(cmdBuffer,
+                       _pipelineDescription.pipelineLayout,
+                       VK_SHADER_STAGE_FRAGMENT_BIT,
+                       0,
+                       sizeof(mandelbrotConstants),
+                       &COLOR);
+
     // Vertex related values
     VkBuffer vertex_buffer[] = { _pipelineData.data.buffer };
     VkDeviceSize offsets[] = { 0 };

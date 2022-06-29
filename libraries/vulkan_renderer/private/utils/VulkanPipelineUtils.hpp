@@ -6,5 +6,8 @@
 VkPipelineLayout createPipelineLayout(
   VulkanDevices const &devices,
   VkDescriptorSetLayout descriptorSetLayout);
+VkPipelineLayout createPipelineLayout(VulkanDevices const &devices,
+                                      VkDescriptorSetLayout descriptorSetLayout,
+                                      VkPushConstantRange pushConstantRange);
 
 #endif // PARTICLE_SYSTEM_VULKAN_VULKANPIPELINEUTILS_HPP

@@ -3,6 +3,10 @@
 
 layout(location = 0) out vec4 outColor;
 
+layout(push_constant) uniform mandelbrotConstants {
+    vec4 backgroundColor;
+} pushConsts;
+
 void main() {
-    outColor = vec4(0.5, 0.0, 0.5, 1.0);
+    outColor = pushConsts.backgroundColor;
 }

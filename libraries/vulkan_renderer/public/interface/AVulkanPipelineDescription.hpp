@@ -21,6 +21,7 @@ class AVulkanPipelineDescription
     void clear();
 
     VkDescriptorSetLayout descriptorSetLayout{};
+    VkPushConstantRange pushConstantRange{};
     VkPipelineLayout pipelineLayout{};
 
   protected:

@@ -50,6 +50,8 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
     _sceneRenderPass.init(_vkInstance, _swapChain);
     _surfaceDisplay.init(_vkInstance, _swapChain, _sceneRenderPass);
+    _surfaceDisplay.pushConstants.backgroundColor =
+      glm::vec4(0.5f, 0.5f, 1.0f, 1.0f);
     recordRenderCmds();
 }
 
@@ -65,6 +67,8 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH)
     _sync.resize(_swapChain.currentSwapChainNbImg);
     _sceneRenderPass.resize(_swapChain);
     _surfaceDisplay.resize(_swapChain, _sceneRenderPass);
+    _surfaceDisplay.pushConstants.backgroundColor =
+      glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
     recordRenderCmds();
 }
 
