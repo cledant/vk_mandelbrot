@@ -76,7 +76,7 @@ class VulkanRenderer final
     std::vector<VkCommandBuffer> _renderCommandBuffers;
 
     inline void emitDrawCmds(uint32_t imgIndex);
-    inline void recordRenderCmds();
+    inline void recordRenderCmd(uint32_t imgIndex, glm::vec4 const &clearColor);
 };
 
 #endif // VK_MANDELBROT_VULKAN_VULKANRENDERER_HPP

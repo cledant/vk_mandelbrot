@@ -50,9 +50,11 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
     _sceneRenderPass.init(_vkInstance, _swapChain);
     _surfaceDisplay.init(_vkInstance, _swapChain, _sceneRenderPass);
-    _surfaceDisplay.pushConstants.backgroundColor =
-      glm::vec4(0.5f, 0.5f, 1.0f, 1.0f);
-    recordRenderCmds();
+    _surfaceDisplay.pushConstants.backgroundColor = { 0.0f, 0.1f, 0.5f, 1.0f };
+    allocateCommandBuffers(_vkInstance.devices.device,
+                           _vkInstance.cmdPools.renderCommandPool,
+                           _renderCommandBuffers,
+                           _swapChain.swapChainImageViews.size());
 }
 
 void
@@ -67,9 +69,11 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH)
     _sync.resize(_swapChain.currentSwapChainNbImg);
     _sceneRenderPass.resize(_swapChain);
     _surfaceDisplay.resize(_swapChain, _sceneRenderPass);
-    _surfaceDisplay.pushConstants.backgroundColor =
-      glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
-    recordRenderCmds();
+    _surfaceDisplay.pushConstants.backgroundColor = { 0.0f, 0.1f, 0.5f, 1.0f };
+    allocateCommandBuffers(_vkInstance.devices.device,
+                           _vkInstance.cmdPools.renderCommandPool,
+                           _renderCommandBuffers,
+                           _swapChain.swapChainImageViews.size());
 }
 
 void
@@ -140,6 +144,7 @@ VulkanRenderer::draw()
     _sync.imgsInflightFence[img_index] =
       _sync.inflightFence[_sync.currentFrame];
 
+    recordRenderCmd(img_index, _surfaceDisplay.pushConstants.backgroundColor);
     emitDrawCmds(img_index);
 
     VkSwapchainKHR swap_chains[] = { _swapChain.swapChain };
@@ -187,44 +192,40 @@ VulkanRenderer::emitDrawCmds(uint32_t imgIndex)
 }
 
 void
-VulkanRenderer::recordRenderCmds()
+VulkanRenderer::recordRenderCmd(uint32_t imgIndex, glm::vec4 const &clearColor)
 {
-    allocateCommandBuffers(_vkInstance.devices.device,
-                           _vkInstance.cmdPools.renderCommandPool,
-                           _renderCommandBuffers,
-                           _swapChain.swapChainImageViews.size());
+    VkCommandBufferBeginInfo cb_begin_info{};
+    cb_begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    cb_begin_info.flags = 0;
+    cb_begin_info.pInheritanceInfo = nullptr;
+    if (vkBeginCommandBuffer(_renderCommandBuffers[imgIndex], &cb_begin_info) !=
+        VK_SUCCESS) {
+        throw std::runtime_error("VulkanRenderer: Failed to begin "
+                                 "recording render command buffer");
+    }
 
-    size_t i = 0;
-    for (auto &it : _renderCommandBuffers) {
-        VkCommandBufferBeginInfo cb_begin_info{};
-        cb_begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        cb_begin_info.flags = 0;
-        cb_begin_info.pInheritanceInfo = nullptr;
-        if (vkBeginCommandBuffer(it, &cb_begin_info) != VK_SUCCESS) {
-            throw std::runtime_error("VulkanRenderer: Failed to begin "
-                                     "recording render command buffer");
-        }
+    // Begin scene renderpass
+    std::array<VkClearValue, 2> clear_vals{};
+    clear_vals[0].color = {
+        { clearColor.x, clearColor.y, clearColor.z, clearColor.w }
+    };
+    clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
+    VkRenderPassBeginInfo rp_begin_info{};
+    rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    rp_begin_info.renderPass = _sceneRenderPass.renderPass;
+    rp_begin_info.framebuffer = _sceneRenderPass.framebuffers[imgIndex];
+    rp_begin_info.renderArea.offset = { 0, 0 };
+    rp_begin_info.renderArea.extent = _swapChain.swapChainExtent;
+    rp_begin_info.clearValueCount = clear_vals.size();
+    rp_begin_info.pClearValues = clear_vals.data();
+    vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
+                         &rp_begin_info,
+                         VK_SUBPASS_CONTENTS_INLINE);
+    _surfaceDisplay.generateCommands(_renderCommandBuffers[imgIndex], imgIndex);
+    vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
 
-        // Begin scene renderpass
-        std::array<VkClearValue, 2> clear_vals{};
-        clear_vals[0].color = DEFAULT_CLEAR_COLOR;
-        clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
-        VkRenderPassBeginInfo rp_begin_info{};
-        rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        rp_begin_info.renderPass = _sceneRenderPass.renderPass;
-        rp_begin_info.framebuffer = _sceneRenderPass.framebuffers[i];
-        rp_begin_info.renderArea.offset = { 0, 0 };
-        rp_begin_info.renderArea.extent = _swapChain.swapChainExtent;
-        rp_begin_info.clearValueCount = clear_vals.size();
-        rp_begin_info.pClearValues = clear_vals.data();
-        vkCmdBeginRenderPass(it, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
-        _surfaceDisplay.generateCommands(it, i);
-        vkCmdEndRenderPass(it);
-
-        if (vkEndCommandBuffer(it) != VK_SUCCESS) {
-            throw std::runtime_error(
-              "VulkanRenderer: Failed to record render command Buffer");
-        }
-        ++i;
+    if (vkEndCommandBuffer(_renderCommandBuffers[imgIndex]) != VK_SUCCESS) {
+        throw std::runtime_error(
+          "VulkanRenderer: Failed to record render command Buffer");
     }
 }

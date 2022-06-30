@@ -66,7 +66,7 @@ VulkanInstance::init(VkSurfaceKHR windowSurface,
     selectPhysicalDevice(options);
     createQueues();
     cmdPools.renderCommandPool =
-      createCommandPool(devices.device, queues.graphicFamilyIndex, 0);
+      createCommandPool(devices.device, queues.graphicFamilyIndex, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
     cmdPools.computeCommandPool =
       (queues.computeFamilyIndex == queues.graphicFamilyIndex)
         ? cmdPools.renderCommandPool
