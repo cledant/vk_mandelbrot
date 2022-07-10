@@ -23,6 +23,7 @@ add_library(vulkan_renderer STATIC
         private/toScreen/VulkanToScreenPipelineData.cpp
         private/toScreen/VulkanToScreenPipelineDescription.cpp
         private/mandelbrot/VulkanMandelbrotPipeline.cpp
+        private/mandelbrot/VulkanMandelbrotPipelineData.cpp
         private/mandelbrot/VulkanMandelbrotPipelineDescription.cpp
         private/common/VulkanBuffer.cpp
         private/common/VulkanTexture.cpp)

@@ -10,6 +10,7 @@
 
 #include "VulkanInstance.hpp"
 #include "VulkanSwapChain.hpp"
+#include "VulkanMandelbrotPipelineData.hpp"
 #include "VulkanMandelbrotPipelineDescription.hpp"
 #include "renderPass/VulkanDefaultOnscreenRenderPass.hpp"
 #include "constants/VulkanConstants.hpp"
@@ -21,11 +22,9 @@ class VulkanMandelbrotPipeline final
     ~VulkanMandelbrotPipeline() = default;
     VulkanMandelbrotPipeline(VulkanMandelbrotPipeline const &src) =
       delete;
-    VulkanMandelbrotPipeline &operator=(
-      VulkanMandelbrotPipeline const &rhs) = delete;
+    VulkanMandelbrotPipeline &operator=(VulkanMandelbrotPipeline const &rhs) = delete;
     VulkanMandelbrotPipeline(VulkanMandelbrotPipeline &&src) = delete;
-    VulkanMandelbrotPipeline &operator=(
-      VulkanMandelbrotPipeline &&rhs) = delete;
+    VulkanMandelbrotPipeline &operator=(VulkanMandelbrotPipeline &&rhs) = delete;
 
     mandelbrotConstants pushConstants{};
 
@@ -49,12 +48,13 @@ class VulkanMandelbrotPipeline final
     VkPipeline _gfxPipeline{};
 
     // Global
+    VulkanMandelbrotPipelineData _pipelineData;
     std::vector<VkDescriptorSet> _descriptorSets;
     VkDescriptorPool _descriptorPool{};
 
     inline void createGfxPipeline(VulkanSwapChain const &swapChain,
       VulkanDefaultOnscreenRenderPass const &renderPass);
-    inline void createDescriptorSets(
+    inline void createDescriptorSets(VulkanMandelbrotPipelineData &pipelineData,
       uint32_t descriptorCount);
     void createDescriptorPool(uint32_t descriptorCount);
 };

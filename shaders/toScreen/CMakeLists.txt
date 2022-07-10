@@ -31,4 +31,4 @@ foreach (SHADER COMPILED_SHADER IN ZIP_LISTS SHADERS COMPILED_SHADERS)
     )
 endforeach ()
 
-add_custom_target(to_screen_shader DEPENDS ${COMPILED_SHADERS})
+add_custom_target(toScreen_shader DEPENDS ${COMPILED_SHADERS})

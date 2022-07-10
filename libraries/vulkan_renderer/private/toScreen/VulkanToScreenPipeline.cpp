@@ -24,7 +24,8 @@ VulkanToScreenPipeline::init(VulkanInstance const &vkInstance,
 }
 
 void
-VulkanToScreenPipeline::resize(VulkanSwapChain const &swapChain,
+VulkanToScreenPipeline::resize(
+  VulkanSwapChain const &swapChain,
   VulkanDefaultOnscreenRenderPass const &renderPass)
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
@@ -55,14 +56,6 @@ void
 VulkanToScreenPipeline::generateCommands(VkCommandBuffer cmdBuffer,
                                          size_t descriptorSetIndex)
 {
-    // Push constants
-    vkCmdPushConstants(cmdBuffer,
-                       _pipelineDescription.pipelineLayout,
-                       VK_SHADER_STAGE_FRAGMENT_BIT,
-                       0,
-                       sizeof(mandelbrotConstants),
-                       &pushConstants.backgroundColor);
-
     // Vertex related values
     VkBuffer vertex_buffer[] = { _pipelineData.data.buffer };
     VkDeviceSize offsets[] = { 0 };
@@ -91,12 +84,10 @@ VulkanToScreenPipeline::createGfxPipeline(
   VulkanDefaultOnscreenRenderPass const &renderPass)
 {
     // Shaders
-    auto vert_shader =
-      loadShader(_devices.device,
-                 "resources/shaders/surfaceDisplay/surfaceDisplay.vert.spv");
-    auto frag_shader =
-      loadShader(_devices.device,
-                 "resources/shaders/surfaceDisplay/surfaceDisplay.frag.spv");
+    auto vert_shader = loadShader(
+      _devices.device, "resources/shaders/toScreen/toScreen.vert.spv");
+    auto frag_shader = loadShader(
+      _devices.device, "resources/shaders/toScreen/toScreen.frag.spv");
 
     VkPipelineShaderStageCreateInfo vert_shader_info{};
     vert_shader_info.sType =

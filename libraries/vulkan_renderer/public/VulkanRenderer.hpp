@@ -26,11 +26,14 @@ class VulkanRenderer final
     VulkanRenderer(VulkanRenderer &&src) = delete;
     VulkanRenderer &operator=(VulkanRenderer &&rhs) = delete;
 
-    // Default Renderer Options
+    // Default Values
     static constexpr VulkanInstanceOptions const DEFAULT_RENDERER_OPTIONS = {
         VK_FALSE,
         VK_TRUE,
         VK_FALSE
+    };
+    static constexpr VkClearColorValue const DEFAULT_CLEAR_COLOR = {
+        { 0.0f, 0.0f, 0.0f, 1.0f }
     };
 
     // Instance related
@@ -56,10 +59,10 @@ class VulkanRenderer final
     // Render related
     void draw();
 
+    // Public values
+    VkClearColorValue clearColor = DEFAULT_CLEAR_COLOR;
+
   private:
-    static constexpr VkClearColorValue const DEFAULT_CLEAR_COLOR = {
-        { 0.0f, 0.0f, 0.0f, 1.0f }
-    };
     static constexpr VkClearDepthStencilValue const
       DEFAULT_CLEAR_DEPTH_STENCIL = { 1.0f, 0 };
 
@@ -80,7 +83,8 @@ class VulkanRenderer final
     std::vector<VkCommandBuffer> _renderCommandBuffers;
 
     inline void emitDrawCmds(uint32_t imgIndex);
-    inline void recordRenderCmd(uint32_t imgIndex, glm::vec4 const &clearColor);
+    inline void recordRenderCmd(uint32_t imgIndex,
+                                VkClearColorValue const &clearColor);
 };
 
 #endif // VK_MANDELBROT_VULKAN_VULKANRENDERER_HPP

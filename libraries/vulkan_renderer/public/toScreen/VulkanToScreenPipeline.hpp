@@ -26,8 +26,6 @@ class VulkanToScreenPipeline final
     VulkanToScreenPipeline(VulkanToScreenPipeline &&src) = delete;
     VulkanToScreenPipeline &operator=(VulkanToScreenPipeline &&rhs) = delete;
 
-    mandelbrotConstants pushConstants{};
-
     void init(VulkanInstance const &vkInstance,
               VulkanSwapChain const &swapChain,
               VulkanDefaultOnscreenRenderPass const &renderPass);

@@ -8,8 +8,9 @@
 #include "utils/VulkanDescriptorUtils.hpp"
 
 void
-VulkanMandelbrotPipeline::init(VulkanInstance const &vkInstance,
-                               VulkanSwapChain const &swapChain,
+VulkanMandelbrotPipeline::init(
+  VulkanInstance const &vkInstance,
+  VulkanSwapChain const &swapChain,
   VulkanDefaultOnscreenRenderPass const &renderPass)
 {
     _devices = vkInstance.devices;
@@ -24,7 +25,8 @@ VulkanMandelbrotPipeline::init(VulkanInstance const &vkInstance,
 }
 
 void
-VulkanMandelbrotPipeline::resize(VulkanSwapChain const &swapChain,
+VulkanMandelbrotPipeline::resize(
+  VulkanSwapChain const &swapChain,
   VulkanDefaultOnscreenRenderPass const &renderPass)
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
@@ -91,10 +93,12 @@ VulkanMandelbrotPipeline::createGfxPipeline(
   VulkanDefaultOnscreenRenderPass const &renderPass)
 {
     // Shaders
-    auto vert_shader = loadShader(
-      _devices.device, "resources/shaders/mandelbrot/mandelbrot.vert.spv");
-    auto frag_shader = loadShader(
-      _devices.device, "resources/shaders/mandelbrot/mandelbrot.frag.spv");
+    auto vert_shader =
+      loadShader(_devices.device,
+                 "resources/shaders/surfaceDisplay/surfaceDisplay.vert.spv");
+    auto frag_shader =
+      loadShader(_devices.device,
+                 "resources/shaders/surfaceDisplay/surfaceDisplay.frag.spv");
 
     VkPipelineShaderStageCreateInfo vert_shader_info{};
     vert_shader_info.sType =
@@ -247,7 +251,7 @@ VulkanMandelbrotPipeline::createGfxPipeline(
                                   nullptr,
                                   &_gfxPipeline) != VK_SUCCESS) {
         throw std::runtime_error(
-          "VulkanMandelbrotPipeline: Failed to create graphic pipeline");
+          "VulkanSurfaceDisplayPipeline: Failed to create graphic pipeline");
     }
 
     vkDestroyShaderModule(_devices.device, vert_shader, nullptr);

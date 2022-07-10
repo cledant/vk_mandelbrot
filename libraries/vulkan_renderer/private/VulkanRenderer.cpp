@@ -50,7 +50,6 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
     _toScreenRenderPass.init(_vkInstance, _swapChain);
     _toScreen.init(_vkInstance, _swapChain, _toScreenRenderPass);
-    _toScreen.pushConstants.backgroundColor = { 0.0f, 0.1f, 0.5f, 1.0f };
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -69,7 +68,6 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH)
     _sync.resize(_swapChain.currentSwapChainNbImg);
     _toScreenRenderPass.resize(_swapChain);
     _toScreen.resize(_swapChain, _toScreenRenderPass);
-    _toScreen.pushConstants.backgroundColor = { 0.0f, 0.1f, 0.5f, 1.0f };
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -144,7 +142,7 @@ VulkanRenderer::draw()
     _sync.imgsInflightFence[img_index] =
       _sync.inflightFence[_sync.currentFrame];
 
-    recordRenderCmd(img_index, _toScreen.pushConstants.backgroundColor);
+    recordRenderCmd(img_index, clearColor);
     emitDrawCmds(img_index);
 
     VkSwapchainKHR swap_chains[] = { _swapChain.swapChain };
@@ -192,7 +190,8 @@ VulkanRenderer::emitDrawCmds(uint32_t imgIndex)
 }
 
 void
-VulkanRenderer::recordRenderCmd(uint32_t imgIndex, glm::vec4 const &clearColor)
+VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
+                                VkClearColorValue const &cmdClearColor)
 {
     VkCommandBufferBeginInfo cb_begin_info{};
     cb_begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -206,9 +205,7 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex, glm::vec4 const &clearColor)
 
     // Begin scene renderpass
     std::array<VkClearValue, 2> clear_vals{};
-    clear_vals[0].color = {
-        { clearColor.x, clearColor.y, clearColor.z, clearColor.w }
-    };
+    clear_vals[0].color = cmdClearColor;
     clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
     VkRenderPassBeginInfo rp_begin_info{};
     rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
