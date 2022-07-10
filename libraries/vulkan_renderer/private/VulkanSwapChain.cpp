@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "utils/VulkanImage.hpp"
+#include "utils/VulkanImageUtils.hpp"
 #include "utils/VulkanSwapChainUtils.hpp"
 #include "utils/VulkanPhysicalDevice.hpp"
 
@@ -20,7 +20,6 @@ VulkanSwapChain::init(VulkanInstance const &vkInstance,
 void
 VulkanSwapChain::resize(uint32_t fbW, uint32_t fbH)
 {
-    oldSwapChainNbImg = currentSwapChainNbImg;
     clean();
     createSwapChain(fbW, fbH);
     createImageView();

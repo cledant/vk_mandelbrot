@@ -1,5 +1,5 @@
-#ifndef PARTICLE_SYSTEM_VULKAN_AVULKANRENDERPASSPRIVATE_HPP
-#define PARTICLE_SYSTEM_VULKAN_AVULKANRENDERPASSPRIVATE_HPP
+#ifndef VK_MANDELBROT_VULKAN_AVULKANRENDERPASSPRIVATE_HPP
+#define VK_MANDELBROT_VULKAN_AVULKANRENDERPASSPRIVATE_HPP
 
 #include <vector>
 #include <array>
@@ -7,7 +7,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "utils/VulkanImage.hpp"
+#include "utils/VulkanImageUtils.hpp"
 #include "utils/VulkanSwapChainUtils.hpp"
 #include "utils/VulkanFrameBuffer.hpp"
 
@@ -92,7 +92,7 @@ AVulkanRenderPass<Child>::defaultCreateRenderPass(
           _devices.device, &render_pass_info, nullptr, &renderPass) !=
         VK_SUCCESS) {
         throw std::runtime_error(
-          "VulkanSkyboxRenderPass: failed to create render pass");
+          "VulkanDefaultRenderPass: failed to create render pass");
     }
 }
 
@@ -127,4 +127,4 @@ AVulkanRenderPass<Child>::defaultCreateFramebuffers(
     }
 }
 
-#endif // PARTICLE_SYSTEM_VULKAN_AVULKANRENDERPASSPRIVATE_HPP
+#endif // VK_MANDELBROT_VULKAN_AVULKANRENDERPASSPRIVATE_HPP

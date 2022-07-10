@@ -55,6 +55,10 @@ struct VulkanTexture final
     VkFormat textureFormat{};
     bool isCubemap{};
 
+    void createColorTexture(VulkanDevices const &devices,
+                            int32_t texW,
+                            int32_t texH,
+                            VkFormat depthFormat);
     void createDepthTexture(VulkanDevices const &devices,
                             VulkanCommandPools const &cmdPools,
                             VulkanQueues const &queues,

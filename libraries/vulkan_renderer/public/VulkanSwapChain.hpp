@@ -22,7 +22,6 @@ class VulkanSwapChain final
     void clean();
     void clear();
 
-    uint32_t oldSwapChainNbImg{};
     uint32_t currentSwapChainNbImg{};
     VkSwapchainKHR swapChain{};
     VkFormat swapChainImageFormat{};

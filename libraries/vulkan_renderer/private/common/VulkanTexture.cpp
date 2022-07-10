@@ -1,7 +1,28 @@
 #include "common/VulkanCommonStruct.hpp"
 
-#include "utils/VulkanImage.hpp"
+#include "utils/VulkanImageUtils.hpp"
 #include "utils/VulkanTextureUtils.hpp"
+
+void
+VulkanTexture::createColorTexture(VulkanDevices const &devices,
+                                  int32_t texW,
+                                  int32_t texH,
+                                  VkFormat colorFormat)
+{
+    _devices = devices;
+    textureFormat = colorFormat;
+    width = texW;
+    height = texH;
+
+    createImage(_devices.device,
+                *this,
+                VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                  VK_IMAGE_USAGE_SAMPLED_BIT);
+    allocateImage(_devices, *this, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    createImageView(_devices, *this, VK_IMAGE_ASPECT_COLOR_BIT);
+    createTextureSampler(_devices, *this);
+}
 
 void
 VulkanTexture::createDepthTexture(VulkanDevices const &devices,

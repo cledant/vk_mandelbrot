@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKANSURFACEDISPLAYPIPELINEDATA_HPP
-#define VK_MANDELBROT_VULKANSURFACEDISPLAYPIPELINEDATA_HPP
+#ifndef VK_MANDELBROT_VULKANTOSCREENPIPELINEDATA_HPP
+#define VK_MANDELBROT_VULKANTOSCREENPIPELINEDATA_HPP
 
 #include <array>
 #include <vector>
@@ -10,7 +10,7 @@
 
 #include "common/VulkanCommonStruct.hpp"
 
-struct VulkanSurfaceDisplayPipelineData
+struct VulkanToScreenPipelineData
 {
     VulkanBuffer data{};
     VkDeviceSize verticesSize{};
@@ -29,4 +29,4 @@ struct VulkanSurfaceDisplayPipelineData
                                         std::array<glm::vec3, 4> &vertices);
 };
 
-#endif // VK_MANDELBROT_VULKANSURFACEDISPLAYPIPELINEDATA_HPP
+#endif // VK_MANDELBROT_VULKANTOSCREENPIPELINEDATA_HPP

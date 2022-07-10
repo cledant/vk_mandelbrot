@@ -1,12 +1,12 @@
-#include "surfaceDisplay/VulkanSurfaceDisplayPipelineData.hpp"
+#include "toScreen/VulkanToScreenPipelineData.hpp"
 
 #include "utils/VulkanMemory.hpp"
 
 void
-VulkanSurfaceDisplayPipelineData::init(VulkanDevices const &devices,
-                                       VulkanCommandPools const &cmdPools,
-                                       VulkanQueues const &queues,
-                                       VkExtent2D const &screenSize)
+VulkanToScreenPipelineData::init(VulkanDevices const &devices,
+                                 VulkanCommandPools const &cmdPools,
+                                 VulkanQueues const &queues,
+                                 VkExtent2D const &screenSize)
 {
     static constexpr std::array const SURFACE_DISPLAY_INDICES = { 0, 1, 2,
                                                                   2, 3, 0 };
@@ -63,7 +63,7 @@ VulkanSurfaceDisplayPipelineData::init(VulkanDevices const &devices,
 }
 
 void
-VulkanSurfaceDisplayPipelineData::clear()
+VulkanToScreenPipelineData::clear()
 {
     data.clear();
     verticesSize = 0;
@@ -74,9 +74,8 @@ VulkanSurfaceDisplayPipelineData::clear()
 }
 
 void
-VulkanSurfaceDisplayPipelineData::forceSquareRatio(
-  VkExtent2D const &screenSize,
-  std::array<glm::vec3, 4> &vertices)
+VulkanToScreenPipelineData::forceSquareRatio(VkExtent2D const &screenSize,
+                                             std::array<glm::vec3, 4> &vertices)
 {
     if (screenSize.height == screenSize.width) {
         return;

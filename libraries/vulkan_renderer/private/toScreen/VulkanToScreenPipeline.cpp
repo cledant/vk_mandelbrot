@@ -1,4 +1,4 @@
-#include "surfaceDisplay/VulkanSurfaceDisplayPipeline.hpp"
+#include "toScreen/VulkanToScreenPipeline.hpp"
 
 #include <stdexcept>
 
@@ -8,9 +8,9 @@
 #include "utils/VulkanDescriptorUtils.hpp"
 
 void
-VulkanSurfaceDisplayPipeline::init(VulkanInstance const &vkInstance,
-                                   VulkanSwapChain const &swapChain,
-                                   VulkanSceneRenderPass const &renderPass)
+VulkanToScreenPipeline::init(VulkanInstance const &vkInstance,
+                             VulkanSwapChain const &swapChain,
+                             VulkanToScreenRenderPass const &renderPass)
 {
     _devices = vkInstance.devices;
     _cmdPools = vkInstance.cmdPools;
@@ -24,8 +24,8 @@ VulkanSurfaceDisplayPipeline::init(VulkanInstance const &vkInstance,
 }
 
 void
-VulkanSurfaceDisplayPipeline::resize(VulkanSwapChain const &swapChain,
-                                     VulkanSceneRenderPass const &renderPass)
+VulkanToScreenPipeline::resize(VulkanSwapChain const &swapChain,
+                               VulkanToScreenRenderPass const &renderPass)
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
@@ -37,7 +37,7 @@ VulkanSurfaceDisplayPipeline::resize(VulkanSwapChain const &swapChain,
 }
 
 void
-VulkanSurfaceDisplayPipeline::clear()
+VulkanToScreenPipeline::clear()
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
@@ -52,8 +52,8 @@ VulkanSurfaceDisplayPipeline::clear()
 }
 
 void
-VulkanSurfaceDisplayPipeline::generateCommands(VkCommandBuffer cmdBuffer,
-                                               size_t descriptorSetIndex)
+VulkanToScreenPipeline::generateCommands(VkCommandBuffer cmdBuffer,
+                                         size_t descriptorSetIndex)
 {
     // Push constants
     vkCmdPushConstants(cmdBuffer,
@@ -86,15 +86,17 @@ VulkanSurfaceDisplayPipeline::generateCommands(VkCommandBuffer cmdBuffer,
 }
 
 void
-VulkanSurfaceDisplayPipeline::createGfxPipeline(
+VulkanToScreenPipeline::createGfxPipeline(
   VulkanSwapChain const &swapChain,
-  VulkanSceneRenderPass const &renderPass)
+  VulkanToScreenRenderPass const &renderPass)
 {
     // Shaders
-    auto vert_shader = loadShader(
-      _devices.device, "resources/shaders/mandelbrot/mandelbrot.vert.spv");
-    auto frag_shader = loadShader(
-      _devices.device, "resources/shaders/mandelbrot/mandelbrot.frag.spv");
+    auto vert_shader =
+      loadShader(_devices.device,
+                 "resources/shaders/surfaceDisplay/surfaceDisplay.vert.spv");
+    auto frag_shader =
+      loadShader(_devices.device,
+                 "resources/shaders/surfaceDisplay/surfaceDisplay.frag.spv");
 
     VkPipelineShaderStageCreateInfo vert_shader_info{};
     vert_shader_info.sType =
@@ -116,9 +118,9 @@ VulkanSurfaceDisplayPipeline::createGfxPipeline(
     // Vertex input
     VkPipelineVertexInputStateCreateInfo vertex_input_info{};
     auto binding_description =
-      VulkanSurfaceDisplayPipelineDescription::inputBindingDescription;
+      VulkanToScreenPipelineDescription::inputBindingDescription;
     auto attribute_description =
-      VulkanSurfaceDisplayPipelineDescription::inputAttributeDescription;
+      VulkanToScreenPipelineDescription::inputAttributeDescription;
     vertex_input_info.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertex_input_info.vertexBindingDescriptionCount =
@@ -255,8 +257,8 @@ VulkanSurfaceDisplayPipeline::createGfxPipeline(
 }
 
 void
-VulkanSurfaceDisplayPipeline::createDescriptorSets(
-  VulkanSurfaceDisplayPipelineData &pipelineData,
+VulkanToScreenPipeline::createDescriptorSets(
+  VulkanToScreenPipelineData &pipelineData,
   uint32_t descriptorCount)
 {
     static_cast<void>(pipelineData);
@@ -278,7 +280,7 @@ VulkanSurfaceDisplayPipeline::createDescriptorSets(
 }
 
 void
-VulkanSurfaceDisplayPipeline::createDescriptorPool(uint32_t descriptorCount)
+VulkanToScreenPipeline::createDescriptorPool(uint32_t descriptorCount)
 {
     std::array<VkDescriptorPoolSize, 3> const poolSize{
         { { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, descriptorCount },

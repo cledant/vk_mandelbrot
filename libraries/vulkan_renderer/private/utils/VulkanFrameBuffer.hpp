@@ -10,7 +10,7 @@ template<std::size_t SIZE>
 VkFramebuffer
 createFrameBuffer(VkDevice device,
                   VkRenderPass renderPass,
-                  std::array<VkImageView, SIZE> imgViews,
+                  std::array<VkImageView, SIZE> const &imgViews,
                   VkExtent2D extent)
 {
     VkFramebufferCreateInfo framebuffer_info{};

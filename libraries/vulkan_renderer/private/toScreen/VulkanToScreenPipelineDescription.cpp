@@ -1,11 +1,11 @@
-#include "surfaceDisplay/VulkanSurfaceDisplayPipelineDescription.hpp"
+#include "toScreen/VulkanToScreenPipelineDescription.hpp"
 
 #include "utils/VulkanDescriptorUtils.hpp"
 #include "utils/VulkanPipelineUtils.hpp"
 #include "constants/VulkanConstants.hpp"
 
 void
-VulkanSurfaceDisplayPipelineDescription::implInit(VulkanDevices const &devices)
+VulkanToScreenPipelineDescription::implInit(VulkanDevices const &devices)
 {
     pushConstantRange.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
     pushConstantRange.offset = 0;
@@ -17,6 +17,6 @@ VulkanSurfaceDisplayPipelineDescription::implInit(VulkanDevices const &devices)
 }
 
 void
-VulkanSurfaceDisplayPipelineDescription::implClear()
+VulkanToScreenPipelineDescription::implClear()
 {
 }

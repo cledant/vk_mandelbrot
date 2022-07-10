@@ -8,19 +8,22 @@ add_library(vulkan_renderer STATIC
         private/VulkanSwapChain.cpp
         private/VulkanSync.cpp
         private/VulkanInstanceOptions.cpp
-        private/renderPass/VulkanSceneRenderPass.cpp
+        private/renderPass/VulkanToScreenRenderPass.cpp
+        private/renderPass/VulkanMandelbrotRenderPass.cpp
         private/utils/VulkanPhysicalDevice.cpp
         private/utils/VulkanSwapChainUtils.cpp
         private/utils/VulkanShader.cpp
-        private/utils/VulkanImage.cpp
+        private/utils/VulkanImageUtils.cpp
         private/utils/VulkanMemory.cpp
         private/utils/VulkanCommandBuffer.cpp
         private/utils/VulkanTextureUtils.cpp
         private/utils/VulkanDescriptorUtils.cpp
         private/utils/VulkanPipelineUtils.cpp
-        private/surfaceDisplay/VulkanSurfaceDisplayPipeline.cpp
-        private/surfaceDisplay/VulkanSurfaceDisplayPipelineData.cpp
-        private/surfaceDisplay/VulkanSurfaceDisplayPipelineDescription.cpp
+        private/toScreen/VulkanToScreenPipeline.cpp
+        private/toScreen/VulkanToScreenPipelineData.cpp
+        private/toScreen/VulkanToScreenPipelineDescription.cpp
+        private/mandelbrot/VulkanMandelbrotPipeline.cpp
+        private/mandelbrot/VulkanMandelbrotPipelineDescription.cpp
         private/common/VulkanBuffer.cpp
         private/common/VulkanTexture.cpp)
 target_include_directories(vulkan_renderer

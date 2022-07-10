@@ -1,10 +1,10 @@
-#include "renderPass//VulkanSceneRenderPass.hpp"
+#include "renderPass/VulkanToScreenRenderPass.hpp"
 
 #include "interface/AVulkanRenderPassPrivate.hpp"
 
 void
-VulkanSceneRenderPass::implInit(VulkanInstance const &vkInstance,
-                                VulkanSwapChain const &swapChain)
+VulkanToScreenRenderPass::implInit(VulkanInstance const &vkInstance,
+                                   VulkanSwapChain const &swapChain)
 {
     static_cast<void>(vkInstance);
     defaultCreateRenderPass(swapChain,
@@ -16,7 +16,7 @@ VulkanSceneRenderPass::implInit(VulkanInstance const &vkInstance,
 }
 
 void
-VulkanSceneRenderPass::implResize(VulkanSwapChain const &swapChain)
+VulkanToScreenRenderPass::implResize(VulkanSwapChain const &swapChain)
 {
     clean();
     defaultCreateRenderPass(swapChain,
@@ -28,11 +28,12 @@ VulkanSceneRenderPass::implResize(VulkanSwapChain const &swapChain)
 }
 
 void
-VulkanSceneRenderPass::implClean()
-{}
+VulkanToScreenRenderPass::implClean()
+{
+}
 
 void
-VulkanSceneRenderPass::implClear()
+VulkanToScreenRenderPass::implClear()
 {
     clean();
 }

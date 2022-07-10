@@ -1,4 +1,4 @@
-#include "VulkanImage.hpp"
+#include "VulkanImageUtils.hpp"
 
 #include <stdexcept>
 
@@ -55,8 +55,10 @@ allocateImage(VulkanDevices const &devices,
         VK_SUCCESS) {
         throw std::runtime_error("VkImage: failed to allocate image memory");
     }
-    vkBindImageMemory(
-      devices.device, texture.textureImg, texture.textureImgMemory, 0);
+    if (vkBindImageMemory(
+          devices.device, texture.textureImg, texture.textureImgMemory, 0)) {
+        throw std::runtime_error("VkImage: failed to bind image memory");
+    }
 }
 
 void

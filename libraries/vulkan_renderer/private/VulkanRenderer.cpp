@@ -48,9 +48,9 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _vkInstance.init(surface, options);
     _swapChain.init(_vkInstance, winW, winH);
     _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
-    _sceneRenderPass.init(_vkInstance, _swapChain);
-    _surfaceDisplay.init(_vkInstance, _swapChain, _sceneRenderPass);
-    _surfaceDisplay.pushConstants.backgroundColor = { 0.0f, 0.1f, 0.5f, 1.0f };
+    _toScreenRenderPass.init(_vkInstance, _swapChain);
+    _toScreen.init(_vkInstance, _swapChain, _toScreenRenderPass);
+    _toScreen.pushConstants.backgroundColor = { 0.0f, 0.1f, 0.5f, 1.0f };
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -67,9 +67,9 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH)
 
     _swapChain.resize(winW, winH);
     _sync.resize(_swapChain.currentSwapChainNbImg);
-    _sceneRenderPass.resize(_swapChain);
-    _surfaceDisplay.resize(_swapChain, _sceneRenderPass);
-    _surfaceDisplay.pushConstants.backgroundColor = { 0.0f, 0.1f, 0.5f, 1.0f };
+    _toScreenRenderPass.resize(_swapChain);
+    _toScreen.resize(_swapChain, _toScreenRenderPass);
+    _toScreen.pushConstants.backgroundColor = { 0.0f, 0.1f, 0.5f, 1.0f };
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -80,8 +80,8 @@ void
 VulkanRenderer::clear()
 {
     vkDeviceWaitIdle(_vkInstance.devices.device);
-    _surfaceDisplay.clear();
-    _sceneRenderPass.clear();
+    _toScreen.clear();
+    _toScreenRenderPass.clear();
     _sync.clear();
     _swapChain.clear();
     _vkInstance.clear();
@@ -144,7 +144,7 @@ VulkanRenderer::draw()
     _sync.imgsInflightFence[img_index] =
       _sync.inflightFence[_sync.currentFrame];
 
-    recordRenderCmd(img_index, _surfaceDisplay.pushConstants.backgroundColor);
+    recordRenderCmd(img_index, _toScreen.pushConstants.backgroundColor);
     emitDrawCmds(img_index);
 
     VkSwapchainKHR swap_chains[] = { _swapChain.swapChain };
@@ -212,8 +212,8 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex, glm::vec4 const &clearColor)
     clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
     VkRenderPassBeginInfo rp_begin_info{};
     rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rp_begin_info.renderPass = _sceneRenderPass.renderPass;
-    rp_begin_info.framebuffer = _sceneRenderPass.framebuffers[imgIndex];
+    rp_begin_info.renderPass = _toScreenRenderPass.renderPass;
+    rp_begin_info.framebuffer = _toScreenRenderPass.framebuffers[imgIndex];
     rp_begin_info.renderArea.offset = { 0, 0 };
     rp_begin_info.renderArea.extent = _swapChain.swapChainExtent;
     rp_begin_info.clearValueCount = clear_vals.size();
@@ -221,7 +221,7 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex, glm::vec4 const &clearColor)
     vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
                          &rp_begin_info,
                          VK_SUBPASS_CONTENTS_INLINE);
-    _surfaceDisplay.generateCommands(_renderCommandBuffers[imgIndex], imgIndex);
+    _toScreen.generateCommands(_renderCommandBuffers[imgIndex], imgIndex);
     vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
 
     if (vkEndCommandBuffer(_renderCommandBuffers[imgIndex]) != VK_SUCCESS) {
