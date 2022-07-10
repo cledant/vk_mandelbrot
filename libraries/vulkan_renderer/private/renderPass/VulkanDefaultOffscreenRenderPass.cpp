@@ -1,9 +1,9 @@
-#include "renderPass/VulkanMandelbrotRenderPass.hpp"
+#include "renderPass/VulkanDefaultOffscreenRenderPass.hpp"
 
 #include "interface/AVulkanOffscreenRenderPassPrivate.hpp"
 
 void
-VulkanMandelbrotRenderPass::implInit(VkFormat colorImageFormat,
+VulkanDefaultOffscreenRenderPass::implInit(VkFormat colorImageFormat,
                                      int32_t imgW,
                                      int32_t imgH)
 {
@@ -16,7 +16,7 @@ VulkanMandelbrotRenderPass::implInit(VkFormat colorImageFormat,
 }
 
 void
-VulkanMandelbrotRenderPass::implResize(VkFormat colorImageFormat,
+VulkanDefaultOffscreenRenderPass::implResize(VkFormat colorImageFormat,
                                        int32_t imgW,
                                        int32_t imgH)
 {
@@ -31,11 +31,11 @@ VulkanMandelbrotRenderPass::implResize(VkFormat colorImageFormat,
 }
 
 void
-VulkanMandelbrotRenderPass::implClean()
+VulkanDefaultOffscreenRenderPass::implClean()
 {
 }
 
 void
-VulkanMandelbrotRenderPass::implClear()
+VulkanDefaultOffscreenRenderPass::implClear()
 {
 }

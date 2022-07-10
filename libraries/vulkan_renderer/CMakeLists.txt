@@ -8,8 +8,8 @@ add_library(vulkan_renderer STATIC
         private/VulkanSwapChain.cpp
         private/VulkanSync.cpp
         private/VulkanInstanceOptions.cpp
-        private/renderPass/VulkanToScreenRenderPass.cpp
-        private/renderPass/VulkanMandelbrotRenderPass.cpp
+        private/renderPass/VulkanDefaultOnscreenRenderPass.cpp
+        private/renderPass/VulkanDefaultOffscreenRenderPass.cpp
         private/utils/VulkanPhysicalDevice.cpp
         private/utils/VulkanSwapChainUtils.cpp
         private/utils/VulkanShader.cpp

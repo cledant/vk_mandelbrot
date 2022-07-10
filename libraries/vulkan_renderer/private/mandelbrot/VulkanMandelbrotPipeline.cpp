@@ -10,7 +10,7 @@
 void
 VulkanMandelbrotPipeline::init(VulkanInstance const &vkInstance,
                                VulkanSwapChain const &swapChain,
-                               VulkanToScreenRenderPass const &renderPass)
+  VulkanDefaultOnscreenRenderPass const &renderPass)
 {
     _devices = vkInstance.devices;
     _cmdPools = vkInstance.cmdPools;
@@ -25,7 +25,7 @@ VulkanMandelbrotPipeline::init(VulkanInstance const &vkInstance,
 
 void
 VulkanMandelbrotPipeline::resize(VulkanSwapChain const &swapChain,
-                                 VulkanToScreenRenderPass const &renderPass)
+  VulkanDefaultOnscreenRenderPass const &renderPass)
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
@@ -88,7 +88,7 @@ VulkanMandelbrotPipeline::generateCommands(VkCommandBuffer cmdBuffer,
 void
 VulkanMandelbrotPipeline::createGfxPipeline(
   VulkanSwapChain const &swapChain,
-  VulkanToScreenRenderPass const &renderPass)
+  VulkanDefaultOnscreenRenderPass const &renderPass)
 {
     // Shaders
     auto vert_shader = loadShader(

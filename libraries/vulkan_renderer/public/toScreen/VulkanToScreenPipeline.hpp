@@ -12,7 +12,7 @@
 #include "VulkanSwapChain.hpp"
 #include "VulkanToScreenPipelineData.hpp"
 #include "VulkanToScreenPipelineDescription.hpp"
-#include "renderPass/VulkanToScreenRenderPass.hpp"
+#include "renderPass/VulkanDefaultOnscreenRenderPass.hpp"
 #include "constants/VulkanConstants.hpp"
 
 class VulkanToScreenPipeline final
@@ -30,9 +30,9 @@ class VulkanToScreenPipeline final
 
     void init(VulkanInstance const &vkInstance,
               VulkanSwapChain const &swapChain,
-              VulkanToScreenRenderPass const &renderPass);
+              VulkanDefaultOnscreenRenderPass const &renderPass);
     void resize(VulkanSwapChain const &swapChain,
-                VulkanToScreenRenderPass const &renderPass);
+                VulkanDefaultOnscreenRenderPass const &renderPass);
     void clear();
 
     void generateCommands(VkCommandBuffer cmdBuffer, size_t descriptorSetIndex);
@@ -53,7 +53,7 @@ class VulkanToScreenPipeline final
     VkDescriptorPool _descriptorPool{};
 
     inline void createGfxPipeline(VulkanSwapChain const &swapChain,
-                                  VulkanToScreenRenderPass const &renderPass);
+      VulkanDefaultOnscreenRenderPass const &renderPass);
     inline void createDescriptorSets(VulkanToScreenPipelineData &pipelineData,
       uint32_t descriptorCount);
     void createDescriptorPool(uint32_t descriptorCount);

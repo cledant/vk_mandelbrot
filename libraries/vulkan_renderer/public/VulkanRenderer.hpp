@@ -11,8 +11,8 @@
 #include "VulkanInstance.hpp"
 #include "VulkanSwapChain.hpp"
 #include "VulkanSync.hpp"
-#include "renderPass/VulkanToScreenRenderPass.hpp"
-#include "renderPass/VulkanMandelbrotRenderPass.hpp"
+#include "renderPass/VulkanDefaultOnscreenRenderPass.hpp"
+#include "renderPass/VulkanDefaultOffscreenRenderPass.hpp"
 #include "toScreen/VulkanToScreenPipeline.hpp"
 #include "mandelbrot/VulkanMandelbrotPipeline.hpp"
 
@@ -71,9 +71,9 @@ class VulkanRenderer final
     VulkanInstance _vkInstance;
     VulkanSwapChain _swapChain;
     VulkanSync _sync;
-    VulkanToScreenRenderPass _toScreenRenderPass;
+    VulkanDefaultOnscreenRenderPass _toScreenRenderPass;
     VulkanToScreenPipeline _toScreen;
-    VulkanMandelbrotRenderPass _mandelbrotRenderPass;
+    VulkanDefaultOffscreenRenderPass _mandelbrotRenderPass;
     VulkanMandelbrotPipeline _mandelbrot;
 
     // Cmd Buffers
