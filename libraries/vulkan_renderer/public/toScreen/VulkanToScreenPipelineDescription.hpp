@@ -33,8 +33,12 @@ class VulkanToScreenPipelineDescription
       inputAttributeDescription{ { { 0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0 } } };
 
   protected:
-    static constexpr std::array<VkDescriptorSetLayoutBinding, 0> const
-      descriptorBindings{};
+    static constexpr std::array<VkDescriptorSetLayoutBinding, 1> const
+      descriptorBindings{ { { 0,
+                              VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                              1,
+                              VK_SHADER_STAGE_FRAGMENT_BIT,
+                              nullptr } } };
 };
 
 #endif // VK_MANDELBROT_VULKAN_TOSCREENPIPELINEDESCRIPTION_HPP

@@ -33,6 +33,7 @@ class AVulkanOffscreenRenderPass
     VulkanTexture depthTex{};
     VkRenderPass renderPass{};
     VkFramebuffer framebuffer{};
+    VkDescriptorImageInfo descriptorImage{};
 
   protected:
     VulkanDevices _devices;
@@ -77,6 +78,7 @@ AVulkanOffscreenRenderPass<Child>::clear()
 {
     static_cast<Child &>(*this).implClear();
     clean();
+    descriptorImage = {};
     framebuffer = nullptr;
     colorTex = VulkanTexture{};
     depthTex = VulkanTexture{};
@@ -91,6 +93,7 @@ void
 AVulkanOffscreenRenderPass<Child>::clean()
 {
     static_cast<Child &>(*this).implClean();
+    descriptorImage = {};
     colorTex.clear();
     depthTex.clear();
     vkDestroyFramebuffer(_devices.device, framebuffer, nullptr);

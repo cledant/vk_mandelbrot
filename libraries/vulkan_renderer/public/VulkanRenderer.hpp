@@ -12,9 +12,9 @@
 #include "VulkanSwapChain.hpp"
 #include "VulkanSync.hpp"
 #include "renderPass/VulkanDefaultOnscreenRenderPass.hpp"
-#include "renderPass/VulkanDefaultOffscreenRenderPass.hpp"
+/*#include "renderPass/VulkanDefaultOffscreenRenderPass.hpp"*/
 #include "toScreen/VulkanToScreenPipeline.hpp"
-#include "mandelbrot/VulkanMandelbrotPipeline.hpp"
+/*#include "mandelbrot/VulkanMandelbrotPipeline.hpp"*/
 
 class VulkanRenderer final
 {
@@ -35,6 +35,7 @@ class VulkanRenderer final
     static constexpr VkClearColorValue const DEFAULT_CLEAR_COLOR = {
         { 0.0f, 0.0f, 0.0f, 1.0f }
     };
+    static constexpr glm::ivec2 const DEFAULT_MB_FB_SIZE = glm::ivec2(750, 750);
 
     // Instance related
     void createInstance(std::string &&appName,
@@ -76,8 +77,9 @@ class VulkanRenderer final
     VulkanSync _sync;
     VulkanDefaultOnscreenRenderPass _toScreenRenderPass;
     VulkanToScreenPipeline _toScreen;
-    VulkanDefaultOffscreenRenderPass _mandelbrotRenderPass;
-    VulkanMandelbrotPipeline _mandelbrot;
+    VulkanTexture _dbgTexture{};
+    /*    VulkanDefaultOffscreenRenderPass _mandelbrotRenderPass;
+        VulkanMandelbrotPipeline _mandelbrot;*/
 
     // Cmd Buffers
     std::vector<VkCommandBuffer> _renderCommandBuffers;

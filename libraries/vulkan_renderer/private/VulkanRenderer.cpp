@@ -8,6 +8,7 @@
 #include "VulkanDebug.hpp"
 #include "utils/VulkanCommandBuffer.hpp"
 #include "utils/VulkanMemory.hpp"
+#include "utils/VulkanTextureUtils.hpp"
 
 void
 VulkanRenderer::createInstance(std::string &&appName,
@@ -49,7 +50,17 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _swapChain.init(_vkInstance, winW, winH);
     _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
     _toScreenRenderPass.init(_vkInstance, _swapChain);
-    _toScreen.init(_vkInstance, _swapChain, _toScreenRenderPass);
+    loadTextureFromFile(_vkInstance.devices,
+                        _vkInstance.cmdPools,
+                        _vkInstance.queues,
+                        "resources/textures/chibiRenko.jpg",
+                        _dbgTexture);
+    _toScreen.init(_vkInstance,
+                   _swapChain,
+                   _toScreenRenderPass,
+                   { _dbgTexture.textureSampler,
+                     _dbgTexture.textureImgView,
+                     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL });
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -67,7 +78,11 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH)
     _swapChain.resize(winW, winH);
     _sync.resize(_swapChain.currentSwapChainNbImg);
     _toScreenRenderPass.resize(_swapChain);
-    _toScreen.resize(_swapChain, _toScreenRenderPass);
+    _toScreen.resize(_swapChain,
+                     _toScreenRenderPass,
+                     { _dbgTexture.textureSampler,
+                       _dbgTexture.textureImgView,
+                       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL });
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -80,6 +95,7 @@ VulkanRenderer::clear()
     vkDeviceWaitIdle(_vkInstance.devices.device);
     _toScreen.clear();
     _toScreenRenderPass.clear();
+    _dbgTexture.clear();
     _sync.clear();
     _swapChain.clear();
     _vkInstance.clear();
@@ -203,23 +219,25 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
                                  "recording render command buffer");
     }
 
-    // Begin scene renderpass
-    std::array<VkClearValue, 2> clear_vals{};
-    clear_vals[0].color = cmdClearColor;
-    clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
-    VkRenderPassBeginInfo rp_begin_info{};
-    rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rp_begin_info.renderPass = _toScreenRenderPass.renderPass;
-    rp_begin_info.framebuffer = _toScreenRenderPass.framebuffers[imgIndex];
-    rp_begin_info.renderArea.offset = { 0, 0 };
-    rp_begin_info.renderArea.extent = _swapChain.swapChainExtent;
-    rp_begin_info.clearValueCount = clear_vals.size();
-    rp_begin_info.pClearValues = clear_vals.data();
-    vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
-                         &rp_begin_info,
-                         VK_SUBPASS_CONTENTS_INLINE);
-    _toScreen.generateCommands(_renderCommandBuffers[imgIndex], imgIndex);
-    vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
+    // Begin onscreen renderpass
+    {
+        std::array<VkClearValue, 2> clear_vals{};
+        clear_vals[0].color = cmdClearColor;
+        clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
+        VkRenderPassBeginInfo rp_begin_info{};
+        rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        rp_begin_info.renderPass = _toScreenRenderPass.renderPass;
+        rp_begin_info.framebuffer = _toScreenRenderPass.framebuffers[imgIndex];
+        rp_begin_info.renderArea.offset = { 0, 0 };
+        rp_begin_info.renderArea.extent = _swapChain.swapChainExtent;
+        rp_begin_info.clearValueCount = clear_vals.size();
+        rp_begin_info.pClearValues = clear_vals.data();
+        vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
+                             &rp_begin_info,
+                             VK_SUBPASS_CONTENTS_INLINE);
+        _toScreen.generateCommands(_renderCommandBuffers[imgIndex], imgIndex);
+        vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
+    }
 
     if (vkEndCommandBuffer(_renderCommandBuffers[imgIndex]) != VK_SUCCESS) {
         throw std::runtime_error(

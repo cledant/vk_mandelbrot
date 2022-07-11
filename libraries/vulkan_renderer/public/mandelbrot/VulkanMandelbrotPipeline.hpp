@@ -12,7 +12,7 @@
 #include "VulkanSwapChain.hpp"
 #include "VulkanMandelbrotPipelineData.hpp"
 #include "VulkanMandelbrotPipelineDescription.hpp"
-#include "renderPass/VulkanDefaultOnscreenRenderPass.hpp"
+#include "renderPass/VulkanDefaultOffscreenRenderPass.hpp"
 #include "constants/VulkanConstants.hpp"
 
 class VulkanMandelbrotPipeline final
@@ -20,19 +20,18 @@ class VulkanMandelbrotPipeline final
   public:
     VulkanMandelbrotPipeline() = default;
     ~VulkanMandelbrotPipeline() = default;
-    VulkanMandelbrotPipeline(VulkanMandelbrotPipeline const &src) =
+    VulkanMandelbrotPipeline(VulkanMandelbrotPipeline const &src) = delete;
+    VulkanMandelbrotPipeline &operator=(VulkanMandelbrotPipeline const &rhs) =
       delete;
-    VulkanMandelbrotPipeline &operator=(VulkanMandelbrotPipeline const &rhs) = delete;
     VulkanMandelbrotPipeline(VulkanMandelbrotPipeline &&src) = delete;
-    VulkanMandelbrotPipeline &operator=(VulkanMandelbrotPipeline &&rhs) = delete;
+    VulkanMandelbrotPipeline &operator=(VulkanMandelbrotPipeline &&rhs) =
+      delete;
 
     mandelbrotConstants pushConstants{};
 
     void init(VulkanInstance const &vkInstance,
-              VulkanSwapChain const &swapChain,
-              VulkanDefaultOnscreenRenderPass const &renderPass);
-    void resize(VulkanSwapChain const &swapChain,
-                VulkanDefaultOnscreenRenderPass const &renderPass);
+              VulkanDefaultOffscreenRenderPass const &renderPass);
+    void resize(VulkanDefaultOffscreenRenderPass const &renderPass);
     void clear();
 
     void generateCommands(VkCommandBuffer cmdBuffer, size_t descriptorSetIndex);
@@ -52,11 +51,11 @@ class VulkanMandelbrotPipeline final
     std::vector<VkDescriptorSet> _descriptorSets;
     VkDescriptorPool _descriptorPool{};
 
-    inline void createGfxPipeline(VulkanSwapChain const &swapChain,
-      VulkanDefaultOnscreenRenderPass const &renderPass);
-    inline void createDescriptorSets(VulkanMandelbrotPipelineData &pipelineData,
-      uint32_t descriptorCount);
-    void createDescriptorPool(uint32_t descriptorCount);
+    inline void createGfxPipeline(
+      VulkanDefaultOffscreenRenderPass const &renderPass);
+    inline void createDescriptorSets(
+      VulkanMandelbrotPipelineData &pipelineData);
+    void createDescriptorPool();
 };
 
 #endif // VK_MANDELBROT_VULKANMANDELBROTPIPELINE_HPP

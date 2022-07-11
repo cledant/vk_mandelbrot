@@ -10,32 +10,38 @@
 void
 VulkanMandelbrotPipeline::init(
   VulkanInstance const &vkInstance,
-  VulkanSwapChain const &swapChain,
-  VulkanDefaultOnscreenRenderPass const &renderPass)
+  VulkanDefaultOffscreenRenderPass const &renderPass)
 {
     _devices = vkInstance.devices;
     _cmdPools = vkInstance.cmdPools;
     _queues = vkInstance.queues;
 
-    _pipelineData.init(_devices, _cmdPools, _queues, swapChain.swapChainExtent);
+    _pipelineData.init(_devices,
+                       _cmdPools,
+                       _queues,
+                       { static_cast<uint32_t>(renderPass.colorTex.width),
+                         static_cast<uint32_t>(renderPass.colorTex.height) });
     _pipelineDescription.init(_devices);
-    createDescriptorPool(swapChain.currentSwapChainNbImg);
-    createGfxPipeline(swapChain, renderPass);
-    createDescriptorSets(_pipelineData, swapChain.currentSwapChainNbImg);
+    createDescriptorPool();
+    createGfxPipeline(renderPass);
+    createDescriptorSets(_pipelineData);
 }
 
 void
 VulkanMandelbrotPipeline::resize(
-  VulkanSwapChain const &swapChain,
-  VulkanDefaultOnscreenRenderPass const &renderPass)
+  VulkanDefaultOffscreenRenderPass const &renderPass)
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
     _pipelineData.clear();
-    _pipelineData.init(_devices, _cmdPools, _queues, swapChain.swapChainExtent);
-    createDescriptorPool(swapChain.currentSwapChainNbImg);
-    createGfxPipeline(swapChain, renderPass);
-    createDescriptorSets(_pipelineData, swapChain.currentSwapChainNbImg);
+    _pipelineData.init(_devices,
+                       _cmdPools,
+                       _queues,
+                       { static_cast<uint32_t>(renderPass.colorTex.width),
+                         static_cast<uint32_t>(renderPass.colorTex.height) });
+    createDescriptorPool();
+    createGfxPipeline(renderPass);
+    createDescriptorSets(_pipelineData);
 }
 
 void
@@ -89,16 +95,13 @@ VulkanMandelbrotPipeline::generateCommands(VkCommandBuffer cmdBuffer,
 
 void
 VulkanMandelbrotPipeline::createGfxPipeline(
-  VulkanSwapChain const &swapChain,
-  VulkanDefaultOnscreenRenderPass const &renderPass)
+  VulkanDefaultOffscreenRenderPass const &renderPass)
 {
     // Shaders
-    auto vert_shader =
-      loadShader(_devices.device,
-                 "resources/shaders/surfaceDisplay/surfaceDisplay.vert.spv");
-    auto frag_shader =
-      loadShader(_devices.device,
-                 "resources/shaders/surfaceDisplay/surfaceDisplay.frag.spv");
+    auto vert_shader = loadShader(
+      _devices.device, "resources/shaders/mandelbrot/mandelbrot.vert.spv");
+    auto frag_shader = loadShader(
+      _devices.device, "resources/shaders/mandelbrot/mandelbrot.frag.spv");
 
     VkPipelineShaderStageCreateInfo vert_shader_info{};
     vert_shader_info.sType =
@@ -143,15 +146,16 @@ VulkanMandelbrotPipeline::createGfxPipeline(
     // Viewport
     VkViewport viewport{};
     viewport.x = 0.0f;
-    viewport.y = static_cast<float>(swapChain.swapChainExtent.height);
-    viewport.height = -static_cast<float>(swapChain.swapChainExtent.height);
-    viewport.width = swapChain.swapChainExtent.width;
+    viewport.y = static_cast<float>(renderPass.colorTex.height);
+    viewport.height = -static_cast<float>(renderPass.colorTex.height);
+    viewport.width = static_cast<float>(renderPass.colorTex.width);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
     scissor.offset = { 0, 0 };
-    scissor.extent = swapChain.swapChainExtent;
+    scissor.extent = { static_cast<uint32_t>(renderPass.colorTex.width),
+                       static_cast<uint32_t>(renderPass.colorTex.height) };
 
     VkPipelineViewportStateCreateInfo viewport_state_info{};
     viewport_state_info.sType =
@@ -260,36 +264,28 @@ VulkanMandelbrotPipeline::createGfxPipeline(
 
 void
 VulkanMandelbrotPipeline::createDescriptorSets(
-  VulkanMandelbrotPipelineData &pipelineData,
-  uint32_t descriptorCount)
+  VulkanMandelbrotPipelineData &pipelineData)
 {
     static_cast<void>(pipelineData);
     allocateDescriptorSets(_devices,
                            _descriptorPool,
                            _pipelineDescription.descriptorSetLayout,
-                           descriptorCount,
+                           1,
                            _descriptorSets);
 
-    for (size_t i = 0; i < descriptorCount; ++i) {
-        std::array<VkWriteDescriptorSet, 0> descriptor_write{};
+    std::array<VkWriteDescriptorSet, 0> descriptor_write{};
 
-        vkUpdateDescriptorSets(_devices.device,
-                               descriptor_write.size(),
-                               descriptor_write.data(),
-                               0,
-                               nullptr);
-    }
+    vkUpdateDescriptorSets(_devices.device,
+                           descriptor_write.size(),
+                           descriptor_write.data(),
+                           0,
+                           nullptr);
 }
 
 void
-VulkanMandelbrotPipeline::createDescriptorPool(uint32_t descriptorCount)
+VulkanMandelbrotPipeline::createDescriptorPool()
 {
-    std::array<VkDescriptorPoolSize, 3> const poolSize{
-        { { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, descriptorCount },
-          { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, descriptorCount },
-          { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, descriptorCount } }
-    };
+    std::array<VkDescriptorPoolSize, 3> const poolSize{};
 
-    _descriptorPool =
-      ::createDescriptorPool(_devices, poolSize, descriptorCount);
+    _descriptorPool = ::createDescriptorPool(_devices, poolSize, 1);
 }

@@ -4,8 +4,8 @@
 
 void
 VulkanDefaultOffscreenRenderPass::implInit(VkFormat colorImageFormat,
-                                     int32_t imgW,
-                                     int32_t imgH)
+                                           int32_t imgW,
+                                           int32_t imgH)
 {
     defaultCreateColorResources(colorImageFormat, imgW, imgH);
     defaultCreateDepthResources(imgW, imgH);
@@ -13,12 +13,15 @@ VulkanDefaultOffscreenRenderPass::implInit(VkFormat colorImageFormat,
                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                             VK_IMAGE_LAYOUT_UNDEFINED);
     defaultCreateFramebuffer(imgW, imgH);
+    descriptorImage.sampler = colorTex.textureSampler;
+    descriptorImage.imageView = colorTex.textureImgView;
+    descriptorImage.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 }
 
 void
 VulkanDefaultOffscreenRenderPass::implResize(VkFormat colorImageFormat,
-                                       int32_t imgW,
-                                       int32_t imgH)
+                                             int32_t imgW,
+                                             int32_t imgH)
 {
     clean();
 
@@ -28,6 +31,9 @@ VulkanDefaultOffscreenRenderPass::implResize(VkFormat colorImageFormat,
                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                             VK_IMAGE_LAYOUT_UNDEFINED);
     defaultCreateFramebuffer(imgW, imgH);
+    descriptorImage.sampler = colorTex.textureSampler;
+    descriptorImage.imageView = colorTex.textureImgView;
+    descriptorImage.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 }
 
 void

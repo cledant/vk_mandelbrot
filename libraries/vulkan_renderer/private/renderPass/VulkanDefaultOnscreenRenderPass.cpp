@@ -1,6 +1,6 @@
 #include "renderPass/VulkanDefaultOnscreenRenderPass.hpp"
 
-#include "interface/AVulkanRenderPassPrivate.hpp"
+#include "interface/AVulkanOnscreenRenderPassPrivate.hpp"
 
 void
 VulkanDefaultOnscreenRenderPass::implInit(VulkanInstance const &vkInstance,

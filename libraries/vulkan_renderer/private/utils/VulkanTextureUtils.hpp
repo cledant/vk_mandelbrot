@@ -2,6 +2,7 @@
 #define PARTICLE_SYSTEM_VULKAN_VULKANTEXTUREUTILS_HPP
 
 #include <cmath>
+#include <string>
 
 #include <vulkan/vulkan.h>
 
@@ -17,5 +18,10 @@ void generateMipmaps(VulkanDevices const &devices,
                      VulkanQueues const &queues,
                      VulkanTexture const &texture);
 void createTextureSampler(VulkanDevices const &devices, VulkanTexture &texture);
+void loadTextureFromFile(VulkanDevices const &devices,
+                         VulkanCommandPools const &cmdPools,
+                         VulkanQueues const &queues,
+                         std::string const &filePath,
+                         VulkanTexture &toLoad);
 
 #endif // PARTICLE_SYSTEM_VULKAN_VULKANTEXTUREUTILS_HPP

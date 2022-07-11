@@ -3,10 +3,10 @@
 
 #include <vulkan/vulkan.h>
 
-#include "interface/AVulkanRenderPass.hpp"
+#include "interface/AVulkanOnscreenRenderPass.hpp"
 
 class VulkanDefaultOnscreenRenderPass final
-  : public AVulkanRenderPass<VulkanDefaultOnscreenRenderPass>
+  : public AVulkanOnscreenRenderPass<VulkanDefaultOnscreenRenderPass>
 {
   public:
     VulkanDefaultOnscreenRenderPass() = default;

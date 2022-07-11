@@ -20,17 +20,19 @@ class VulkanToScreenPipeline final
   public:
     VulkanToScreenPipeline() = default;
     ~VulkanToScreenPipeline() = default;
-    VulkanToScreenPipeline(VulkanToScreenPipeline const &src) =
+    VulkanToScreenPipeline(VulkanToScreenPipeline const &src) = delete;
+    VulkanToScreenPipeline &operator=(VulkanToScreenPipeline const &rhs) =
       delete;
-    VulkanToScreenPipeline &operator=(VulkanToScreenPipeline const &rhs) = delete;
     VulkanToScreenPipeline(VulkanToScreenPipeline &&src) = delete;
     VulkanToScreenPipeline &operator=(VulkanToScreenPipeline &&rhs) = delete;
 
     void init(VulkanInstance const &vkInstance,
               VulkanSwapChain const &swapChain,
-              VulkanDefaultOnscreenRenderPass const &renderPass);
+              VulkanDefaultOnscreenRenderPass const &renderPass,
+              VkDescriptorImageInfo const &toDisplayImageInfo);
     void resize(VulkanSwapChain const &swapChain,
-                VulkanDefaultOnscreenRenderPass const &renderPass);
+                VulkanDefaultOnscreenRenderPass const &renderPass,
+                VkDescriptorImageInfo const &toDisplayImageInfo);
     void clear();
 
     void generateCommands(VkCommandBuffer cmdBuffer, size_t descriptorSetIndex);
@@ -42,6 +44,7 @@ class VulkanToScreenPipeline final
     VulkanQueues _queues;
 
     // Vertex / Fragment shaders related
+    VkDescriptorImageInfo _toDisplayImageInfo{};
     VulkanToScreenPipelineDescription _pipelineDescription;
     VkPipeline _gfxPipeline{};
 
@@ -50,10 +53,11 @@ class VulkanToScreenPipeline final
     std::vector<VkDescriptorSet> _descriptorSets;
     VkDescriptorPool _descriptorPool{};
 
-    inline void createGfxPipeline(VulkanSwapChain const &swapChain,
+    inline void createGfxPipeline(
+      VulkanSwapChain const &swapChain,
       VulkanDefaultOnscreenRenderPass const &renderPass);
     inline void createDescriptorSets(VulkanToScreenPipelineData &pipelineData,
-      uint32_t descriptorCount);
+                                     uint32_t descriptorCount);
     void createDescriptorPool(uint32_t descriptorCount);
 };
 

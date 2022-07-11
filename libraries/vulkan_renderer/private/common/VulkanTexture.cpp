@@ -4,6 +4,39 @@
 #include "utils/VulkanTextureUtils.hpp"
 
 void
+VulkanTexture::loadTextureOnGPU(VulkanDevices const &devices,
+                                VulkanCommandPools const &cmdPools,
+                                VulkanQueues const &queues,
+                                VulkanTextureStaging const &stagingTexture,
+                                VkFormat format)
+{
+    _devices = devices;
+    textureFormat = format;
+    width = stagingTexture.width;
+    height = stagingTexture.height;
+    mipLevel = stagingTexture.mipLevel;
+    isCubemap = stagingTexture.isCubemap;
+
+    createImage(_devices.device,
+                *this,
+                VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                  VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+    allocateImage(_devices, *this, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    transitionImageLayout(_devices,
+                          cmdPools,
+                          queues,
+                          *this,
+                          VK_IMAGE_LAYOUT_UNDEFINED,
+                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    copyBufferToImage(
+      _devices, cmdPools, queues, stagingTexture.stagingBuffer, *this);
+    generateMipmaps(_devices, cmdPools, queues, *this);
+    createImageView(_devices, *this, VK_IMAGE_ASPECT_COLOR_BIT);
+    createTextureSampler(devices, *this);
+}
+
+void
 VulkanTexture::createColorTexture(VulkanDevices const &devices,
                                   int32_t texW,
                                   int32_t texH,

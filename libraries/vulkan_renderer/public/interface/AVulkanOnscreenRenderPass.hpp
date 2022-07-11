@@ -9,15 +9,18 @@
 #include "VulkanSwapChain.hpp"
 
 template<class Child>
-class AVulkanRenderPass
+class AVulkanOnscreenRenderPass
 {
   public:
-    AVulkanRenderPass() = default;
-    virtual ~AVulkanRenderPass() = default;
-    AVulkanRenderPass(AVulkanRenderPass const &src) = default;
-    AVulkanRenderPass &operator=(AVulkanRenderPass const &rhs) = default;
-    AVulkanRenderPass(AVulkanRenderPass &&src) noexcept = default;
-    AVulkanRenderPass &operator=(AVulkanRenderPass &&rhs) noexcept = default;
+    AVulkanOnscreenRenderPass() = default;
+    virtual ~AVulkanOnscreenRenderPass() = default;
+    AVulkanOnscreenRenderPass(AVulkanOnscreenRenderPass const &src) = default;
+    AVulkanOnscreenRenderPass &operator=(AVulkanOnscreenRenderPass const &rhs) =
+      default;
+    AVulkanOnscreenRenderPass(AVulkanOnscreenRenderPass &&src) noexcept =
+      default;
+    AVulkanOnscreenRenderPass &operator=(
+      AVulkanOnscreenRenderPass &&rhs) noexcept = default;
     void init(VulkanInstance const &vkInstance,
               VulkanSwapChain const &swapChain);
     void resize(VulkanSwapChain const &swapChain);
@@ -43,8 +46,8 @@ class AVulkanRenderPass
 
 template<class Child>
 void
-AVulkanRenderPass<Child>::init(VulkanInstance const &vkInstance,
-                               VulkanSwapChain const &swapChain)
+AVulkanOnscreenRenderPass<Child>::init(VulkanInstance const &vkInstance,
+                                       VulkanSwapChain const &swapChain)
 {
     _devices = vkInstance.devices;
     _queues = vkInstance.queues;
@@ -54,14 +57,14 @@ AVulkanRenderPass<Child>::init(VulkanInstance const &vkInstance,
 
 template<class Child>
 void
-AVulkanRenderPass<Child>::resize(VulkanSwapChain const &swapChain)
+AVulkanOnscreenRenderPass<Child>::resize(VulkanSwapChain const &swapChain)
 {
     static_cast<Child &>(*this).implResize(swapChain);
 }
 
 template<class Child>
 void
-AVulkanRenderPass<Child>::clear()
+AVulkanOnscreenRenderPass<Child>::clear()
 {
     static_cast<Child &>(*this).implClear();
     framebuffers.clear();
@@ -74,7 +77,7 @@ AVulkanRenderPass<Child>::clear()
 
 template<class Child>
 void
-AVulkanRenderPass<Child>::clean()
+AVulkanOnscreenRenderPass<Child>::clean()
 {
     static_cast<Child &>(*this).implClean();
     depthTex.clear();

@@ -10,12 +10,14 @@
 void
 VulkanToScreenPipeline::init(VulkanInstance const &vkInstance,
                              VulkanSwapChain const &swapChain,
-                             VulkanDefaultOnscreenRenderPass const &renderPass)
+                             VulkanDefaultOnscreenRenderPass const &renderPass,
+                             VkDescriptorImageInfo const &toDisplayImageInfo)
 {
     _devices = vkInstance.devices;
     _cmdPools = vkInstance.cmdPools;
     _queues = vkInstance.queues;
 
+    _toDisplayImageInfo = toDisplayImageInfo;
     _pipelineData.init(_devices, _cmdPools, _queues, swapChain.swapChainExtent);
     _pipelineDescription.init(_devices);
     createDescriptorPool(swapChain.currentSwapChainNbImg);
@@ -26,11 +28,13 @@ VulkanToScreenPipeline::init(VulkanInstance const &vkInstance,
 void
 VulkanToScreenPipeline::resize(
   VulkanSwapChain const &swapChain,
-  VulkanDefaultOnscreenRenderPass const &renderPass)
+  VulkanDefaultOnscreenRenderPass const &renderPass,
+  VkDescriptorImageInfo const &toDisplayImageInfo)
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
     _pipelineData.clear();
+    _toDisplayImageInfo = toDisplayImageInfo;
     _pipelineData.init(_devices, _cmdPools, _queues, swapChain.swapChainExtent);
     createDescriptorPool(swapChain.currentSwapChainNbImg);
     createGfxPipeline(swapChain, renderPass);
@@ -42,6 +46,7 @@ VulkanToScreenPipeline::clear()
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
+    _toDisplayImageInfo = {};
     _pipelineDescription.clear();
     _devices = VulkanDevices{};
     _cmdPools = VulkanCommandPools{};
@@ -260,7 +265,23 @@ VulkanToScreenPipeline::createDescriptorSets(
                            _descriptorSets);
 
     for (size_t i = 0; i < descriptorCount; ++i) {
-        std::array<VkWriteDescriptorSet, 0> descriptor_write{};
+        std::array<VkWriteDescriptorSet, 1> descriptor_write{};
+
+        // Texture
+        VkDescriptorImageInfo img_info{};
+        img_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        img_info.imageView = _toDisplayImageInfo.imageView;
+        img_info.sampler = _toDisplayImageInfo.sampler;
+        descriptor_write[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptor_write[0].dstSet = _descriptorSets[i];
+        descriptor_write[0].dstBinding = 0;
+        descriptor_write[0].dstArrayElement = 0;
+        descriptor_write[0].descriptorType =
+          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        descriptor_write[0].descriptorCount = 1;
+        descriptor_write[0].pBufferInfo = nullptr;
+        descriptor_write[0].pImageInfo = &img_info;
+        descriptor_write[0].pTexelBufferView = nullptr;
 
         vkUpdateDescriptorSets(_devices.device,
                                descriptor_write.size(),
@@ -273,10 +294,8 @@ VulkanToScreenPipeline::createDescriptorSets(
 void
 VulkanToScreenPipeline::createDescriptorPool(uint32_t descriptorCount)
 {
-    std::array<VkDescriptorPoolSize, 3> const poolSize{
-        { { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, descriptorCount },
-          { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, descriptorCount },
-          { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, descriptorCount } }
+    std::array<VkDescriptorPoolSize, 1> const poolSize{
+        { { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, descriptorCount } }
     };
 
     _descriptorPool =

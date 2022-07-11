@@ -11,11 +11,11 @@
 #include "utils/VulkanSwapChainUtils.hpp"
 #include "utils/VulkanFrameBuffer.hpp"
 
-#include "interface/AVulkanRenderPass.hpp"
+#include "interface/AVulkanOnscreenRenderPass.hpp"
 
 template<class Child>
 void
-AVulkanRenderPass<Child>::defaultCreateRenderPass(
+AVulkanOnscreenRenderPass<Child>::defaultCreateRenderPass(
   VulkanSwapChain const &swapChain,
   VkAttachmentLoadOp loadOp,
   VkImageLayout initialLayout,
@@ -98,7 +98,7 @@ AVulkanRenderPass<Child>::defaultCreateRenderPass(
 
 template<class Child>
 void
-AVulkanRenderPass<Child>::defaultCreateDepthResources(
+AVulkanOnscreenRenderPass<Child>::defaultCreateDepthResources(
   VulkanSwapChain const &swapChain)
 {
     depthTex.createDepthTexture(_devices,
@@ -111,7 +111,7 @@ AVulkanRenderPass<Child>::defaultCreateDepthResources(
 
 template<class Child>
 void
-AVulkanRenderPass<Child>::defaultCreateFramebuffers(
+AVulkanOnscreenRenderPass<Child>::defaultCreateFramebuffers(
   VulkanSwapChain const &swapChain)
 {
     framebuffers.resize(swapChain.swapChainImageViews.size());

@@ -153,3 +153,18 @@ createTextureSampler(VulkanDevices const &devices, VulkanTexture &texture)
           "VulkanTextureUtils: failed to create texture sampler");
     }
 }
+
+void
+loadTextureFromFile(VulkanDevices const &devices,
+                    VulkanCommandPools const &cmdPools,
+                    VulkanQueues const &queues,
+                    std::string const &filePath,
+                    VulkanTexture &toLoad)
+{
+    VulkanTextureStaging stagingTex{};
+    stagingTex.stageTexture(devices, filePath);
+
+    toLoad.loadTextureOnGPU(
+      devices, cmdPools, queues, stagingTex, VK_FORMAT_R8G8B8A8_UNORM);
+    stagingTex.clear();
+}
