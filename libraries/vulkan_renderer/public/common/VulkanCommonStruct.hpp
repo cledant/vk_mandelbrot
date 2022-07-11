@@ -51,6 +51,7 @@ struct VulkanTextureStaging final
     int32_t width{};
     int32_t height{};
     uint32_t mipLevel{};
+    uint32_t nbChannel{};
     bool isCubemap{};
 
     VkDeviceSize stageTexture(VulkanDevices const &devices,
@@ -82,6 +83,10 @@ struct VulkanTexture final
     void loadTextureOnGPU(VulkanDevices const &devices,
                           VulkanCommandPools const &cmdPools,
                           VulkanQueues const &queues,
+                          VulkanTextureStaging const &stagingTexture);
+    void loadTextureOnGPU(VulkanDevices const &devices,
+                          VulkanCommandPools const &cmdPools,
+                          VulkanQueues const &queues,
                           VulkanTextureStaging const &stagingTexture,
                           VkFormat format);
     void createColorTexture(VulkanDevices const &devices,
@@ -108,7 +113,7 @@ struct VulkanTexture final
 struct VulkanSimpleVertex final
 {
     glm::vec3 position{};
-    glm::vec2 texCoords{};
+    glm::vec2 texCoord{};
 };
 
 #endif // PARTICLE_SYSTEM_VULKAN_VULKANCOMMONSTRUCT_HPP

@@ -11,16 +11,16 @@ VulkanToScreenPipelineData::init(VulkanDevices const &devices,
     static constexpr std::array const SURFACE_DISPLAY_INDICES = { 0, 1, 2,
                                                                   2, 3, 0 };
     std::array SURFACE_DISPLAY_VERTICES = {
-        glm::vec3(-1.0f, -1.0f, 0.0f),
-        glm::vec3(1.0f, -1.0f, 0.0f),
-        glm::vec3(1.0f, 1.0f, 0.0f),
-        glm::vec3(-1.0f, 1.0f, 0.0f),
+        VulkanSimpleVertex{ { -1.0f, -1.0f, 0.0f }, { 1.0f, 0.0f } },
+        VulkanSimpleVertex{ { 1.0f, -1.0f, 0.0f }, { 0.0f, 0.0f } },
+        VulkanSimpleVertex{ { 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f } },
+        VulkanSimpleVertex{ { -1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } }
     };
     forceSquareRatio(screenSize, SURFACE_DISPLAY_VERTICES);
 
     // Computing sizes and offsets
     indicesDrawNb = SURFACE_DISPLAY_INDICES.size();
-    verticesSize = sizeof(glm::vec3) * SURFACE_DISPLAY_VERTICES.size();
+    verticesSize = sizeof(VulkanSimpleVertex) * SURFACE_DISPLAY_VERTICES.size();
     indicesSize = sizeof(uint32_t) * SURFACE_DISPLAY_INDICES.size();
     indicesOffset = verticesSize;
     VkDeviceSize total_size = verticesSize + indicesSize;
@@ -74,8 +74,9 @@ VulkanToScreenPipelineData::clear()
 }
 
 void
-VulkanToScreenPipelineData::forceSquareRatio(VkExtent2D const &screenSize,
-                                             std::array<glm::vec3, 4> &vertices)
+VulkanToScreenPipelineData::forceSquareRatio(
+  VkExtent2D const &screenSize,
+  std::array<VulkanSimpleVertex, 4> &vertices)
 {
     if (screenSize.height == screenSize.width) {
         return;
@@ -88,7 +89,7 @@ VulkanToScreenPipelineData::forceSquareRatio(VkExtent2D const &screenSize,
                          1.0f };
 
         for (auto &item : vertices) {
-            item *= ratio;
+            item.position *= ratio;
         }
     } else {
         glm::vec3 ratio{ 1.0f,
@@ -97,7 +98,7 @@ VulkanToScreenPipelineData::forceSquareRatio(VkExtent2D const &screenSize,
                          1.0f };
 
         for (auto &item : vertices) {
-            item *= ratio;
+            item.position *= ratio;
         }
     }
 }

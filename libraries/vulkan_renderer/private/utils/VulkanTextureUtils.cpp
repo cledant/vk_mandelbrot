@@ -164,7 +164,6 @@ loadTextureFromFile(VulkanDevices const &devices,
     VulkanTextureStaging stagingTex{};
     stagingTex.stageTexture(devices, filePath);
 
-    toLoad.loadTextureOnGPU(
-      devices, cmdPools, queues, stagingTex, VK_FORMAT_R8G8B8A8_UNORM);
+    toLoad.loadTextureOnGPU(devices, cmdPools, queues, stagingTex);
     stagingTex.clear();
 }

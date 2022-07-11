@@ -33,6 +33,7 @@ VulkanTextureStaging::stageTexture(VulkanDevices const &devices,
     vkUnmapMemory(devices.device, stagingBuffer.memory);
     stbi_image_free(pixels);
     mipLevel = computeMipmapLevel(width, height);
+    nbChannel = img_chan;
     return (img_size);
 }
 
@@ -47,8 +48,8 @@ VulkanTextureStaging::stageTexture(VulkanDevices const &devices,
     std::array<uint8_t *, 6> faces_buffer{};
 
     uint8_t i = 0;
+    int img_chan;
     for (auto const &it : faces_name) {
-        int img_chan;
         auto fullpath = cubemapFolder;
         fullpath += "/";
         fullpath += it;
@@ -91,6 +92,7 @@ VulkanTextureStaging::stageTexture(VulkanDevices const &devices,
     vkUnmapMemory(devices.device, stagingBuffer.memory);
     isCubemap = true;
     mipLevel = computeMipmapLevel(width, height);
+    nbChannel = img_chan;
     return (img_size);
 }
 
@@ -121,6 +123,7 @@ VulkanTextureStaging::stageTexture(VulkanDevices const &devices,
     memcpy(data, buff, static_cast<size_t>(img_size));
     vkUnmapMemory(devices.device, stagingBuffer.memory);
     mipLevel = computeMipmapLevel(texW, texH);
+    nbChannel = nbChan;
     return (img_size);
 }
 

@@ -25,8 +25,9 @@ struct VulkanToScreenPipelineData
     void clear();
 
   private:
-    static inline void forceSquareRatio(VkExtent2D const &screenSize,
-                                        std::array<glm::vec3, 4> &vertices);
+    static inline void forceSquareRatio(
+      VkExtent2D const &screenSize,
+      std::array<VulkanSimpleVertex, 4> &vertices);
 };
 
 #endif // VK_MANDELBROT_VULKANTOSCREENPIPELINEDATA_HPP

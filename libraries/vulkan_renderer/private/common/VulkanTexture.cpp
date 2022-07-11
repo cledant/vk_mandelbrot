@@ -1,7 +1,49 @@
 #include "common/VulkanCommonStruct.hpp"
 
+#include <stdexcept>
+
 #include "utils/VulkanImageUtils.hpp"
 #include "utils/VulkanTextureUtils.hpp"
+
+void
+VulkanTexture::loadTextureOnGPU(VulkanDevices const &devices,
+                                VulkanCommandPools const &cmdPools,
+                                VulkanQueues const &queues,
+                                VulkanTextureStaging const &stagingTexture)
+{
+    _devices = devices;
+    if (stagingTexture.nbChannel == 3) {
+        textureFormat = VK_FORMAT_R8G8B8_UNORM;
+    } else if (stagingTexture.nbChannel == 3) {
+        textureFormat = VK_FORMAT_R8G8B8A8_UNORM;
+    } else {
+        throw std::runtime_error(
+          "VulkanTexture: Texture must have 3 or 4 channels");
+    }
+
+    width = stagingTexture.width;
+    height = stagingTexture.height;
+    mipLevel = stagingTexture.mipLevel;
+    isCubemap = stagingTexture.isCubemap;
+
+    createImage(_devices.device,
+                *this,
+                VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                  VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+    allocateImage(_devices, *this, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    transitionImageLayout(_devices,
+                          cmdPools,
+                          queues,
+                          *this,
+                          VK_IMAGE_LAYOUT_UNDEFINED,
+                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    copyBufferToImage(
+      _devices, cmdPools, queues, stagingTexture.stagingBuffer, *this);
+    generateMipmaps(_devices, cmdPools, queues, *this);
+    createImageView(_devices, *this, VK_IMAGE_ASPECT_COLOR_BIT);
+    createTextureSampler(devices, *this);
+}
 
 void
 VulkanTexture::loadTextureOnGPU(VulkanDevices const &devices,
