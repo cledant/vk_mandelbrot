@@ -19,7 +19,7 @@ VulkanTextureStaging::stageTexture(VulkanDevices const &devices,
         throw std::runtime_error(
           "VulkanTextureStaging: failed to load image: " + filepath);
     }
-    VkDeviceSize img_size = width * height * img_chan;
+    VkDeviceSize img_size = width * height * 4;
 
     stagingBuffer.allocate(devices,
                            img_size,

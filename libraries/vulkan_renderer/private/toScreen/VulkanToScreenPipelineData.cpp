@@ -11,10 +11,10 @@ VulkanToScreenPipelineData::init(VulkanDevices const &devices,
     static constexpr std::array const SURFACE_DISPLAY_INDICES = { 0, 1, 2,
                                                                   2, 3, 0 };
     std::array SURFACE_DISPLAY_VERTICES = {
-        VulkanSimpleVertex{ { -1.0f, -1.0f, 0.0f }, { 1.0f, 0.0f } },
-        VulkanSimpleVertex{ { 1.0f, -1.0f, 0.0f }, { 0.0f, 0.0f } },
-        VulkanSimpleVertex{ { 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f } },
-        VulkanSimpleVertex{ { -1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } }
+        VulkanSimpleVertex{ { -1.0f, -1.0f, 0.0f }, { 0.0f, 1.0f } },
+        VulkanSimpleVertex{ { 1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f } },
+        VulkanSimpleVertex{ { 1.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },
+        VulkanSimpleVertex{ { -1.0f, 1.0f, 0.0f }, { 0.0f, 0.0f } }
     };
     forceSquareRatio(screenSize, SURFACE_DISPLAY_VERTICES);
 
