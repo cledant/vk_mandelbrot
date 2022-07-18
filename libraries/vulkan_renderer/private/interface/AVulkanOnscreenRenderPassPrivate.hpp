@@ -9,7 +9,7 @@
 
 #include "utils/VulkanImageUtils.hpp"
 #include "utils/VulkanSwapChainUtils.hpp"
-#include "utils/VulkanFrameBuffer.hpp"
+#include "utils/VulkanFrameBufferUtils.hpp"
 
 #include "interface/AVulkanOnscreenRenderPass.hpp"
 
@@ -51,7 +51,7 @@ AVulkanOnscreenRenderPass<Child>::defaultCreateRenderPass(
     depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    depth_attachment.initialLayout = initialLayout;
     depth_attachment.finalLayout =
       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 

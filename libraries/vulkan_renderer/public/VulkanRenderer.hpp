@@ -11,10 +11,11 @@
 #include "VulkanInstance.hpp"
 #include "VulkanSwapChain.hpp"
 #include "VulkanSync.hpp"
+#include "common/VulkanDefaultImageBuffer.hpp"
 #include "renderPass/VulkanDefaultOnscreenRenderPass.hpp"
-/*#include "renderPass/VulkanDefaultOffscreenRenderPass.hpp"*/
+#include "renderPass/VulkanDefaultOffscreenRenderPass.hpp"
 #include "toScreen/VulkanToScreenPipeline.hpp"
-/*#include "mandelbrot/VulkanMandelbrotPipeline.hpp"*/
+#include "mandelbrot/VulkanMandelbrotPipeline.hpp"
 
 class VulkanRenderer final
 {
@@ -77,9 +78,9 @@ class VulkanRenderer final
     VulkanSync _sync;
     VulkanDefaultOnscreenRenderPass _toScreenRenderPass;
     VulkanToScreenPipeline _toScreen;
-    VulkanTexture _dbgTexture{};
-    /*    VulkanDefaultOffscreenRenderPass _mandelbrotRenderPass;
-        VulkanMandelbrotPipeline _mandelbrot;*/
+    VulkanDefaultImageBuffer _imageDisplayed;
+    VulkanDefaultOffscreenRenderPass _mandelbrotRenderPass;
+    VulkanMandelbrotPipeline _mandelbrot;
 
     // Cmd Buffers
     std::vector<VkCommandBuffer> _renderCommandBuffers;

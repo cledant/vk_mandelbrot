@@ -4,36 +4,34 @@
 
 void
 VulkanDefaultOffscreenRenderPass::implInit(VkFormat colorImageFormat,
+                                           VkFormat depthImageFormat,
+                                           VkImageView colorTexImgView,
+                                           VkImageView depthTexImgView,
                                            int32_t imgW,
                                            int32_t imgH)
 {
-    defaultCreateColorResources(colorImageFormat, imgW, imgH);
-    defaultCreateDepthResources(imgW, imgH);
-    defaultCreateRenderPass(colorTex.textureFormat,
+    defaultCreateRenderPass(colorImageFormat,
+                            depthImageFormat,
                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                             VK_IMAGE_LAYOUT_UNDEFINED);
-    defaultCreateFramebuffer(imgW, imgH);
-    descriptorImage.sampler = colorTex.textureSampler;
-    descriptorImage.imageView = colorTex.textureImgView;
-    descriptorImage.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    defaultCreateFramebuffer(colorTexImgView, depthTexImgView, imgW, imgH);
 }
 
 void
 VulkanDefaultOffscreenRenderPass::implResize(VkFormat colorImageFormat,
+                                             VkFormat depthImageFormat,
+                                             VkImageView colorTexImgView,
+                                             VkImageView depthTexImgView,
                                              int32_t imgW,
                                              int32_t imgH)
 {
     clean();
 
-    defaultCreateColorResources(colorImageFormat, imgW, imgH);
-    defaultCreateDepthResources(imgW, imgH);
-    defaultCreateRenderPass(colorTex.textureFormat,
+    defaultCreateRenderPass(colorImageFormat,
+                            depthImageFormat,
                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                             VK_IMAGE_LAYOUT_UNDEFINED);
-    defaultCreateFramebuffer(imgW, imgH);
-    descriptorImage.sampler = colorTex.textureSampler;
-    descriptorImage.imageView = colorTex.textureImgView;
-    descriptorImage.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    defaultCreateFramebuffer(colorTexImgView, depthTexImgView, imgW, imgH);
 }
 
 void

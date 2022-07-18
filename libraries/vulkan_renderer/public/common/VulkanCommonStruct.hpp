@@ -1,5 +1,5 @@
-#ifndef PARTICLE_SYSTEM_VULKAN_VULKANCOMMONSTRUCT_HPP
-#define PARTICLE_SYSTEM_VULKAN_VULKANCOMMONSTRUCT_HPP
+#ifndef VK_MANDELBROT_VULKAN_VULKANCOMMONSTRUCT_HPP
+#define VK_MANDELBROT_VULKAN_VULKANCOMMONSTRUCT_HPP
 
 #include <string>
 
@@ -83,10 +83,6 @@ struct VulkanTexture final
     void loadTextureOnGPU(VulkanDevices const &devices,
                           VulkanCommandPools const &cmdPools,
                           VulkanQueues const &queues,
-                          VulkanTextureStaging const &stagingTexture);
-    void loadTextureOnGPU(VulkanDevices const &devices,
-                          VulkanCommandPools const &cmdPools,
-                          VulkanQueues const &queues,
                           VulkanTextureStaging const &stagingTexture,
                           VkFormat format);
     void createColorTexture(VulkanDevices const &devices,
@@ -116,4 +112,4 @@ struct VulkanSimpleVertex final
     glm::vec2 texCoord{};
 };
 
-#endif // PARTICLE_SYSTEM_VULKAN_VULKANCOMMONSTRUCT_HPP
+#endif // VK_MANDELBROT_VULKAN_VULKANCOMMONSTRUCT_HPP

@@ -3,12 +3,11 @@
 #include <cstdint>
 #include <stdexcept>
 #include <cassert>
-#include <cstring>
 
 #include "VulkanDebug.hpp"
 #include "utils/VulkanCommandBuffer.hpp"
 #include "utils/VulkanMemory.hpp"
-#include "utils/VulkanTextureUtils.hpp"
+#include "utils/VulkanImageUtils.hpp"
 
 void
 VulkanRenderer::createInstance(std::string &&appName,
@@ -50,17 +49,21 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _swapChain.init(_vkInstance, winW, winH);
     _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
     _toScreenRenderPass.init(_vkInstance, _swapChain);
-    loadTextureFromFile(_vkInstance.devices,
-                        _vkInstance.cmdPools,
-                        _vkInstance.queues,
-                        "resources/textures/chibiRenko.jpg",
-                        _dbgTexture);
+    _imageDisplayed.init(
+      _vkInstance,
+      VK_FORMAT_R8G8B8A8_UNORM,
+      findSupportedFormat(_vkInstance.devices.physicalDevice,
+                          { VK_FORMAT_D32_SFLOAT,
+                            VK_FORMAT_D32_SFLOAT_S8_UINT,
+                            VK_FORMAT_D24_UNORM_S8_UINT },
+                          VK_IMAGE_TILING_OPTIMAL,
+                          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT),
+      winW,
+      winH);
     _toScreen.init(_vkInstance,
                    _swapChain,
                    _toScreenRenderPass,
-                   { _dbgTexture.textureSampler,
-                     _dbgTexture.textureImgView,
-                     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL });
+                   _imageDisplayed.descriptorImage);
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -77,12 +80,19 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH)
 
     _swapChain.resize(winW, winH);
     _sync.resize(_swapChain.currentSwapChainNbImg);
+    _imageDisplayed.resize(
+      VK_FORMAT_R8G8B8A8_UNORM,
+      findSupportedFormat(_vkInstance.devices.physicalDevice,
+                          { VK_FORMAT_D32_SFLOAT,
+                            VK_FORMAT_D32_SFLOAT_S8_UINT,
+                            VK_FORMAT_D24_UNORM_S8_UINT },
+                          VK_IMAGE_TILING_OPTIMAL,
+                          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT),
+      winW,
+      winH);
     _toScreenRenderPass.resize(_swapChain);
-    _toScreen.resize(_swapChain,
-                     _toScreenRenderPass,
-                     { _dbgTexture.textureSampler,
-                       _dbgTexture.textureImgView,
-                       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL });
+    _toScreen.resize(
+      _swapChain, _toScreenRenderPass, _imageDisplayed.descriptorImage);
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -95,7 +105,7 @@ VulkanRenderer::clear()
     vkDeviceWaitIdle(_vkInstance.devices.device);
     _toScreen.clear();
     _toScreenRenderPass.clear();
-    _dbgTexture.clear();
+    _imageDisplayed.clear();
     _sync.clear();
     _swapChain.clear();
     _vkInstance.clear();

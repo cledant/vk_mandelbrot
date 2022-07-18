@@ -4,7 +4,7 @@
 
 void
 VulkanDefaultOnscreenRenderPass::implInit(VulkanInstance const &vkInstance,
-                                   VulkanSwapChain const &swapChain)
+                                          VulkanSwapChain const &swapChain)
 {
     static_cast<void>(vkInstance);
     defaultCreateRenderPass(swapChain,

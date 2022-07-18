@@ -9,7 +9,7 @@ add_library(vulkan_renderer STATIC
         private/VulkanSync.cpp
         private/VulkanInstanceOptions.cpp
         private/renderPass/VulkanDefaultOnscreenRenderPass.cpp
-#[[        private/renderPass/VulkanDefaultOffscreenRenderPass.cpp]]
+        private/renderPass/VulkanDefaultOffscreenRenderPass.cpp
         private/utils/VulkanPhysicalDevice.cpp
         private/utils/VulkanSwapChainUtils.cpp
         private/utils/VulkanShader.cpp
@@ -22,12 +22,13 @@ add_library(vulkan_renderer STATIC
         private/toScreen/VulkanToScreenPipeline.cpp
         private/toScreen/VulkanToScreenPipelineData.cpp
         private/toScreen/VulkanToScreenPipelineDescription.cpp
-#[[        private/mandelbrot/VulkanMandelbrotPipeline.cpp
+        private/mandelbrot/VulkanMandelbrotPipeline.cpp
         private/mandelbrot/VulkanMandelbrotPipelineData.cpp
-        private/mandelbrot/VulkanMandelbrotPipelineDescription.cpp]]
+        private/mandelbrot/VulkanMandelbrotPipelineDescription.cpp
         private/common/VulkanBuffer.cpp
         private/common/VulkanTexture.cpp
-        private/common/VulkanTextureStaging.cpp)
+        private/common/VulkanTextureStaging.cpp
+        private/common/VulkanDefaultImageBuffer.cpp)
 target_include_directories(vulkan_renderer
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/public

@@ -10,43 +10,15 @@
 #include "utils/VulkanImageUtils.hpp"
 #include "utils/VulkanTextureUtils.hpp"
 #include "utils/VulkanSwapChainUtils.hpp"
-#include "utils/VulkanFrameBuffer.hpp"
+#include "utils/VulkanFrameBufferUtils.hpp"
 
 #include "interface/AVulkanOffscreenRenderPass.hpp"
 
 template<class Child>
 void
-AVulkanOffscreenRenderPass<Child>::defaultCreateColorResources(
-  VkFormat colorImageFormat,
-  int32_t imgW,
-  int32_t imgH)
-{
-    colorTex.createColorTexture(_devices, imgW, imgH, colorImageFormat);
-}
-
-template<class Child>
-void
-AVulkanOffscreenRenderPass<Child>::defaultCreateDepthResources(int32_t imgW,
-                                                               int32_t imgH)
-{
-    depthTex.createDepthTexture(
-      _devices,
-      _cmdPools,
-      _queues,
-      imgW,
-      imgH,
-      findSupportedFormat(_devices.physicalDevice,
-                          { VK_FORMAT_D32_SFLOAT,
-                            VK_FORMAT_D32_SFLOAT_S8_UINT,
-                            VK_FORMAT_D24_UNORM_S8_UINT },
-                          VK_IMAGE_TILING_OPTIMAL,
-                          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT));
-}
-
-template<class Child>
-void
 AVulkanOffscreenRenderPass<Child>::defaultCreateRenderPass(
   VkFormat colorImageFormat,
+  VkFormat depthImageFormat,
   VkAttachmentLoadOp loadOp,
   VkImageLayout initialLayout)
 {
@@ -67,7 +39,7 @@ AVulkanOffscreenRenderPass<Child>::defaultCreateRenderPass(
 
     // Depth
     VkAttachmentDescription depth_attachment{};
-    depth_attachment.format = depthTex.textureFormat;
+    depth_attachment.format = depthImageFormat;
     depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
     depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -126,11 +98,13 @@ AVulkanOffscreenRenderPass<Child>::defaultCreateRenderPass(
 
 template<class Child>
 void
-AVulkanOffscreenRenderPass<Child>::defaultCreateFramebuffer(int32_t imgW,
-                                                            int32_t imgH)
+AVulkanOffscreenRenderPass<Child>::defaultCreateFramebuffer(
+  VkImageView colorTexImgView,
+  VkImageView depthTexImgView,
+  int32_t imgW,
+  int32_t imgH)
 {
-    std::array<VkImageView, 2> imgViews{ colorTex.textureImgView,
-                                         depthTex.textureImgView };
+    std::array<VkImageView, 2> imgViews{ colorTexImgView, depthTexImgView };
 
     createFrameBuffer(
       _devices.device,

@@ -82,15 +82,6 @@ add_subdirectory(libraries/app_info)
 add_subdirectory(shaders/toScreen)
 add_subdirectory(shaders/mandelbrot)
 
-#Debug texture
-set(DBG_TEXTURE_SOURCE_FOLDER
-        ${CMAKE_SOURCE_DIR}/textures)
-set(DBG_TEXTURE_RUNTIME_FOLDER
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources)
-file(COPY ${DBG_TEXTURE_SOURCE_FOLDER}
-        DESTINATION
-        ${DBG_TEXTURE_RUNTIME_FOLDER})
-
 #Main binary
 add_executable(${APP_BINARY_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/binary/private/mandelbrot.cpp)
