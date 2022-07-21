@@ -10,37 +10,31 @@
 void
 VulkanMandelbrotPipeline::init(
   VulkanInstance const &vkInstance,
+  VulkanDefaultImageBuffer const &imgBuffer,
   VulkanDefaultOffscreenRenderPass const &renderPass)
 {
     _devices = vkInstance.devices;
     _cmdPools = vkInstance.cmdPools;
     _queues = vkInstance.queues;
 
-    _pipelineData.init(_devices,
-                       _cmdPools,
-                       _queues,
-                       { static_cast<uint32_t>(renderPass.colorTex.width),
-                         static_cast<uint32_t>(renderPass.colorTex.height) });
+    _pipelineData.init(_devices, _cmdPools, _queues);
     _pipelineDescription.init(_devices);
     createDescriptorPool();
-    createGfxPipeline(renderPass);
+    createGfxPipeline(imgBuffer, renderPass);
     createDescriptorSets(_pipelineData);
 }
 
 void
 VulkanMandelbrotPipeline::resize(
+  VulkanDefaultImageBuffer const &imgBuffer,
   VulkanDefaultOffscreenRenderPass const &renderPass)
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
     _pipelineData.clear();
-    _pipelineData.init(_devices,
-                       _cmdPools,
-                       _queues,
-                       { static_cast<uint32_t>(renderPass.colorTex.width),
-                         static_cast<uint32_t>(renderPass.colorTex.height) });
+    _pipelineData.init(_devices, _cmdPools, _queues);
     createDescriptorPool();
-    createGfxPipeline(renderPass);
+    createGfxPipeline(imgBuffer, renderPass);
     createDescriptorSets(_pipelineData);
 }
 
@@ -60,8 +54,7 @@ VulkanMandelbrotPipeline::clear()
 }
 
 void
-VulkanMandelbrotPipeline::generateCommands(VkCommandBuffer cmdBuffer,
-                                           size_t descriptorSetIndex)
+VulkanMandelbrotPipeline::generateCommands(VkCommandBuffer cmdBuffer)
 {
     // Push constants
     vkCmdPushConstants(cmdBuffer,
@@ -87,7 +80,7 @@ VulkanMandelbrotPipeline::generateCommands(VkCommandBuffer cmdBuffer,
                             _pipelineDescription.pipelineLayout,
                             0,
                             1,
-                            &_descriptorSets[descriptorSetIndex],
+                            &_descriptorSets[0],
                             0,
                             nullptr);
     vkCmdDrawIndexed(cmdBuffer, _pipelineData.indicesDrawNb, 1, 0, 0, 0);
@@ -95,6 +88,7 @@ VulkanMandelbrotPipeline::generateCommands(VkCommandBuffer cmdBuffer,
 
 void
 VulkanMandelbrotPipeline::createGfxPipeline(
+  VulkanDefaultImageBuffer const &imgBuffer,
   VulkanDefaultOffscreenRenderPass const &renderPass)
 {
     // Shaders
@@ -146,16 +140,16 @@ VulkanMandelbrotPipeline::createGfxPipeline(
     // Viewport
     VkViewport viewport{};
     viewport.x = 0.0f;
-    viewport.y = static_cast<float>(renderPass.colorTex.height);
-    viewport.height = -static_cast<float>(renderPass.colorTex.height);
-    viewport.width = static_cast<float>(renderPass.colorTex.width);
+    viewport.y = static_cast<float>(imgBuffer.colorTex.height);
+    viewport.height = -static_cast<float>(imgBuffer.colorTex.height);
+    viewport.width = static_cast<float>(imgBuffer.colorTex.width);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
     scissor.offset = { 0, 0 };
-    scissor.extent = { static_cast<uint32_t>(renderPass.colorTex.width),
-                       static_cast<uint32_t>(renderPass.colorTex.height) };
+    scissor.extent = { static_cast<uint32_t>(imgBuffer.colorTex.width),
+                       static_cast<uint32_t>(imgBuffer.colorTex.height) };
 
     VkPipelineViewportStateCreateInfo viewport_state_info{};
     viewport_state_info.sType =
@@ -285,7 +279,7 @@ VulkanMandelbrotPipeline::createDescriptorSets(
 void
 VulkanMandelbrotPipeline::createDescriptorPool()
 {
-    std::array<VkDescriptorPoolSize, 3> const poolSize{};
+    std::array<VkDescriptorPoolSize, 0> const poolSize{};
 
     _descriptorPool = ::createDescriptorPool(_devices, poolSize, 1);
 }

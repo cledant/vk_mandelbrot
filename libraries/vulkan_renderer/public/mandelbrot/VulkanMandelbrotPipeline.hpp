@@ -14,6 +14,7 @@
 #include "VulkanMandelbrotPipelineDescription.hpp"
 #include "renderPass/VulkanDefaultOffscreenRenderPass.hpp"
 #include "constants/VulkanConstants.hpp"
+#include "common/VulkanDefaultImageBuffer.hpp"
 
 class VulkanMandelbrotPipeline final
 {
@@ -30,11 +31,13 @@ class VulkanMandelbrotPipeline final
     mandelbrotConstants pushConstants{};
 
     void init(VulkanInstance const &vkInstance,
+              VulkanDefaultImageBuffer const &imgBuffer,
               VulkanDefaultOffscreenRenderPass const &renderPass);
-    void resize(VulkanDefaultOffscreenRenderPass const &renderPass);
+    void resize(VulkanDefaultImageBuffer const &imgBuffer,
+                VulkanDefaultOffscreenRenderPass const &renderPass);
     void clear();
 
-    void generateCommands(VkCommandBuffer cmdBuffer, size_t descriptorSetIndex);
+    void generateCommands(VkCommandBuffer cmdBuffer);
 
   private:
     // Vulkan related
@@ -52,6 +55,7 @@ class VulkanMandelbrotPipeline final
     VkDescriptorPool _descriptorPool{};
 
     inline void createGfxPipeline(
+      VulkanDefaultImageBuffer const &imgBuffer,
       VulkanDefaultOffscreenRenderPass const &renderPass);
     inline void createDescriptorSets(
       VulkanMandelbrotPipelineData &pipelineData);

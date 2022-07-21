@@ -106,7 +106,7 @@ AVulkanOffscreenRenderPass<Child>::defaultCreateFramebuffer(
 {
     std::array<VkImageView, 2> imgViews{ colorTexImgView, depthTexImgView };
 
-    createFrameBuffer(
+    framebuffer = createFrameBuffer(
       _devices.device,
       renderPass,
       imgViews,

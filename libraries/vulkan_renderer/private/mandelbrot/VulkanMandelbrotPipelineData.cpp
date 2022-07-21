@@ -5,18 +5,16 @@
 void
 VulkanMandelbrotPipelineData::init(VulkanDevices const &devices,
                                    VulkanCommandPools const &cmdPools,
-                                   VulkanQueues const &queues,
-                                   VkExtent2D const &screenSize)
+                                   VulkanQueues const &queues)
 {
     static constexpr std::array const SURFACE_DISPLAY_INDICES = { 0, 1, 2,
                                                                   2, 3, 0 };
-    std::array SURFACE_DISPLAY_VERTICES = {
+    std::array const SURFACE_DISPLAY_VERTICES = {
         glm::vec3(-1.0f, -1.0f, 0.0f),
         glm::vec3(1.0f, -1.0f, 0.0f),
         glm::vec3(1.0f, 1.0f, 0.0f),
         glm::vec3(-1.0f, 1.0f, 0.0f),
     };
-    forceSquareRatio(screenSize, SURFACE_DISPLAY_VERTICES);
 
     // Computing sizes and offsets
     indicesDrawNb = SURFACE_DISPLAY_INDICES.size();
@@ -71,34 +69,4 @@ VulkanMandelbrotPipelineData::clear()
     indicesOffset = 0;
     verticesSize = 0;
     indicesDrawNb = 0;
-}
-
-void
-VulkanMandelbrotPipelineData::forceSquareRatio(
-  VkExtent2D const &screenSize,
-  std::array<glm::vec3, 4> &vertices)
-{
-    if (screenSize.height == screenSize.width) {
-        return;
-    }
-
-    if (screenSize.width > screenSize.height) {
-        glm::vec3 ratio{ static_cast<float>(screenSize.height) /
-                           static_cast<float>(screenSize.width),
-                         1.0f,
-                         1.0f };
-
-        for (auto &item : vertices) {
-            item *= ratio;
-        }
-    } else {
-        glm::vec3 ratio{ 1.0f,
-                         static_cast<float>(screenSize.width) /
-                           static_cast<float>(screenSize.height),
-                         1.0f };
-
-        for (auto &item : vertices) {
-            item *= ratio;
-        }
-    }
 }

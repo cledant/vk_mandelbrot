@@ -20,13 +20,8 @@ struct VulkanMandelbrotPipelineData
 
     void init(VulkanDevices const &devices,
               VulkanCommandPools const &cmdPools,
-              VulkanQueues const &queues,
-              VkExtent2D const &screenSize);
+              VulkanQueues const &queues);
     void clear();
-
-  private:
-    static inline void forceSquareRatio(VkExtent2D const &screenSize,
-                                        std::array<glm::vec3, 4> &vertices);
 };
 
 #endif // VK_MANDELBROT_VULKANMANDELBROTPIPELINEDATA_HPP
