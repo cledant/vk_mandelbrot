@@ -6,7 +6,8 @@ void
 VulkanToScreenPipelineData::init(VulkanDevices const &devices,
                                  VulkanCommandPools const &cmdPools,
                                  VulkanQueues const &queues,
-                                 VkExtent2D const &screenSize)
+                                 VkExtent2D const &screenSize,
+                                 bool forceSquareRatio)
 {
     static constexpr std::array const SURFACE_DISPLAY_INDICES = { 0, 1, 2,
                                                                   2, 3, 0 };
@@ -16,7 +17,9 @@ VulkanToScreenPipelineData::init(VulkanDevices const &devices,
         VulkanSimpleVertex{ { 1.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },
         VulkanSimpleVertex{ { -1.0f, 1.0f, 0.0f }, { 0.0f, 0.0f } }
     };
-    forceSquareRatio(screenSize, SURFACE_DISPLAY_VERTICES);
+    if (forceSquareRatio) {
+        computeSquareRatio(screenSize, SURFACE_DISPLAY_VERTICES);
+    }
 
     // Computing sizes and offsets
     indicesDrawNb = SURFACE_DISPLAY_INDICES.size();
@@ -74,7 +77,7 @@ VulkanToScreenPipelineData::clear()
 }
 
 void
-VulkanToScreenPipelineData::forceSquareRatio(
+VulkanToScreenPipelineData::computeSquareRatio(
   VkExtent2D const &screenSize,
   std::array<VulkanSimpleVertex, 4> &vertices)
 {

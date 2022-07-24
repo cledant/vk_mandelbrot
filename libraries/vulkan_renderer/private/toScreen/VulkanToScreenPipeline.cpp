@@ -11,14 +11,19 @@ void
 VulkanToScreenPipeline::init(VulkanInstance const &vkInstance,
                              VulkanSwapChain const &swapChain,
                              VulkanDefaultOnscreenRenderPass const &renderPass,
-                             VkDescriptorImageInfo const &toDisplayImageInfo)
+                             VkDescriptorImageInfo const &toDisplayImageInfo,
+                             bool forceSquareRatio)
 {
     _devices = vkInstance.devices;
     _cmdPools = vkInstance.cmdPools;
     _queues = vkInstance.queues;
 
     _toDisplayImageInfo = toDisplayImageInfo;
-    _pipelineData.init(_devices, _cmdPools, _queues, swapChain.swapChainExtent);
+    _pipelineData.init(_devices,
+                       _cmdPools,
+                       _queues,
+                       swapChain.swapChainExtent,
+                       forceSquareRatio);
     _pipelineDescription.init(_devices);
     createDescriptorPool(swapChain.currentSwapChainNbImg);
     createGfxPipeline(swapChain, renderPass);
@@ -29,13 +34,18 @@ void
 VulkanToScreenPipeline::resize(
   VulkanSwapChain const &swapChain,
   VulkanDefaultOnscreenRenderPass const &renderPass,
-  VkDescriptorImageInfo const &toDisplayImageInfo)
+  VkDescriptorImageInfo const &toDisplayImageInfo,
+  bool forceSquareRatio)
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
     _pipelineData.clear();
     _toDisplayImageInfo = toDisplayImageInfo;
-    _pipelineData.init(_devices, _cmdPools, _queues, swapChain.swapChainExtent);
+    _pipelineData.init(_devices,
+                       _cmdPools,
+                       _queues,
+                       swapChain.swapChainExtent,
+                       forceSquareRatio);
     createDescriptorPool(swapChain.currentSwapChainNbImg);
     createGfxPipeline(swapChain, renderPass);
     createDescriptorSets(_pipelineData, swapChain.currentSwapChainNbImg);

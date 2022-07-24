@@ -21,11 +21,12 @@ struct VulkanToScreenPipelineData
     void init(VulkanDevices const &devices,
               VulkanCommandPools const &cmdPools,
               VulkanQueues const &queues,
-              VkExtent2D const &screenSize);
+              VkExtent2D const &screenSize,
+              bool forceSquareRatio);
     void clear();
 
   private:
-    static inline void forceSquareRatio(
+    static inline void computeSquareRatio(
       VkExtent2D const &screenSize,
       std::array<VulkanSimpleVertex, 4> &vertices);
 };

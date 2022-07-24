@@ -41,7 +41,8 @@ void
 VulkanRenderer::init(VkSurfaceKHR surface,
                      VulkanInstanceOptions const &options,
                      uint32_t winW,
-                     uint32_t winH)
+                     uint32_t winH,
+                     bool forceSquareRatio)
 {
     assert(surface);
 
@@ -55,20 +56,24 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                             VK_FORMAT_D24_UNORM_S8_UINT },
                           VK_IMAGE_TILING_OPTIMAL,
                           VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-    _imageDisplayed.init(
-      _vkInstance, VK_FORMAT_R8G8B8A8_UNORM, depthFormat, winW, winH);
+    _imageDisplayed.init(_vkInstance,
+                         VK_FORMAT_R8G8B8A8_UNORM,
+                         depthFormat,
+                         DEFAULT_MB_FB_SIZE.x,
+                         DEFAULT_MB_FB_SIZE.y);
     _toScreenRenderPass.init(_vkInstance, _swapChain);
     _toScreen.init(_vkInstance,
                    _swapChain,
                    _toScreenRenderPass,
-                   _imageDisplayed.descriptorImage);
+                   _imageDisplayed.descriptorImage,
+                   forceSquareRatio);
     _mandelbrotRenderPass.init(_vkInstance,
                                VK_FORMAT_R8G8B8A8_UNORM,
                                depthFormat,
                                _imageDisplayed.colorTex.textureImgView,
                                _imageDisplayed.depthTex.textureImgView,
-                               winW,
-                               winH);
+                               DEFAULT_MB_FB_SIZE.x,
+                               DEFAULT_MB_FB_SIZE.y);
     _mandelbrot.init(_vkInstance, _imageDisplayed, _mandelbrotRenderPass);
     _mandelbrot.pushConstants.backgroundColor = glm::vec4(0.5f);
     allocateCommandBuffers(_vkInstance.devices.device,
@@ -78,7 +83,7 @@ VulkanRenderer::init(VkSurfaceKHR surface,
 }
 
 void
-VulkanRenderer::resize(uint32_t winW, uint32_t winH)
+VulkanRenderer::resize(uint32_t winW, uint32_t winH, bool forceSquareRatio)
 {
     vkDeviceWaitIdle(_vkInstance.devices.device);
     if (winW <= 0 || winH <= 0) {
@@ -94,16 +99,21 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH)
                             VK_FORMAT_D24_UNORM_S8_UINT },
                           VK_IMAGE_TILING_OPTIMAL,
                           VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-    _imageDisplayed.resize(VK_FORMAT_R8G8B8A8_UNORM, depthFormat, winW, winH);
+    _imageDisplayed.resize(VK_FORMAT_R8G8B8A8_UNORM,
+                           depthFormat,
+                           DEFAULT_MB_FB_SIZE.x,
+                           DEFAULT_MB_FB_SIZE.y);
     _toScreenRenderPass.resize(_swapChain);
-    _toScreen.resize(
-      _swapChain, _toScreenRenderPass, _imageDisplayed.descriptorImage);
+    _toScreen.resize(_swapChain,
+                     _toScreenRenderPass,
+                     _imageDisplayed.descriptorImage,
+                     forceSquareRatio);
     _mandelbrotRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
                                  depthFormat,
                                  _imageDisplayed.colorTex.textureImgView,
                                  _imageDisplayed.depthTex.textureImgView,
-                                 winW,
-                                 winH);
+                                 DEFAULT_MB_FB_SIZE.x,
+                                 DEFAULT_MB_FB_SIZE.y);
     _mandelbrot.resize(_imageDisplayed, _mandelbrotRenderPass);
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,

@@ -37,6 +37,7 @@ class VulkanRenderer final
         { 0.0f, 0.0f, 0.0f, 1.0f }
     };
     static constexpr glm::ivec2 const DEFAULT_MB_FB_SIZE = glm::ivec2(750, 750);
+    static constexpr bool DEFAULT_FORCE_SQUARE_RATIO = false;
 
     // Instance related
     void createInstance(std::string &&appName,
@@ -48,8 +49,9 @@ class VulkanRenderer final
     void init(VkSurfaceKHR surface,
               VulkanInstanceOptions const &options,
               uint32_t winW,
-              uint32_t winH);
-    void resize(uint32_t winW, uint32_t winH);
+              uint32_t winH,
+              bool forceSquareRatio);
+    void resize(uint32_t winW, uint32_t winH, bool forceSquareRatio);
     void clear();
 
     // Info related

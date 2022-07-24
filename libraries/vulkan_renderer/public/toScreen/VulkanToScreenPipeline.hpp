@@ -29,10 +29,12 @@ class VulkanToScreenPipeline final
     void init(VulkanInstance const &vkInstance,
               VulkanSwapChain const &swapChain,
               VulkanDefaultOnscreenRenderPass const &renderPass,
-              VkDescriptorImageInfo const &toDisplayImageInfo);
+              VkDescriptorImageInfo const &toDisplayImageInfo,
+              bool forceSquareRatio);
     void resize(VulkanSwapChain const &swapChain,
                 VulkanDefaultOnscreenRenderPass const &renderPass,
-                VkDescriptorImageInfo const &toDisplayImageInfo);
+                VkDescriptorImageInfo const &toDisplayImageInfo,
+                bool forceSquareRatio);
     void clear();
 
     void generateCommands(VkCommandBuffer cmdBuffer, size_t descriptorSetIndex);
