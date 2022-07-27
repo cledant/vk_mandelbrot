@@ -6,7 +6,7 @@
 
 #include "glm/glm.hpp"
 
-static constexpr glm::ivec2 const DEFAULT_WIN_SIZE = glm::ivec2(750, 750);
+static constexpr glm::ivec2 const DEFAULT_WIN_SIZE = glm::ivec2(1280, 720);
 
 struct IOManagerWindowCreationOption final
 {

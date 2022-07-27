@@ -90,6 +90,11 @@ class VulkanRenderer final
     inline void emitDrawCmds(uint32_t imgIndex);
     inline void recordRenderCmd(uint32_t imgIndex,
                                 VkClearColorValue const &clearColor);
+    inline void recordMandelbrotRenderCmd(
+      uint32_t imgIndex,
+      VkClearColorValue const &cmdClearColor);
+    inline void recordToScreenRenderCmd(uint32_t imgIndex,
+                                        VkClearColorValue const &cmdClearColor);
 };
 
 #endif // VK_MANDELBROT_VULKAN_VULKANRENDERER_HPP

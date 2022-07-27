@@ -22,6 +22,7 @@ VulkanMandelbrotPipeline::init(
     createDescriptorPool();
     createGfxPipeline(imgBuffer, renderPass);
     createDescriptorSets(_pipelineData);
+    _computeDone = false;
 }
 
 void
@@ -29,6 +30,7 @@ VulkanMandelbrotPipeline::resize(
   VulkanDefaultImageBuffer const &imgBuffer,
   VulkanDefaultOffscreenRenderPass const &renderPass)
 {
+    _computeDone = false;
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
     _pipelineData.clear();
@@ -41,6 +43,7 @@ VulkanMandelbrotPipeline::resize(
 void
 VulkanMandelbrotPipeline::clear()
 {
+    _computeDone = false;
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
     _pipelineDescription.clear();
@@ -62,7 +65,7 @@ VulkanMandelbrotPipeline::generateCommands(VkCommandBuffer cmdBuffer)
                        VK_SHADER_STAGE_FRAGMENT_BIT,
                        0,
                        sizeof(mandelbrotConstants),
-                       &pushConstants.backgroundColor);
+                       &pushConstants);
 
     // Vertex related values
     VkBuffer vertex_buffer[] = { _pipelineData.data.buffer };
@@ -84,6 +87,13 @@ VulkanMandelbrotPipeline::generateCommands(VkCommandBuffer cmdBuffer)
                             0,
                             nullptr);
     vkCmdDrawIndexed(cmdBuffer, _pipelineData.indicesDrawNb, 1, 0, 0, 0);
+    _computeDone = true;
+}
+
+bool
+VulkanMandelbrotPipeline::isComputeDone() const
+{
+    return (_computeDone);
 }
 
 void

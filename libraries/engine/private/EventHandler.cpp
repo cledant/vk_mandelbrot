@@ -59,7 +59,7 @@ EventHandler::processEvents(IOEvents const &ioEvents)
     if (_ioManager->wasResized()) {
         // VK Renderer related
         auto fb_size = _ioManager->getFramebufferSize();
-        _renderer->resize(fb_size.x, fb_size.y, true);
+        _renderer->resize(fb_size.x, fb_size.y, false);
     }
 
     // Setting timers origin

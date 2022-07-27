@@ -32,7 +32,7 @@ Engine::init()
       VulkanRenderer::DEFAULT_RENDERER_OPTIONS,
       fb_size.x,
       fb_size.y,
-      true);
+      false);
 }
 
 void

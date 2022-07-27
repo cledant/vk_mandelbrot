@@ -59,8 +59,8 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _imageDisplayed.init(_vkInstance,
                          VK_FORMAT_R8G8B8A8_UNORM,
                          depthFormat,
-                         DEFAULT_MB_FB_SIZE.x,
-                         DEFAULT_MB_FB_SIZE.y);
+                         _swapChain.swapChainExtent.width,
+                         _swapChain.swapChainExtent.height);
     _toScreenRenderPass.init(_vkInstance, _swapChain);
     _toScreen.init(_vkInstance,
                    _swapChain,
@@ -72,10 +72,9 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                                depthFormat,
                                _imageDisplayed.colorTex.textureImgView,
                                _imageDisplayed.depthTex.textureImgView,
-                               DEFAULT_MB_FB_SIZE.x,
-                               DEFAULT_MB_FB_SIZE.y);
+                               _swapChain.swapChainExtent.width,
+                               _swapChain.swapChainExtent.height);
     _mandelbrot.init(_vkInstance, _imageDisplayed, _mandelbrotRenderPass);
-    _mandelbrot.pushConstants.backgroundColor = glm::vec4(0.5f);
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -101,8 +100,8 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH, bool forceSquareRatio)
                           VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
     _imageDisplayed.resize(VK_FORMAT_R8G8B8A8_UNORM,
                            depthFormat,
-                           DEFAULT_MB_FB_SIZE.x,
-                           DEFAULT_MB_FB_SIZE.y);
+                           _swapChain.swapChainExtent.width,
+                           _swapChain.swapChainExtent.height);
     _toScreenRenderPass.resize(_swapChain);
     _toScreen.resize(_swapChain,
                      _toScreenRenderPass,
@@ -112,8 +111,8 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH, bool forceSquareRatio)
                                  depthFormat,
                                  _imageDisplayed.colorTex.textureImgView,
                                  _imageDisplayed.depthTex.textureImgView,
-                                 DEFAULT_MB_FB_SIZE.x,
-                                 DEFAULT_MB_FB_SIZE.y);
+                                 _swapChain.swapChainExtent.width,
+                                 _swapChain.swapChainExtent.height);
     _mandelbrot.resize(_imageDisplayed, _mandelbrotRenderPass);
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
@@ -253,51 +252,78 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
                                  "recording render command buffer");
     }
 
-    // Begin Mandelbrot renderpass
-    {
-        std::array<VkClearValue, 2> clear_vals{};
-        clear_vals[0].color = cmdClearColor;
-        clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
-        VkRenderPassBeginInfo rp_begin_info{};
-        rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        rp_begin_info.renderPass = _mandelbrotRenderPass.renderPass;
-        rp_begin_info.framebuffer = _mandelbrotRenderPass.framebuffer;
-        rp_begin_info.renderArea.offset = { 0, 0 };
-        rp_begin_info.renderArea.extent = {
-            static_cast<uint32_t>(_imageDisplayed.colorTex.width),
-            static_cast<uint32_t>(_imageDisplayed.colorTex.height),
-        };
-        rp_begin_info.clearValueCount = clear_vals.size();
-        rp_begin_info.pClearValues = clear_vals.data();
-        vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
-                             &rp_begin_info,
-                             VK_SUBPASS_CONTENTS_INLINE);
-        _mandelbrot.generateCommands(_renderCommandBuffers[imgIndex]);
-        vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
-    }
+    if (!_mandelbrot.isComputeDone()) {
+        // Update push constant values
+        _mandelbrot.pushConstants.backgroundColor =
+          mandelbrotConstants::DEFAULT_BACKGROUND_COLOR;
+        _mandelbrot.pushConstants.maxIter =
+          mandelbrotConstants::DEFAULT_MAX_ITER;
+        _mandelbrot.pushConstants.zoom = mandelbrotConstants::DEFAULT_ZOOM;
+        _mandelbrot.pushConstants.offset = mandelbrotConstants::DEFAULT_OFFSET;
+        _mandelbrot.pushConstants.fwW = _swapChain.swapChainExtent.width;
+        _mandelbrot.pushConstants.fwH = _swapChain.swapChainExtent.height;
+        _mandelbrot.pushConstants.screenRatio =
+          static_cast<float>(_swapChain.swapChainExtent.width) /
+          static_cast<float>(_swapChain.swapChainExtent.height);
 
-    // Begin onscreen renderpass
-    {
-        std::array<VkClearValue, 2> clear_vals{};
-        clear_vals[0].color = cmdClearColor;
-        clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
-        VkRenderPassBeginInfo rp_begin_info{};
-        rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        rp_begin_info.renderPass = _toScreenRenderPass.renderPass;
-        rp_begin_info.framebuffer = _toScreenRenderPass.framebuffers[imgIndex];
-        rp_begin_info.renderArea.offset = { 0, 0 };
-        rp_begin_info.renderArea.extent = _swapChain.swapChainExtent;
-        rp_begin_info.clearValueCount = clear_vals.size();
-        rp_begin_info.pClearValues = clear_vals.data();
-        vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
-                             &rp_begin_info,
-                             VK_SUBPASS_CONTENTS_INLINE);
-        _toScreen.generateCommands(_renderCommandBuffers[imgIndex], imgIndex);
-        vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
+        recordMandelbrotRenderCmd(imgIndex, cmdClearColor);
     }
+    recordToScreenRenderCmd(imgIndex, cmdClearColor);
 
     if (vkEndCommandBuffer(_renderCommandBuffers[imgIndex]) != VK_SUCCESS) {
         throw std::runtime_error(
           "VulkanRenderer: Failed to record render command Buffer");
     }
+}
+
+void
+VulkanRenderer::recordMandelbrotRenderCmd(
+  uint32_t imgIndex,
+  VkClearColorValue const &cmdClearColor)
+{
+    // Update push constant
+
+    // Begin Mandelbrot renderpass
+    std::array<VkClearValue, 2> clear_vals{};
+    clear_vals[0].color = cmdClearColor;
+    clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
+    VkRenderPassBeginInfo rp_begin_info{};
+    rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    rp_begin_info.renderPass = _mandelbrotRenderPass.renderPass;
+    rp_begin_info.framebuffer = _mandelbrotRenderPass.framebuffer;
+    rp_begin_info.renderArea.offset = { 0, 0 };
+    rp_begin_info.renderArea.extent = {
+        static_cast<uint32_t>(_imageDisplayed.colorTex.width),
+        static_cast<uint32_t>(_imageDisplayed.colorTex.height),
+    };
+    rp_begin_info.clearValueCount = clear_vals.size();
+    rp_begin_info.pClearValues = clear_vals.data();
+    vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
+                         &rp_begin_info,
+                         VK_SUBPASS_CONTENTS_INLINE);
+    _mandelbrot.generateCommands(_renderCommandBuffers[imgIndex]);
+    vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
+}
+
+void
+VulkanRenderer::recordToScreenRenderCmd(uint32_t imgIndex,
+                                        VkClearColorValue const &cmdClearColor)
+{
+    // Begin onscreen renderpass
+    std::array<VkClearValue, 2> clear_vals{};
+    clear_vals[0].color = cmdClearColor;
+    clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
+    VkRenderPassBeginInfo rp_begin_info{};
+    rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    rp_begin_info.renderPass = _toScreenRenderPass.renderPass;
+    rp_begin_info.framebuffer = _toScreenRenderPass.framebuffers[imgIndex];
+    rp_begin_info.renderArea.offset = { 0, 0 };
+    rp_begin_info.renderArea.extent = _swapChain.swapChainExtent;
+    rp_begin_info.clearValueCount = clear_vals.size();
+    rp_begin_info.pClearValues = clear_vals.data();
+    vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
+                         &rp_begin_info,
+                         VK_SUBPASS_CONTENTS_INLINE);
+    _toScreen.generateCommands(_renderCommandBuffers[imgIndex], imgIndex);
+    vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
 }
