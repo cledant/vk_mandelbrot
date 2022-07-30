@@ -27,18 +27,19 @@ EventHandler::processEvents(IOEvents const &ioEvents)
     _movements = glm::ivec3(0);
 
     static const std::array<void (EventHandler::*)(), IOET_NB>
-      keyboard_events = {
-          &EventHandler::_mouseExclusive,
-          &EventHandler::_closeWinEvent,
-          &EventHandler::_toggleFullscreen,
-          &EventHandler::_up,
-          &EventHandler::_down,
-          &EventHandler::_right,
-          &EventHandler::_left,
-          &EventHandler::_leftMouse,
-          &EventHandler::_middleMouse,
-          &EventHandler::_rightMouse,
-      };
+      keyboard_events = { &EventHandler::_closeWinEvent,
+                          &EventHandler::_toggleFullscreen,
+                          &EventHandler::_up,
+                          &EventHandler::_down,
+                          &EventHandler::_right,
+                          &EventHandler::_left,
+                          &EventHandler::_setScreenCenter,
+                          &EventHandler::_resetZoomScreenCenter,
+                          &EventHandler::_singleIncIter,
+                          &EventHandler::_singleDecIter,
+                          &EventHandler::_multipleIncIter,
+                          &EventHandler::_multipleDecIter,
+                          &EventHandler::_resetIter };
 
     // Checking Timers
     auto now = std::chrono::steady_clock::now();
@@ -68,17 +69,6 @@ EventHandler::processEvents(IOEvents const &ioEvents)
             _timers.time_ref[i] = now;
         }
         _timers.updated[i] = 0;
-    }
-}
-
-void
-EventHandler::_mouseExclusive()
-{
-    if (_timers.accept_event[ET_SYSTEM]) {
-        _ioManager->toggleMouseExclusive();
-        _mousePosSkip = true;
-        _timers.accept_event[ET_SYSTEM] = 0;
-        _timers.updated[ET_SYSTEM] = 1;
     }
 }
 
@@ -127,25 +117,79 @@ EventHandler::_left()
 }
 
 void
-EventHandler::_leftMouse()
+EventHandler::_setScreenCenter()
 {
-    _timers.updated[ET_LEFT_MOUSE] = 1;
-}
-
-void
-EventHandler::_middleMouse()
-{
-    if (_timers.accept_event[ET_MIDDLE_MOUSE]) {
-        _timers.accept_event[ET_MIDDLE_MOUSE] = 0;
-        _timers.updated[ET_MIDDLE_MOUSE] = 1;
+    if (_timers.accept_event[ET_LEFT_MOUSE]) {
+        _timers.accept_event[ET_LEFT_MOUSE] = 0;
+        _timers.updated[ET_LEFT_MOUSE] = 1;
     }
 }
 
 void
-EventHandler::_rightMouse()
+EventHandler::_resetZoomScreenCenter()
 {
     if (_timers.accept_event[ET_RIGHT_MOUSE]) {
         _timers.accept_event[ET_RIGHT_MOUSE] = 0;
         _timers.updated[ET_RIGHT_MOUSE] = 1;
+    }
+}
+
+void
+EventHandler::_singleIncIter()
+{
+    if (_timers.accept_event[ET_KEYBOARD_CONTROLS]) {
+        ++_renderer->mandelbrotConstants.maxIter;
+        _renderer->mandelbrotComputeDone = false;
+        _timers.accept_event[ET_KEYBOARD_CONTROLS] = 0;
+        _timers.updated[ET_KEYBOARD_CONTROLS] = 1;
+    }
+}
+
+void
+EventHandler::_singleDecIter()
+{
+    if (_timers.accept_event[ET_KEYBOARD_CONTROLS] &&
+        _renderer->mandelbrotConstants.maxIter) {
+        --_renderer->mandelbrotConstants.maxIter;
+        _renderer->mandelbrotComputeDone = false;
+        _timers.accept_event[ET_KEYBOARD_CONTROLS] = 0;
+        _timers.updated[ET_KEYBOARD_CONTROLS] = 1;
+    }
+}
+
+void
+EventHandler::_multipleIncIter()
+{
+    if (_timers.accept_event[ET_KEYBOARD_CONTROLS]) {
+        _renderer->mandelbrotConstants.maxIter += MULTI_ITER_INC_DEC_VALUE;
+        _renderer->mandelbrotComputeDone = false;
+        _timers.accept_event[ET_KEYBOARD_CONTROLS] = 0;
+        _timers.updated[ET_KEYBOARD_CONTROLS] = 1;
+    }
+}
+
+void
+EventHandler::_multipleDecIter()
+{
+    if (_timers.accept_event[ET_KEYBOARD_CONTROLS]) {
+        _renderer->mandelbrotConstants.maxIter =
+          (_renderer->mandelbrotConstants.maxIter <= MULTI_ITER_INC_DEC_VALUE)
+            ? 1
+            : _renderer->mandelbrotConstants.maxIter - MULTI_ITER_INC_DEC_VALUE;
+        _renderer->mandelbrotComputeDone = false;
+        _timers.accept_event[ET_KEYBOARD_CONTROLS] = 0;
+        _timers.updated[ET_KEYBOARD_CONTROLS] = 1;
+    }
+}
+
+void
+EventHandler::_resetIter()
+{
+    if (_timers.accept_event[ET_KEYBOARD_CONTROLS]) {
+        _renderer->mandelbrotConstants.maxIter =
+          mandelbrotPushConstants::DEFAULT_MAX_ITER;
+        _renderer->mandelbrotComputeDone = false;
+        _timers.accept_event[ET_KEYBOARD_CONTROLS] = 0;
+        _timers.updated[ET_KEYBOARD_CONTROLS] = 1;
     }
 }

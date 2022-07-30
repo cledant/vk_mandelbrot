@@ -5,12 +5,14 @@
 
 struct mandelbrotPushConstants final
 {
-    static constexpr glm::vec4 DEFAULT_BACKGROUND_COLOR{ 0.5, 0.3, 0.3, 0.0 };
+    static constexpr glm::vec4 DEFAULT_COLOR{ 0.6, 0.3, 0.3, 0.0 };
+    static constexpr glm::vec4 DEFAULT_MAX_ITER_COLOR{ 0.1, 0.1, 0.3, 0.0 };
     static constexpr glm::vec2 DEFAULT_OFFSET{ 0.0, 0.0 };
-    static constexpr uint32_t DEFAULT_MAX_ITER = 250;
+    static constexpr uint32_t DEFAULT_MAX_ITER = 200;
     static constexpr float DEFAULT_ZOOM = 1.0f;
 
-    alignas(16) glm::vec4 backgroundColor = DEFAULT_BACKGROUND_COLOR;
+    alignas(16) glm::vec4 color = DEFAULT_COLOR;
+    alignas(16) glm::vec4 maxIterColor = DEFAULT_MAX_ITER_COLOR;
     alignas(4) float fwW{};
     alignas(4) float fwH{};
     alignas(4) float screenRatio{};

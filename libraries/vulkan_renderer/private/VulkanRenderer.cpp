@@ -248,7 +248,7 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
                                  "recording render command buffer");
     }
 
-    if (!_mandelbrot.isComputeDone()) {
+    if (!mandelbrotComputeDone) {
         // Update push constant values
         mandelbrotConstants.fwW = _imageDisplayed.colorTex.width;
         mandelbrotConstants.fwH = _imageDisplayed.colorTex.height;
@@ -256,6 +256,7 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
           static_cast<float>(_swapChain.swapChainExtent.width) /
           static_cast<float>(_swapChain.swapChainExtent.height);
         recordMandelbrotRenderCmd(imgIndex, cmdClearColor);
+        mandelbrotComputeDone = true;
     }
     recordToScreenRenderCmd(imgIndex, cmdClearColor);
 

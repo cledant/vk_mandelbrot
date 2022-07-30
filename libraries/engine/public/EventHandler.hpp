@@ -26,7 +26,7 @@ class EventHandler final
     // Timer related
     static constexpr double const SYSTEM_TIMER_SECONDS = 1.0;
     static constexpr double const CONFIG_TIMER_SECONDS = 0.5;
-    static constexpr double const ACTION_TIMER_SECONDS = 0.15;
+    static constexpr double const ACTION_TIMER_SECONDS = 0.5;
     static constexpr double const FAST_ACTION_TIMER_SECONDS = 0.01;
 
     enum EventTimersTypes
@@ -55,17 +55,23 @@ class EventHandler final
         };
     };
 
+    // IO related
+    static constexpr uint32_t const MULTI_ITER_INC_DEC_VALUE = 100;
+
     // IO Event handling functions
-    inline void _mouseExclusive();
     inline void _closeWinEvent();
     inline void _toggleFullscreen();
     inline void _up();
     inline void _down();
     inline void _right();
     inline void _left();
-    inline void _leftMouse();
-    inline void _middleMouse();
-    inline void _rightMouse();
+    inline void _setScreenCenter();
+    inline void _resetZoomScreenCenter();
+    inline void _singleIncIter();
+    inline void _singleDecIter();
+    inline void _multipleIncIter();
+    inline void _multipleDecIter();
+    inline void _resetIter();
 
     IOManager *_ioManager{};
     VulkanRenderer *_renderer{};

@@ -4,7 +4,8 @@
 layout(location = 0) out vec4 outColor;
 
 layout(push_constant) uniform mandelbrotConstants {
-    vec4 backgroundColor;
+    vec4 color;
+    vec4 maxIterColor;
     float fbW;
     float fbH;
     float screenRatio;
@@ -31,6 +32,10 @@ void main() {
         ++i;
     }
 
-    vec3 color = mix(pushConsts.backgroundColor.xyz, vec3(0.0), (float(i) / float(pushConsts.maxIter)));
-    outColor = vec4(color, 1.0);
+    if (i >= pushConsts.maxIter) {
+        outColor = vec4(pushConsts.maxIterColor.xyz, 1.0);
+        return;
+    }
+    vec3 mixColor = mix(pushConsts.color.xyz, pushConsts.maxIterColor.xyz, (float(i) / float(pushConsts.maxIter)));
+    outColor = vec4(mixColor, 1.0);
 }

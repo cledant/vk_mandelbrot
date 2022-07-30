@@ -42,6 +42,7 @@ class VulkanRenderer final
     // Public values
     VkClearColorValue clearColor = DEFAULT_CLEAR_COLOR;
     mandelbrotPushConstants mandelbrotConstants{};
+    bool mandelbrotComputeDone{};
 
     // Instance related
     void createInstance(std::string &&appName,

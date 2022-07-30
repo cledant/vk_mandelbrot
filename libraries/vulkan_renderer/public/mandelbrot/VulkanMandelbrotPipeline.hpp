@@ -37,7 +37,6 @@ class VulkanMandelbrotPipeline final
 
     void generateCommands(VkCommandBuffer cmdBuffer,
                           mandelbrotPushConstants const &pushConstants);
-    [[nodiscard]] bool isComputeDone() const;
 
   private:
     // Vulkan related
@@ -53,7 +52,6 @@ class VulkanMandelbrotPipeline final
     VulkanMandelbrotPipelineData _pipelineData;
     std::vector<VkDescriptorSet> _descriptorSets;
     VkDescriptorPool _descriptorPool{};
-    bool _computeDone{};
 
     inline void createGfxPipeline(
       VulkanDefaultImageBuffer const &imgBuffer,

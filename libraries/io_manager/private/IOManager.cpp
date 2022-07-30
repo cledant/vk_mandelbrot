@@ -155,16 +155,20 @@ IOManager::getEvents() const
     IOEvents io{};
 
     glfwPollEvents();
-    io.events[IOET_MOUSE_EXCLUSIVE] = _keys[GLFW_KEY_F4];
     io.events[IOET_QUIT] = _keys[GLFW_KEY_ESCAPE];
-    io.events[IOET_FULLSCREEN] = _keys[GLFW_KEY_F8];
+    io.events[IOET_FULLSCREEN] = _keys[GLFW_KEY_F2];
     io.events[IOET_UP] = _keys[GLFW_KEY_W];
     io.events[IOET_DOWN] = _keys[GLFW_KEY_S];
     io.events[IOET_RIGHT] = _keys[GLFW_KEY_D];
     io.events[IOET_LEFT] = _keys[GLFW_KEY_A];
-    io.events[IOET_LEFT_MOUSE] = _mouseButton[GLFW_MOUSE_BUTTON_LEFT];
-    io.events[IOET_MIDDLE_MOUSE] = _mouseButton[GLFW_MOUSE_BUTTON_MIDDLE];
-    io.events[IOET_RIGHT_MOUSE] = _mouseButton[GLFW_MOUSE_BUTTON_RIGHT];
+    io.events[IOET_SET_SCREEN_CENTER] = _mouseButton[GLFW_MOUSE_BUTTON_LEFT];
+    io.events[IOET_RESET_ZOOM_SCREEN_CENTER] =
+      _mouseButton[GLFW_MOUSE_BUTTON_RIGHT];
+    io.events[IOET_SINGLE_INC_ITER] = _keys[GLFW_KEY_EQUAL];
+    io.events[IOET_SINGLE_DEC_ITER] = _keys[GLFW_KEY_MINUS];
+    io.events[IOET_MULTIPLE_INC_ITER] = _keys[GLFW_KEY_RIGHT_BRACKET];
+    io.events[IOET_MULTIPLE_DEC_ITER] = _keys[GLFW_KEY_LEFT_BRACKET];
+    io.events[IOET_RESET_ITER] = _keys[GLFW_KEY_P];
     io.mousePosition = _mousePosition;
     io.mouseScroll = _mouseScroll;
     return (io);
