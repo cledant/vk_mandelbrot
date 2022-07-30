@@ -252,9 +252,6 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
         // Update push constant values
         mandelbrotConstants.fwW = _imageDisplayed.colorTex.width;
         mandelbrotConstants.fwH = _imageDisplayed.colorTex.height;
-        mandelbrotConstants.screenRatio =
-          static_cast<float>(_swapChain.swapChainExtent.width) /
-          static_cast<float>(_swapChain.swapChainExtent.height);
         recordMandelbrotRenderCmd(imgIndex, cmdClearColor);
         mandelbrotComputeDone = true;
     }

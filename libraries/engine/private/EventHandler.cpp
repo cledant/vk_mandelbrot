@@ -9,6 +9,7 @@ void
 EventHandler::setIOManager(IOManager *io_manager)
 {
     _ioManager = io_manager;
+    _computeFbSizeDependentValues();
 }
 
 void
@@ -24,7 +25,32 @@ EventHandler::processEvents(IOEvents const &ioEvents)
     assert(_renderer);
 
     // Resetting movement tracking
-    _movements = glm::ivec3(0);
+    _keyboardMvt = glm::ivec2(0);
+
+    // Multiplier value handling
+    if (ioEvents.multiplier) {
+        _iterStepValue = ITER_WITH_MULTIPLIER;
+        _zoomStepValue = ZOOM_WITH_MULTIPLIER;
+        _keyboardMvtStepValue = KEYBOARD_MVT_WITH_MULTIPLIER;
+    } else {
+        _iterStepValue = ITER_NO_MULTIPLIER;
+        _zoomStepValue = ZOOM_NO_MULTIPLIER;
+        _keyboardMvtStepValue = KEYBOARD_MVT_NO_MULTIPLIER;
+    }
+
+    // Zoom handling
+    if (ioEvents.mouseScroll != 0.0f) {
+        _zoomVal += (ioEvents.mouseScroll * _zoomStepValue);
+        if (_zoomVal < 1.0f) {
+            _zoomVal = 1.0f;
+        }
+        _renderer->mandelbrotComputeDone = false;
+    }
+    _renderer->mandelbrotConstants.zoom =
+      mandelbrotPushConstants::DEFAULT_ZOOM / _zoomVal;
+    _renderer->mandelbrotConstants.zoomMultScreenRatio =
+      _renderer->mandelbrotConstants.zoom * _screenRatio;
+    _ioManager->resetMouseScroll();
 
     static const std::array<void (EventHandler::*)(), IOET_NB>
       keyboard_events = { &EventHandler::_closeWinEvent,
@@ -35,10 +61,8 @@ EventHandler::processEvents(IOEvents const &ioEvents)
                           &EventHandler::_left,
                           &EventHandler::_setScreenCenter,
                           &EventHandler::_resetZoomScreenCenter,
-                          &EventHandler::_singleIncIter,
-                          &EventHandler::_singleDecIter,
-                          &EventHandler::_multipleIncIter,
-                          &EventHandler::_multipleDecIter,
+                          &EventHandler::_incIter,
+                          &EventHandler::_decIter,
                           &EventHandler::_resetIter };
 
     // Checking Timers
@@ -54,6 +78,18 @@ EventHandler::processEvents(IOEvents const &ioEvents)
         if (ioEvents.events[i]) {
             std::invoke(keyboard_events[i], this);
         }
+    }
+
+    // Keyboard Mvt handling
+    if (_keyboardMvt.x) {
+        _renderer->mandelbrotConstants.offset.x +=
+          _keyboardMvt.x * (_keyboardMvtStepValue / _zoomVal);
+        _renderer->mandelbrotComputeDone = false;
+    }
+    if (_keyboardMvt.y) {
+        _renderer->mandelbrotConstants.offset.y -=
+          _keyboardMvt.y * (_keyboardMvtStepValue / _zoomVal);
+        _renderer->mandelbrotComputeDone = false;
     }
 
     // Resized window case
@@ -77,6 +113,7 @@ EventHandler::_closeWinEvent()
 {
     if (_timers.accept_event[ET_SYSTEM]) {
         _ioManager->triggerClose();
+
         _timers.accept_event[ET_SYSTEM] = 0;
         _timers.updated[ET_SYSTEM] = 1;
     }
@@ -87,6 +124,8 @@ EventHandler::_toggleFullscreen()
 {
     if (_timers.accept_event[ET_SYSTEM]) {
         _ioManager->toggleFullscreen();
+        _computeFbSizeDependentValues();
+
         _timers.accept_event[ET_SYSTEM] = 0;
         _timers.updated[ET_SYSTEM] = 1;
     }
@@ -95,25 +134,25 @@ EventHandler::_toggleFullscreen()
 void
 EventHandler::_up()
 {
-    _movements.y += 1;
+    _keyboardMvt.y += 1;
 }
 
 void
 EventHandler::_down()
 {
-    _movements.y -= 1;
+    _keyboardMvt.y -= 1;
 }
 
 void
 EventHandler::_right()
 {
-    _movements.x += 1;
+    _keyboardMvt.x += 1;
 }
 
 void
 EventHandler::_left()
 {
-    _movements.x -= 1;
+    _keyboardMvt.x -= 1;
 }
 
 void
@@ -129,67 +168,66 @@ void
 EventHandler::_resetZoomScreenCenter()
 {
     if (_timers.accept_event[ET_RIGHT_MOUSE]) {
+        _keyboardMvt = glm::ivec2(0.0);
+        _renderer->mandelbrotConstants.offset =
+          mandelbrotPushConstants::DEFAULT_OFFSET;
+        _zoomVal = DEFAULT_ZOOM;
+        _renderer->mandelbrotConstants.zoom =
+          mandelbrotPushConstants::DEFAULT_ZOOM / _zoomVal;
+        _renderer->mandelbrotConstants.zoomMultScreenRatio =
+          _renderer->mandelbrotConstants.zoom * _screenRatio;
+        _renderer->mandelbrotComputeDone = false;
+
         _timers.accept_event[ET_RIGHT_MOUSE] = 0;
         _timers.updated[ET_RIGHT_MOUSE] = 1;
     }
 }
 
 void
-EventHandler::_singleIncIter()
+EventHandler::_incIter()
 {
-    if (_timers.accept_event[ET_KEYBOARD_CONTROLS]) {
-        ++_renderer->mandelbrotConstants.maxIter;
+    if (_timers.accept_event[ET_CONFIG]) {
+        _renderer->mandelbrotConstants.maxIter += _iterStepValue;
         _renderer->mandelbrotComputeDone = false;
-        _timers.accept_event[ET_KEYBOARD_CONTROLS] = 0;
-        _timers.updated[ET_KEYBOARD_CONTROLS] = 1;
+
+        _timers.accept_event[ET_CONFIG] = 0;
+        _timers.updated[ET_CONFIG] = 1;
     }
 }
 
 void
-EventHandler::_singleDecIter()
+EventHandler::_decIter()
 {
-    if (_timers.accept_event[ET_KEYBOARD_CONTROLS] &&
-        _renderer->mandelbrotConstants.maxIter) {
-        --_renderer->mandelbrotConstants.maxIter;
-        _renderer->mandelbrotComputeDone = false;
-        _timers.accept_event[ET_KEYBOARD_CONTROLS] = 0;
-        _timers.updated[ET_KEYBOARD_CONTROLS] = 1;
-    }
-}
-
-void
-EventHandler::_multipleIncIter()
-{
-    if (_timers.accept_event[ET_KEYBOARD_CONTROLS]) {
-        _renderer->mandelbrotConstants.maxIter += MULTI_ITER_INC_DEC_VALUE;
-        _renderer->mandelbrotComputeDone = false;
-        _timers.accept_event[ET_KEYBOARD_CONTROLS] = 0;
-        _timers.updated[ET_KEYBOARD_CONTROLS] = 1;
-    }
-}
-
-void
-EventHandler::_multipleDecIter()
-{
-    if (_timers.accept_event[ET_KEYBOARD_CONTROLS]) {
+    if (_timers.accept_event[ET_CONFIG]) {
         _renderer->mandelbrotConstants.maxIter =
-          (_renderer->mandelbrotConstants.maxIter <= MULTI_ITER_INC_DEC_VALUE)
+          (_renderer->mandelbrotConstants.maxIter <= _iterStepValue)
             ? 1
-            : _renderer->mandelbrotConstants.maxIter - MULTI_ITER_INC_DEC_VALUE;
+            : _renderer->mandelbrotConstants.maxIter - _iterStepValue;
         _renderer->mandelbrotComputeDone = false;
-        _timers.accept_event[ET_KEYBOARD_CONTROLS] = 0;
-        _timers.updated[ET_KEYBOARD_CONTROLS] = 1;
+
+        _timers.accept_event[ET_CONFIG] = 0;
+        _timers.updated[ET_CONFIG] = 1;
     }
 }
 
 void
 EventHandler::_resetIter()
 {
-    if (_timers.accept_event[ET_KEYBOARD_CONTROLS]) {
+    if (_timers.accept_event[ET_CONFIG]) {
         _renderer->mandelbrotConstants.maxIter =
           mandelbrotPushConstants::DEFAULT_MAX_ITER;
         _renderer->mandelbrotComputeDone = false;
-        _timers.accept_event[ET_KEYBOARD_CONTROLS] = 0;
-        _timers.updated[ET_KEYBOARD_CONTROLS] = 1;
+
+        _timers.accept_event[ET_CONFIG] = 0;
+        _timers.updated[ET_CONFIG] = 1;
     }
+}
+
+void
+EventHandler::_computeFbSizeDependentValues()
+{
+    auto fbSize = _ioManager->getFramebufferSize();
+    _pitch.x = 2.0f / static_cast<float>(fbSize.x);
+    _pitch.y = 2.0f / static_cast<float>(fbSize.y);
+    _screenRatio = static_cast<float>(fbSize.x) / static_cast<float>(fbSize.y);
 }

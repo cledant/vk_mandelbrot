@@ -26,7 +26,7 @@ class EventHandler final
     // Timer related
     static constexpr double const SYSTEM_TIMER_SECONDS = 1.0;
     static constexpr double const CONFIG_TIMER_SECONDS = 0.5;
-    static constexpr double const ACTION_TIMER_SECONDS = 0.5;
+    static constexpr double const ACTION_TIMER_SECONDS = 0.25;
     static constexpr double const FAST_ACTION_TIMER_SECONDS = 0.01;
 
     enum EventTimersTypes
@@ -36,7 +36,7 @@ class EventHandler final
         ET_LEFT_MOUSE,
         ET_MIDDLE_MOUSE,
         ET_RIGHT_MOUSE,
-        ET_KEYBOARD_CONTROLS,
+        ET_KEYBOARD_MOVEMENTS,
         ET_NB_EVENT_TIMER_TYPES
     };
 
@@ -51,12 +51,22 @@ class EventHandler final
         std::array<double, ET_NB_EVENT_TIMER_TYPES> timer_values = {
             SYSTEM_TIMER_SECONDS,      CONFIG_TIMER_SECONDS,
             FAST_ACTION_TIMER_SECONDS, FAST_ACTION_TIMER_SECONDS,
-            FAST_ACTION_TIMER_SECONDS, ACTION_TIMER_SECONDS
+            FAST_ACTION_TIMER_SECONDS, FAST_ACTION_TIMER_SECONDS
         };
     };
 
-    // IO related
-    static constexpr uint32_t const MULTI_ITER_INC_DEC_VALUE = 100;
+    // Multiplier
+    static constexpr uint32_t const ITER_NO_MULTIPLIER = 1;
+    static constexpr uint32_t const ITER_WITH_MULTIPLIER = 100;
+
+    static constexpr float const KEYBOARD_MVT_NO_MULTIPLIER = 0.01f;
+    static constexpr float const KEYBOARD_MVT_WITH_MULTIPLIER = 0.1f;
+
+    static constexpr float const ZOOM_NO_MULTIPLIER = 1.0f;
+    static constexpr float const ZOOM_WITH_MULTIPLIER = 10.0f;
+
+    // Default val
+    static constexpr float const DEFAULT_ZOOM = 1.0f;
 
     // IO Event handling functions
     inline void _closeWinEvent();
@@ -67,21 +77,26 @@ class EventHandler final
     inline void _left();
     inline void _setScreenCenter();
     inline void _resetZoomScreenCenter();
-    inline void _singleIncIter();
-    inline void _singleDecIter();
-    inline void _multipleIncIter();
-    inline void _multipleDecIter();
+    inline void _incIter();
+    inline void _decIter();
     inline void _resetIter();
+
+    inline void _computeFbSizeDependentValues();
 
     IOManager *_ioManager{};
     VulkanRenderer *_renderer{};
 
     EventTimers _timers{};
 
-    glm::ivec3 _movements{};
-    glm::vec2 _mousePos{};
-    glm::vec2 _previousMousePos{};
-    bool _mousePosSkip = true;
+    float _screenRatio{};
+    glm::vec2 _pitch{};
+
+    uint32_t _iterStepValue{};
+    float _keyboardMvtStepValue{};
+    float _zoomStepValue{};
+
+    glm::ivec2 _keyboardMvt{};
+    float _zoomVal = DEFAULT_ZOOM;
 };
 
 #endif // VK_MANDELBROT_VULKAN_EVENTHANDLER_HPP

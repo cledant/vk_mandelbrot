@@ -164,11 +164,10 @@ IOManager::getEvents() const
     io.events[IOET_SET_SCREEN_CENTER] = _mouseButton[GLFW_MOUSE_BUTTON_LEFT];
     io.events[IOET_RESET_ZOOM_SCREEN_CENTER] =
       _mouseButton[GLFW_MOUSE_BUTTON_RIGHT];
-    io.events[IOET_SINGLE_INC_ITER] = _keys[GLFW_KEY_EQUAL];
-    io.events[IOET_SINGLE_DEC_ITER] = _keys[GLFW_KEY_MINUS];
-    io.events[IOET_MULTIPLE_INC_ITER] = _keys[GLFW_KEY_RIGHT_BRACKET];
-    io.events[IOET_MULTIPLE_DEC_ITER] = _keys[GLFW_KEY_LEFT_BRACKET];
+    io.events[IOET_INC_ITER] = _keys[GLFW_KEY_EQUAL];
+    io.events[IOET_DEC_ITER] = _keys[GLFW_KEY_MINUS];
     io.events[IOET_RESET_ITER] = _keys[GLFW_KEY_P];
+    io.multiplier = _keys[GLFW_KEY_LEFT_SHIFT];
     io.mousePosition = _mousePosition;
     io.mouseScroll = _mouseScroll;
     return (io);

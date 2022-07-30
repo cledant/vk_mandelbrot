@@ -14,8 +14,6 @@ Engine::init()
         false, false, false, false, DEFAULT_WIN_SIZE, app_info::APP_NAME
     };
 
-    _eventHandler.setIOManager(&_ioManager);
-    _eventHandler.setVkRenderer(&_vkRenderer);
     _ioManager.createWindow(std::move(win_opts));
     _vkRenderer.createInstance(app_info::APP_NAME,
                                engine_name,
@@ -26,6 +24,8 @@ Engine::init()
                                                app_info::APP_VERSION_MINOR,
                                                app_info::APP_VERSION_PATCH),
                                IOManager::getRequiredInstanceExtension());
+    _eventHandler.setIOManager(&_ioManager);
+    _eventHandler.setVkRenderer(&_vkRenderer);
     auto fb_size = _ioManager.getFramebufferSize();
     _vkRenderer.init(
       _ioManager.createVulkanSurface(_vkRenderer.getVkInstance()),

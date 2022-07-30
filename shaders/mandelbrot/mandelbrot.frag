@@ -8,16 +8,16 @@ layout(push_constant) uniform mandelbrotConstants {
     vec4 maxIterColor;
     float fbW;
     float fbH;
-    float screenRatio;
     uint maxIter;
     float zoom;
+    float zoomMultScreenRatio;
     vec2 offset;
 } pushConsts;
 
 void main() {
 
-    float x0 = 4.0 * pushConsts.zoom * pushConsts.screenRatio * ((gl_FragCoord.x / pushConsts.fbW) - 0.5 - pushConsts.offset.x);
-    float y0 = 4.0 * pushConsts.zoom * ((gl_FragCoord.y / pushConsts.fbH) - 0.5 + pushConsts.offset.y);
+    float x0 = pushConsts.zoomMultScreenRatio * ((gl_FragCoord.x / pushConsts.fbW) + pushConsts.offset.x);
+    float y0 = pushConsts.zoom * ((gl_FragCoord.y / pushConsts.fbH) + pushConsts.offset.y);
     float x = 0.0;
     float y = 0.0;
     float x2 = 0.0;
