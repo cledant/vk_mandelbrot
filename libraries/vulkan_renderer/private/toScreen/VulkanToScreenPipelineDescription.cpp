@@ -9,7 +9,7 @@ VulkanToScreenPipelineDescription::implInit(VulkanDevices const &devices)
 {
     pushConstantRange.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
     pushConstantRange.offset = 0;
-    pushConstantRange.size = sizeof(mandelbrotConstants);
+    pushConstantRange.size = sizeof(mandelbrotPushConstants);
     descriptorSetLayout =
       createDescriptorSetLayout(devices, descriptorBindings);
     pipelineLayout =

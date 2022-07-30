@@ -20,15 +20,8 @@ struct VulkanToScreenPipelineData
 
     void init(VulkanDevices const &devices,
               VulkanCommandPools const &cmdPools,
-              VulkanQueues const &queues,
-              VkExtent2D const &screenSize,
-              bool forceSquareRatio);
+              VulkanQueues const &queues);
     void clear();
-
-  private:
-    static inline void computeSquareRatio(
-      VkExtent2D const &screenSize,
-      std::array<VulkanSimpleVertex, 4> &vertices);
 };
 
 #endif // VK_MANDELBROT_VULKANTOSCREENPIPELINEDATA_HPP

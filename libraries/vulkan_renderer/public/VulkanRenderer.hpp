@@ -36,8 +36,12 @@ class VulkanRenderer final
     static constexpr VkClearColorValue const DEFAULT_CLEAR_COLOR = {
         { 0.0f, 0.0f, 0.0f, 1.0f }
     };
-    static constexpr glm::ivec2 const DEFAULT_MB_FB_SIZE = glm::ivec2(750, 750);
-    static constexpr bool DEFAULT_FORCE_SQUARE_RATIO = false;
+    static constexpr VkClearDepthStencilValue const
+      DEFAULT_CLEAR_DEPTH_STENCIL = { 1.0f, 0 };
+
+    // Public values
+    VkClearColorValue clearColor = DEFAULT_CLEAR_COLOR;
+    mandelbrotPushConstants mandelbrotConstants{};
 
     // Instance related
     void createInstance(std::string &&appName,
@@ -49,9 +53,8 @@ class VulkanRenderer final
     void init(VkSurfaceKHR surface,
               VulkanInstanceOptions const &options,
               uint32_t winW,
-              uint32_t winH,
-              bool forceSquareRatio);
-    void resize(uint32_t winW, uint32_t winH, bool forceSquareRatio);
+              uint32_t winH);
+    void resize(uint32_t winW, uint32_t winH);
     void clear();
 
     // Info related
@@ -63,13 +66,7 @@ class VulkanRenderer final
     // Render related
     void draw();
 
-    // Public values
-    VkClearColorValue clearColor = DEFAULT_CLEAR_COLOR;
-
   private:
-    static constexpr VkClearDepthStencilValue const
-      DEFAULT_CLEAR_DEPTH_STENCIL = { 1.0f, 0 };
-
     std::string _appName;
     std::string _engineName;
     uint32_t _appVersion{};

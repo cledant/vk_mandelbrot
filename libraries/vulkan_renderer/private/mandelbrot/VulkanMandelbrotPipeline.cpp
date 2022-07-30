@@ -57,14 +57,16 @@ VulkanMandelbrotPipeline::clear()
 }
 
 void
-VulkanMandelbrotPipeline::generateCommands(VkCommandBuffer cmdBuffer)
+VulkanMandelbrotPipeline::generateCommands(
+  VkCommandBuffer cmdBuffer,
+  mandelbrotPushConstants const &pushConstants)
 {
     // Push constants
     vkCmdPushConstants(cmdBuffer,
                        _pipelineDescription.pipelineLayout,
                        VK_SHADER_STAGE_FRAGMENT_BIT,
                        0,
-                       sizeof(mandelbrotConstants),
+                       sizeof(mandelbrotPushConstants),
                        &pushConstants);
 
     // Vertex related values

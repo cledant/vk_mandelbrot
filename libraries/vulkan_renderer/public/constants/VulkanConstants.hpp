@@ -3,7 +3,7 @@
 
 #include "glm/glm.hpp"
 
-struct mandelbrotConstants final
+struct mandelbrotPushConstants final
 {
     static constexpr glm::vec4 DEFAULT_BACKGROUND_COLOR{ 0.5, 0.3, 0.3, 0.0 };
     static constexpr glm::vec2 DEFAULT_OFFSET{ 0.0, 0.0 };
@@ -19,6 +19,6 @@ struct mandelbrotConstants final
     alignas(8) glm::vec2 offset = DEFAULT_OFFSET;
 };
 
-static_assert(sizeof(mandelbrotConstants) <= 128);
+static_assert(sizeof(mandelbrotPushConstants) <= 128);
 
 #endif // VK_MANDELBROT_VULKAN_CONSTANTS_HPP

@@ -41,8 +41,7 @@ void
 VulkanRenderer::init(VkSurfaceKHR surface,
                      VulkanInstanceOptions const &options,
                      uint32_t winW,
-                     uint32_t winH,
-                     bool forceSquareRatio)
+                     uint32_t winH)
 {
     assert(surface);
 
@@ -65,8 +64,7 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _toScreen.init(_vkInstance,
                    _swapChain,
                    _toScreenRenderPass,
-                   _imageDisplayed.descriptorImage,
-                   forceSquareRatio);
+                   _imageDisplayed.descriptorImage);
     _mandelbrotRenderPass.init(_vkInstance,
                                VK_FORMAT_R8G8B8A8_UNORM,
                                depthFormat,
@@ -82,7 +80,7 @@ VulkanRenderer::init(VkSurfaceKHR surface,
 }
 
 void
-VulkanRenderer::resize(uint32_t winW, uint32_t winH, bool forceSquareRatio)
+VulkanRenderer::resize(uint32_t winW, uint32_t winH)
 {
     vkDeviceWaitIdle(_vkInstance.devices.device);
     if (winW <= 0 || winH <= 0) {
@@ -103,10 +101,8 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH, bool forceSquareRatio)
                            _swapChain.swapChainExtent.width,
                            _swapChain.swapChainExtent.height);
     _toScreenRenderPass.resize(_swapChain);
-    _toScreen.resize(_swapChain,
-                     _toScreenRenderPass,
-                     _imageDisplayed.descriptorImage,
-                     forceSquareRatio);
+    _toScreen.resize(
+      _swapChain, _toScreenRenderPass, _imageDisplayed.descriptorImage);
     _mandelbrotRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
                                  depthFormat,
                                  _imageDisplayed.colorTex.textureImgView,
@@ -254,18 +250,11 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
 
     if (!_mandelbrot.isComputeDone()) {
         // Update push constant values
-        _mandelbrot.pushConstants.backgroundColor =
-          mandelbrotConstants::DEFAULT_BACKGROUND_COLOR;
-        _mandelbrot.pushConstants.maxIter =
-          mandelbrotConstants::DEFAULT_MAX_ITER;
-        _mandelbrot.pushConstants.zoom = mandelbrotConstants::DEFAULT_ZOOM;
-        _mandelbrot.pushConstants.offset = mandelbrotConstants::DEFAULT_OFFSET;
-        _mandelbrot.pushConstants.fwW = _swapChain.swapChainExtent.width;
-        _mandelbrot.pushConstants.fwH = _swapChain.swapChainExtent.height;
-        _mandelbrot.pushConstants.screenRatio =
+        mandelbrotConstants.fwW = _imageDisplayed.colorTex.width;
+        mandelbrotConstants.fwH = _imageDisplayed.colorTex.height;
+        mandelbrotConstants.screenRatio =
           static_cast<float>(_swapChain.swapChainExtent.width) /
           static_cast<float>(_swapChain.swapChainExtent.height);
-
         recordMandelbrotRenderCmd(imgIndex, cmdClearColor);
     }
     recordToScreenRenderCmd(imgIndex, cmdClearColor);
@@ -301,7 +290,8 @@ VulkanRenderer::recordMandelbrotRenderCmd(
     vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
                          &rp_begin_info,
                          VK_SUBPASS_CONTENTS_INLINE);
-    _mandelbrot.generateCommands(_renderCommandBuffers[imgIndex]);
+    _mandelbrot.generateCommands(_renderCommandBuffers[imgIndex],
+                                 mandelbrotConstants);
     vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
 }
 

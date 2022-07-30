@@ -28,8 +28,6 @@ class VulkanMandelbrotPipeline final
     VulkanMandelbrotPipeline &operator=(VulkanMandelbrotPipeline &&rhs) =
       delete;
 
-    mandelbrotConstants pushConstants{};
-
     void init(VulkanInstance const &vkInstance,
               VulkanDefaultImageBuffer const &imgBuffer,
               VulkanDefaultOffscreenRenderPass const &renderPass);
@@ -37,7 +35,8 @@ class VulkanMandelbrotPipeline final
                 VulkanDefaultOffscreenRenderPass const &renderPass);
     void clear();
 
-    void generateCommands(VkCommandBuffer cmdBuffer);
+    void generateCommands(VkCommandBuffer cmdBuffer,
+                          mandelbrotPushConstants const &pushConstants);
     [[nodiscard]] bool isComputeDone() const;
 
   private:

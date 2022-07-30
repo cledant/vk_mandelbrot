@@ -31,8 +31,7 @@ Engine::init()
       _ioManager.createVulkanSurface(_vkRenderer.getVkInstance()),
       VulkanRenderer::DEFAULT_RENDERER_OPTIONS,
       fb_size.x,
-      fb_size.y,
-      false);
+      fb_size.y);
 }
 
 void
