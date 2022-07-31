@@ -7,7 +7,7 @@ struct mandelbrotPushConstants final
 {
     static constexpr glm::vec4 DEFAULT_COLOR{ 0.6, 0.3, 0.3, 0.0 };
     static constexpr glm::vec4 DEFAULT_MAX_ITER_COLOR{ 0.1, 0.1, 0.3, 0.0 };
-    static constexpr glm::vec2 DEFAULT_OFFSET{ 0.5, 0.5 };
+    static constexpr glm::vec2 DEFAULT_OFFSET{ 0.0, 0.0 };
     static constexpr uint32_t DEFAULT_MAX_ITER = 200;
     static constexpr float DEFAULT_ZOOM = 4.0f;
 

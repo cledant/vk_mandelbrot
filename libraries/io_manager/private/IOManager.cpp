@@ -161,7 +161,6 @@ IOManager::getEvents() const
     io.events[IOET_DOWN] = _keys[GLFW_KEY_S];
     io.events[IOET_RIGHT] = _keys[GLFW_KEY_D];
     io.events[IOET_LEFT] = _keys[GLFW_KEY_A];
-    io.events[IOET_SET_SCREEN_CENTER] = _mouseButton[GLFW_MOUSE_BUTTON_LEFT];
     io.events[IOET_RESET_ZOOM_SCREEN_CENTER] =
       _mouseButton[GLFW_MOUSE_BUTTON_RIGHT];
     io.events[IOET_INC_ITER] = _keys[GLFW_KEY_EQUAL];

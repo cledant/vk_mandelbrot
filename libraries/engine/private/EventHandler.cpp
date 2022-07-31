@@ -9,7 +9,8 @@ void
 EventHandler::setIOManager(IOManager *io_manager)
 {
     _ioManager = io_manager;
-    _computeFbSizeDependentValues();
+    auto fbSize = _ioManager->getFramebufferSize();
+    _screenRatio = static_cast<float>(fbSize.x) / static_cast<float>(fbSize.y);
 }
 
 void
@@ -24,6 +25,8 @@ EventHandler::processEvents(IOEvents const &ioEvents)
     assert(_ioManager);
     assert(_renderer);
 
+    auto fbSize = _ioManager->getFramebufferSize();
+
     // Resetting movement tracking
     _keyboardMvt = glm::ivec2(0);
 
@@ -36,23 +39,37 @@ EventHandler::processEvents(IOEvents const &ioEvents)
                                                   : KEYBOARD_MVT_NO_MULTIPLIER;
 
     // Zoom handling
+    bool addOffsetZoomIn{};
+    bool addOffsetZoomOut{};
     if (ioEvents.mouseScroll != 0.0f) {
         if (ioEvents.mouseScroll > 0.0f) {
             _zoomVal *= _zoomStepValue;
+            addOffsetZoomIn = true;
         } else {
             _zoomVal /= _zoomStepValue;
+            addOffsetZoomOut = true;
         }
 
         if (_zoomVal < 1.0f) {
             _zoomVal = 1.0f;
+            addOffsetZoomOut = false;
         }
+
         _renderer->mandelbrotComputeDone = false;
+        _ioManager->resetMouseScroll();
+    }
+    if (addOffsetZoomOut) {
+        _renderer->mandelbrotConstants.offset -=
+          _computeMouseOffset(ioEvents.mousePosition, fbSize);
     }
     _renderer->mandelbrotConstants.zoom =
       mandelbrotPushConstants::DEFAULT_ZOOM / _zoomVal;
     _renderer->mandelbrotConstants.zoomMultScreenRatio =
       _renderer->mandelbrotConstants.zoom * _screenRatio;
-    _ioManager->resetMouseScroll();
+    if (addOffsetZoomIn) {
+        _renderer->mandelbrotConstants.offset +=
+          _computeMouseOffset(ioEvents.mousePosition, fbSize);
+    }
 
     static const std::array<void (EventHandler::*)(), IOET_NB>
       keyboard_events = { &EventHandler::_closeWinEvent,
@@ -61,7 +78,6 @@ EventHandler::processEvents(IOEvents const &ioEvents)
                           &EventHandler::_down,
                           &EventHandler::_right,
                           &EventHandler::_left,
-                          &EventHandler::_setScreenCenter,
                           &EventHandler::_resetZoomScreenCenter,
                           &EventHandler::_incIter,
                           &EventHandler::_decIter,
@@ -96,10 +112,10 @@ EventHandler::processEvents(IOEvents const &ioEvents)
 
     // Resized window case
     if (_ioManager->wasResized()) {
-        // VK Renderer related
-        auto fb_size = _ioManager->getFramebufferSize();
-        _renderer->resize(fb_size.x, fb_size.y);
-        _computeFbSizeDependentValues();
+        fbSize = _ioManager->getFramebufferSize();
+        _renderer->resize(fbSize.x, fbSize.y);
+        _screenRatio =
+          static_cast<float>(fbSize.x) / static_cast<float>(fbSize.y);
         _renderer->mandelbrotComputeDone = false;
     }
 
@@ -156,15 +172,6 @@ void
 EventHandler::_left()
 {
     _keyboardMvt.x -= 1;
-}
-
-void
-EventHandler::_setScreenCenter()
-{
-    if (_timers.accept_event[ET_LEFT_MOUSE]) {
-        _timers.accept_event[ET_LEFT_MOUSE] = 0;
-        _timers.updated[ET_LEFT_MOUSE] = 1;
-    }
 }
 
 void
@@ -226,11 +233,17 @@ EventHandler::_resetIter()
     }
 }
 
-void
-EventHandler::_computeFbSizeDependentValues()
+glm::vec2
+EventHandler::_computeMouseOffset(glm::vec2 const &mousePos,
+                                  glm::ivec2 const &fbSize)
 {
-    auto fbSize = _ioManager->getFramebufferSize();
-    _pitch.x = 2.0f / static_cast<float>(fbSize.x);
-    _pitch.y = 2.0f / static_cast<float>(fbSize.y);
-    _screenRatio = static_cast<float>(fbSize.x) / static_cast<float>(fbSize.y);
+    glm::vec2 mouseOffsetPosition{};
+
+    mouseOffsetPosition.x =
+      _renderer->mandelbrotConstants.zoomMultScreenRatio *
+      ((mousePos.x / static_cast<float>(fbSize.x)) - 0.5f);
+    mouseOffsetPosition.y =
+      _renderer->mandelbrotConstants.zoom *
+      ((mousePos.y / static_cast<float>(fbSize.y)) - 0.5f);
+    return (mouseOffsetPosition);
 }

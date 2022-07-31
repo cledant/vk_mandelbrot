@@ -75,27 +75,25 @@ class EventHandler final
     inline void _down();
     inline void _right();
     inline void _left();
-    inline void _setScreenCenter();
     inline void _resetZoomScreenCenter();
     inline void _incIter();
     inline void _decIter();
     inline void _resetIter();
 
-    inline void _computeFbSizeDependentValues();
+    glm::vec2 _computeMouseOffset(glm::vec2 const &mousePos,
+                                  glm::ivec2 const &fbSize);
 
     IOManager *_ioManager{};
     VulkanRenderer *_renderer{};
 
     EventTimers _timers{};
 
-    float _screenRatio{};
-    glm::vec2 _pitch{};
-
     uint32_t _iterStepValue{};
     float _keyboardMvtStepValue{};
     float _zoomStepValue{};
 
     glm::ivec2 _keyboardMvt{};
+    float _screenRatio{};
     float _zoomVal = DEFAULT_ZOOM;
 };
 
