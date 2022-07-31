@@ -62,8 +62,8 @@ class EventHandler final
     static constexpr float const KEYBOARD_MVT_NO_MULTIPLIER = 0.01f;
     static constexpr float const KEYBOARD_MVT_WITH_MULTIPLIER = 0.1f;
 
-    static constexpr float const ZOOM_NO_MULTIPLIER = 1.0f;
-    static constexpr float const ZOOM_WITH_MULTIPLIER = 10.0f;
+    static constexpr float const ZOOM_NO_MULTIPLIER = 2.0f;
+    static constexpr float const ZOOM_WITH_MULTIPLIER = 8.0f;
 
     // Default val
     static constexpr float const DEFAULT_ZOOM = 1.0f;

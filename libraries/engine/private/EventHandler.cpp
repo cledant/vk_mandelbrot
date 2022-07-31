@@ -28,19 +28,21 @@ EventHandler::processEvents(IOEvents const &ioEvents)
     _keyboardMvt = glm::ivec2(0);
 
     // Multiplier value handling
-    if (ioEvents.multiplier) {
-        _iterStepValue = ITER_WITH_MULTIPLIER;
-        _zoomStepValue = ZOOM_WITH_MULTIPLIER;
-        _keyboardMvtStepValue = KEYBOARD_MVT_WITH_MULTIPLIER;
-    } else {
-        _iterStepValue = ITER_NO_MULTIPLIER;
-        _zoomStepValue = ZOOM_NO_MULTIPLIER;
-        _keyboardMvtStepValue = KEYBOARD_MVT_NO_MULTIPLIER;
-    }
+    _iterStepValue =
+      (ioEvents.multiplier) ? ITER_WITH_MULTIPLIER : ITER_NO_MULTIPLIER;
+    _zoomStepValue =
+      (ioEvents.multiplier) ? ZOOM_WITH_MULTIPLIER : ZOOM_NO_MULTIPLIER;
+    _keyboardMvtStepValue = (ioEvents.multiplier) ? KEYBOARD_MVT_WITH_MULTIPLIER
+                                                  : KEYBOARD_MVT_NO_MULTIPLIER;
 
     // Zoom handling
     if (ioEvents.mouseScroll != 0.0f) {
-        _zoomVal += (ioEvents.mouseScroll * _zoomStepValue);
+        if (ioEvents.mouseScroll > 0.0f) {
+            _zoomVal *= _zoomStepValue;
+        } else {
+            _zoomVal /= _zoomStepValue;
+        }
+
         if (_zoomVal < 1.0f) {
             _zoomVal = 1.0f;
         }
