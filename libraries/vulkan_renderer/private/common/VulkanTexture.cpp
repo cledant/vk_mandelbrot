@@ -75,7 +75,8 @@ VulkanTexture::createDepthTexture(VulkanDevices const &devices,
     createImage(_devices.device,
                 *this,
                 VK_IMAGE_TILING_OPTIMAL,
-                VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
+                VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
+                  VK_IMAGE_USAGE_SAMPLED_BIT);
     allocateImage(_devices, *this, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     createImageView(devices, *this, VK_IMAGE_ASPECT_DEPTH_BIT);
     transitionImageLayout(devices,
@@ -123,6 +124,7 @@ VulkanTexture::clear()
     textureFormat = static_cast<VkFormat>(0);
     width = 0;
     height = 0;
+    mipLevel = 1;
     _devices = VulkanDevices{};
 }
 
@@ -140,5 +142,6 @@ VulkanTexture::clearSwapchainTexture()
     textureFormat = static_cast<VkFormat>(0);
     width = 0;
     height = 0;
+    mipLevel = 1;
     _devices = VulkanDevices{};
 }

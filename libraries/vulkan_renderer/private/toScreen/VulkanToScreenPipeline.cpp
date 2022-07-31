@@ -33,9 +33,12 @@ VulkanToScreenPipeline::resize(
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
+    _pipelineDescription.clear();
     _pipelineData.clear();
+
     _toDisplayImageInfo = toDisplayImageInfo;
     _pipelineData.init(_devices, _cmdPools, _queues);
+    _pipelineDescription.init(_devices);
     createDescriptorPool(swapChain.currentSwapChainNbImg);
     createGfxPipeline(swapChain, renderPass);
     createDescriptorSets(_pipelineData, swapChain.currentSwapChainNbImg);

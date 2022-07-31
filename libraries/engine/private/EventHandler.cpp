@@ -99,6 +99,8 @@ EventHandler::processEvents(IOEvents const &ioEvents)
         // VK Renderer related
         auto fb_size = _ioManager->getFramebufferSize();
         _renderer->resize(fb_size.x, fb_size.y);
+        _computeFbSizeDependentValues();
+        _renderer->mandelbrotComputeDone = false;
     }
 
     // Setting timers origin
@@ -126,7 +128,6 @@ EventHandler::_toggleFullscreen()
 {
     if (_timers.accept_event[ET_SYSTEM]) {
         _ioManager->toggleFullscreen();
-        _computeFbSizeDependentValues();
 
         _timers.accept_event[ET_SYSTEM] = 0;
         _timers.updated[ET_SYSTEM] = 1;

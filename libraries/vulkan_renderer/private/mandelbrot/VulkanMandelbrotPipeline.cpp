@@ -31,8 +31,11 @@ VulkanMandelbrotPipeline::resize(
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
+    _pipelineDescription.clear();
     _pipelineData.clear();
+
     _pipelineData.init(_devices, _cmdPools, _queues);
+    _pipelineDescription.init(_devices);
     createDescriptorPool();
     createGfxPipeline(imgBuffer, renderPass);
     createDescriptorSets(_pipelineData);
@@ -43,7 +46,6 @@ VulkanMandelbrotPipeline::clear()
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
-    _pipelineDescription.clear();
     _devices = VulkanDevices{};
     _cmdPools = VulkanCommandPools{};
     _queues = VulkanQueues{};
