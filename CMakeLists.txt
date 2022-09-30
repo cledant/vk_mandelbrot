@@ -28,31 +28,62 @@ find_package(Vulkan REQUIRED FATAL_ERROR)
 find_program(GLSLC_PROGRAM glslc REQUIRED FATAL_ERROR)
 
 #Setting global C/CXX compile options
-set(OPTIMIZATION_TYPE NATIVE CACHE STRING "")
+set(TARGET_ARCH_OPTIMIZATION "native" CACHE STRING "Can be either native,x86-64,x86-64-v2,x86-64-v3,x86-64-v4")
 
-if (${OPTIMIZATION_TYPE} STREQUAL NATIVE)
+#Compiler support for x86_64 feature level
+set(USE_X86_64_PROFILE TRUE)
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "11.1.0")
+        set(USE_X86_64_PROFILE FALSE)
+    endif ()
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "12.0.0")
+        set(USE_X86_64_PROFILE FALSE)
+    endif ()
+else ()
+    set(USE_X86_64_PROFILE FALSE)
+endif ()
+
+#Setting C/CXX optimization flags
+if (${TARGET_ARCH_OPTIMIZATION} MATCHES "native")
     message("Build binary for current computer arch")
     set(CMAKE_CXX_FLAGS "-march=native -pipe")
     set(CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
-elseif (${OPTIMIZATION_TYPE} STREQUAL AVX2)
-    message("Build binary with AVX2 profile")
-    set(CMAKE_CXX_FLAGS "-march=core2 -mtune=haswell \
-    -mmmx -msse -msse2 -msse3 -mssse3 -msse4 -msse4.1 -msse4.2 \
-    -mavx -mavx2 -mbmi -mbmi2 -mf16c -mfma -mfsgsbase \
-    -mlzcnt -mmovbe -mpclmul -mpopcnt -maes \
-    -mrdrnd  -pipe")
-    set(CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
-elseif (${OPTIMIZATION_TYPE} STREQUAL SSE4)
-    message("Build binary with SSE4 profile")
-    set(CMAKE_CXX_FLAGS "-march=core2 -mtune=nehalem \
-    -mmmx -msse -msse2 -msse3 -mssse3 -msse4 -msse4.1 -msse4.2 \
-    -mpopcnt -pipe")
+elseif (${USE_X86_64_PROFILE} AND ${TARGET_ARCH_OPTIMIZATION} MATCHES "x86-64|x86-64-v2|x86-64-v3|x86-64-v4")
+    message("Build binary for profile: ${TARGET_ARCH_OPTIMIZATION}")
+    set(CMAKE_CXX_FLAGS "-march=${TARGET_ARCH_OPTIMIZATION} -pipe")
+    if (${TARGET_ARCH_OPTIMIZATION} MATCHES "x86-64-v3|x86-64-v4")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mpclmul -mfsgsbase -mrdrnd")
+    endif ()
     set(CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
 else ()
-    message("No arch optimization selected")
-    set(CMAKE_CXX_FLAGS "-pipe")
-    set(CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
+    if (${TARGET_ARCH_OPTIMIZATION} MATCHES "x86-64-v3|x86-64-v4")
+        message("Build binary with AVX2 profile")
+        set(CMAKE_CXX_FLAGS "-march=core2 -mtune=haswell \
+-mavx -mavx2 -mbmi -mbmi2 -mf16c -mfma -mfsgsbase \
+-mlzcnt -mmovbe -mpclmul -mpopcnt -mrdrnd \
+-msse4 -msse4.1 -msse4.2 -mxsave -mxsaveopt \
+-pipe")
+        set(CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
+    elseif (${TARGET_ARCH_OPTIMIZATION} MATCHES "x86-64-v2")
+        message("Build binary with SSE4 profile")
+        set(CMAKE_CXX_FLAGS "-march=core2 -mtune=nehalem \
+-msse4 -msse4.1 -msse4.2 -mpopcnt -pipe")
+        set(CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
+    else ()
+        message("No arch optimization selected")
+        set(CMAKE_CXX_FLAGS "-pipe")
+        set(CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
+    endif ()
 endif ()
+
+#Security settings
+if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fstack-protector-strong -D_FORTIFY_SOURCE=2" CACHE STRING "" FORCE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -fstack-protector-strong -D_FORTIFY_SOURCE=2" CACHE STRING "" FORCE)
+endif ()
+
+message(${CMAKE_CXX_FLAGS})
 
 #Setup glm
 add_library(glm INTERFACE IMPORTED)

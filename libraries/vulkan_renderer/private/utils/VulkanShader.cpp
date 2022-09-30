@@ -16,7 +16,8 @@ readFileContent(std::string const &filepath)
     fseek(file, 0, SEEK_SET);
 
     std::vector<char> file_content(file_size);
-    fread(file_content.data(), file_size, 1, file);
+    size_t read = fread(file_content.data(), file_size, 1, file);
+    (void)read;
     fclose(file);
     return (file_content);
 }
