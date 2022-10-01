@@ -60,7 +60,7 @@ EventHandler::processEvents(IOEvents const &ioEvents)
     }
     if (addOffsetZoomOut) {
         _renderer->mandelbrotConstants.offset -=
-          _computeMouseOffset(ioEvents.mousePosition, fbSize);
+          computeMouseOffset(ioEvents.mousePosition, fbSize);
     }
     _renderer->mandelbrotConstants.zoom =
       mandelbrotPushConstants::DEFAULT_ZOOM / _zoomVal;
@@ -68,20 +68,20 @@ EventHandler::processEvents(IOEvents const &ioEvents)
       _renderer->mandelbrotConstants.zoom * _screenRatio;
     if (addOffsetZoomIn) {
         _renderer->mandelbrotConstants.offset +=
-          _computeMouseOffset(ioEvents.mousePosition, fbSize);
+          computeMouseOffset(ioEvents.mousePosition, fbSize);
     }
 
     static const std::array<void (EventHandler::*)(), IOET_NB>
-      keyboard_events = { &EventHandler::_closeWinEvent,
-                          &EventHandler::_toggleFullscreen,
-                          &EventHandler::_up,
-                          &EventHandler::_down,
-                          &EventHandler::_right,
-                          &EventHandler::_left,
-                          &EventHandler::_resetZoomScreenCenter,
-                          &EventHandler::_incIter,
-                          &EventHandler::_decIter,
-                          &EventHandler::_resetIter };
+      keyboard_events = { &EventHandler::closeWinEvent,
+                          &EventHandler::toggleFullscreen,
+                          &EventHandler::up,
+                          &EventHandler::down,
+                          &EventHandler::right,
+                          &EventHandler::left,
+                          &EventHandler::resetZoomScreenCenter,
+                          &EventHandler::incIter,
+                          &EventHandler::decIter,
+                          &EventHandler::resetIter };
 
     // Checking Timers
     auto now = std::chrono::steady_clock::now();
@@ -129,7 +129,7 @@ EventHandler::processEvents(IOEvents const &ioEvents)
 }
 
 void
-EventHandler::_closeWinEvent()
+EventHandler::closeWinEvent()
 {
     if (_timers.accept_event[ET_SYSTEM]) {
         _ioManager->triggerClose();
@@ -140,7 +140,7 @@ EventHandler::_closeWinEvent()
 }
 
 void
-EventHandler::_toggleFullscreen()
+EventHandler::toggleFullscreen()
 {
     if (_timers.accept_event[ET_SYSTEM]) {
         _ioManager->toggleFullscreen();
@@ -151,31 +151,31 @@ EventHandler::_toggleFullscreen()
 }
 
 void
-EventHandler::_up()
+EventHandler::up()
 {
     _keyboardMvt.y += 1;
 }
 
 void
-EventHandler::_down()
+EventHandler::down()
 {
     _keyboardMvt.y -= 1;
 }
 
 void
-EventHandler::_right()
+EventHandler::right()
 {
     _keyboardMvt.x += 1;
 }
 
 void
-EventHandler::_left()
+EventHandler::left()
 {
     _keyboardMvt.x -= 1;
 }
 
 void
-EventHandler::_resetZoomScreenCenter()
+EventHandler::resetZoomScreenCenter()
 {
     if (_timers.accept_event[ET_RIGHT_MOUSE]) {
         _keyboardMvt = glm::ivec2(0.0);
@@ -194,7 +194,7 @@ EventHandler::_resetZoomScreenCenter()
 }
 
 void
-EventHandler::_incIter()
+EventHandler::incIter()
 {
     if (_timers.accept_event[ET_CONFIG]) {
         _renderer->mandelbrotConstants.maxIter += _iterStepValue;
@@ -206,7 +206,7 @@ EventHandler::_incIter()
 }
 
 void
-EventHandler::_decIter()
+EventHandler::decIter()
 {
     if (_timers.accept_event[ET_CONFIG]) {
         _renderer->mandelbrotConstants.maxIter =
@@ -221,7 +221,7 @@ EventHandler::_decIter()
 }
 
 void
-EventHandler::_resetIter()
+EventHandler::resetIter()
 {
     if (_timers.accept_event[ET_CONFIG]) {
         _renderer->mandelbrotConstants.maxIter =
@@ -234,7 +234,7 @@ EventHandler::_resetIter()
 }
 
 glm::vec2
-EventHandler::_computeMouseOffset(glm::vec2 const &mousePos,
+EventHandler::computeMouseOffset(glm::vec2 const &mousePos,
                                   glm::ivec2 const &fbSize)
 {
     glm::vec2 mouseOffsetPosition{};

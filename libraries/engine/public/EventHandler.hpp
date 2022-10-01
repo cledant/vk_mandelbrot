@@ -69,19 +69,19 @@ class EventHandler final
     static constexpr float const DEFAULT_ZOOM = 1.0f;
 
     // IO Event handling functions
-    inline void _closeWinEvent();
-    inline void _toggleFullscreen();
-    inline void _up();
-    inline void _down();
-    inline void _right();
-    inline void _left();
-    inline void _resetZoomScreenCenter();
-    inline void _incIter();
-    inline void _decIter();
-    inline void _resetIter();
+    inline void closeWinEvent();
+    inline void toggleFullscreen();
+    inline void up();
+    inline void down();
+    inline void right();
+    inline void left();
+    inline void resetZoomScreenCenter();
+    inline void incIter();
+    inline void decIter();
+    inline void resetIter();
 
-    glm::vec2 _computeMouseOffset(glm::vec2 const &mousePos,
-                                  glm::ivec2 const &fbSize);
+    glm::vec2 computeMouseOffset(glm::vec2 const &mousePos,
+                                 glm::ivec2 const &fbSize);
 
     IOManager *_ioManager{};
     VulkanRenderer *_renderer{};

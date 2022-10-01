@@ -1,5 +1,5 @@
-#ifndef PARTICLE_SYSTEM_VULKAN_VULKANDESCRIPTORUTILS_HPP
-#define PARTICLE_SYSTEM_VULKAN_VULKANDESCRIPTORUTILS_HPP
+#ifndef VK_MANDELBROT_VULKANDESCRIPTORUTILS_HPP
+#define VK_MANDELBROT_VULKANDESCRIPTORUTILS_HPP
 
 #include <array>
 #include <vector>
@@ -56,4 +56,4 @@ void allocateDescriptorSets(VulkanDevices const &devices,
                             uint32_t descriptorCount,
                             std::vector<VkDescriptorSet> &descriptorSets);
 
-#endif // PARTICLE_SYSTEM_VULKAN_VULKANDESCRIPTORUTILS_HPP
+#endif // VK_MANDELBROT_VULKANDESCRIPTORUTILS_HPP

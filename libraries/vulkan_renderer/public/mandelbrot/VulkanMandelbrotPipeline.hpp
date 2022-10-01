@@ -58,7 +58,7 @@ class VulkanMandelbrotPipeline final
       VulkanDefaultOffscreenRenderPass const &renderPass);
     inline void createDescriptorSets(
       VulkanMandelbrotPipelineData &pipelineData);
-    void createDescriptorPool();
+    inline void createDescriptorPool();
 };
 
 #endif // VK_MANDELBROT_VULKANMANDELBROTPIPELINE_HPP

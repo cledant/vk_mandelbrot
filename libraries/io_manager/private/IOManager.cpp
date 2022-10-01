@@ -38,11 +38,11 @@ IOManager::createWindow(IOManagerWindowCreationOption &&opts)
         glfwGetWindowSize(_win, &_winSize.x, &_winSize.y);
         glfwGetFramebufferSize(_win, &_framebufferSize.x, &_framebufferSize.y);
         glfwSetWindowUserPointer(_win, this);
-        _initCallbacks();
+        initCallbacks();
         if (opts.fullscreen) {
             toggleFullscreen();
         }
-        _applyMouseVisibility();
+        applyMouseVisibility();
     }
 }
 
@@ -114,14 +114,14 @@ void
 IOManager::toggleMouseExclusive()
 {
     _mouseExclusive = !_mouseExclusive;
-    _applyMouseVisibility();
+    applyMouseVisibility();
 }
 
 void
 IOManager::toggleMouseVisibility()
 {
     _cursorHiddenOnWindow = !_cursorHiddenOnWindow;
-    _applyMouseVisibility();
+    applyMouseVisibility();
 }
 
 bool
@@ -203,7 +203,7 @@ IOManager::getRequiredInstanceExtension()
 
 // Callbacks
 void
-IOManager::_initCallbacks()
+IOManager::initCallbacks()
 {
     // Keyboard input
     auto keyboard_callback =
@@ -274,7 +274,7 @@ IOManager::_initCallbacks()
 }
 
 void
-IOManager::_applyMouseVisibility() const
+IOManager::applyMouseVisibility() const
 {
     if (_mouseExclusive) {
         glfwSetInputMode(_win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

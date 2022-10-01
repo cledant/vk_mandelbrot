@@ -69,10 +69,10 @@ class IOManager final
     bool _cursorHiddenOnWindow{};
 
     // Callbacks
-    inline void _initCallbacks();
+    inline void initCallbacks();
 
     // Mouse
-    inline void _applyMouseVisibility() const;
+    inline void applyMouseVisibility() const;
 };
 
 #endif // VK_MANDELBROT_VULKAN_IOMANAGER_HPP
