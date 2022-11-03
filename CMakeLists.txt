@@ -106,6 +106,24 @@ set_target_properties(stb PROPERTIES
 #Setup fmt
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/fmt ${CMAKE_BINARY_DIR}/external/fmt/build)
 
+#Setup imgui
+set(IMGUI_FOLDER ${CMAKE_SOURCE_DIR}/external/imgui)
+add_library(imgui_glfw_vulkan STATIC
+        ${IMGUI_FOLDER}/backends/imgui_impl_glfw.cpp
+        ${IMGUI_FOLDER}/backends/imgui_impl_vulkan.cpp
+        ${IMGUI_FOLDER}/imgui.cpp
+        ${IMGUI_FOLDER}/imgui_draw.cpp
+        ${IMGUI_FOLDER}/imgui_tables.cpp
+        ${IMGUI_FOLDER}/imgui_widgets.cpp)
+target_include_directories(imgui_glfw_vulkan
+        PUBLIC
+        ${IMGUI_FOLDER}
+        ${IMGUI_FOLDER}/backend)
+add_dependencies(imgui_glfw_vulkan
+        glfw)
+target_link_libraries(imgui_glfw_vulkan
+        glfw)
+
 #Project libs
 add_subdirectory(libraries/io_manager)
 add_subdirectory(libraries/engine)
@@ -120,8 +138,8 @@ add_executable(${APP_BINARY_NAME}
 target_include_directories(${APP_BINARY_NAME}
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/binary/private)
-target_link_libraries(${APP_BINARY_NAME} fmt iomanager engine vulkan)
-add_dependencies(${APP_BINARY_NAME} fmt iomanager engine mandelbrot_shader toScreen_shader)
+target_link_libraries(${APP_BINARY_NAME} fmt iomanager engine vulkan imgui_glfw_vulkan)
+add_dependencies(${APP_BINARY_NAME} fmt iomanager engine mandelbrot_shader toScreen_shader imgui_glfw_vulkan)
 set_target_properties(${APP_BINARY_NAME} PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES
