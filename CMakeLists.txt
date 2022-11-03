@@ -3,8 +3,8 @@ project(vk_mandelbrot)
 
 #App info
 set(APP_BINARY_NAME mandelbrot)
-set(APP_VERSION_MAJOR 1)
-set(APP_VERSION_MINOR 0)
+set(APP_VERSION_MAJOR 0)
+set(APP_VERSION_MINOR 1)
 set(APP_VERSION_PATCH 0)
 
 #Detecting + setting global LTO
@@ -81,9 +81,10 @@ endif ()
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fstack-protector-strong -D_FORTIFY_SOURCE=2" CACHE STRING "" FORCE)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -fstack-protector-strong -D_FORTIFY_SOURCE=2" CACHE STRING "" FORCE)
+else ()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer" CACHE STRING "" FORCE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -fno-omit-frame-pointer" CACHE STRING "" FORCE)
 endif ()
-
-message(${CMAKE_CXX_FLAGS})
 
 #Setup glm
 add_library(glm INTERFACE IMPORTED)
