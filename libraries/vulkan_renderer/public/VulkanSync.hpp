@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKAN_VULKANSYNC_HPP
-#define VK_MANDELBROT_VULKAN_VULKANSYNC_HPP
+#ifndef VK_MANDELBROT_VULKANSYNC_HPP
+#define VK_MANDELBROT_VULKANSYNC_HPP
 
 #include <vector>
 
@@ -34,4 +34,4 @@ class VulkanSync final
     VulkanDevices _devices;
 };
 
-#endif // VK_MANDELBROT_VULKAN_VULKANSYNC_HPP
+#endif // VK_MANDELBROT_VULKANSYNC_HPP

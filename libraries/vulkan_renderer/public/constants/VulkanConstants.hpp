@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKAN_CONSTANTS_HPP
-#define VK_MANDELBROT_VULKAN_CONSTANTS_HPP
+#ifndef VK_MANDELBROT_VULKANCONSTANTS_HPP
+#define VK_MANDELBROT_VULKANCONSTANTS_HPP
 
 #include "glm/glm.hpp"
 
@@ -23,4 +23,4 @@ struct mandelbrotPushConstants final
 
 static_assert(sizeof(mandelbrotPushConstants) <= 128);
 
-#endif // VK_MANDELBROT_VULKAN_CONSTANTS_HPP
+#endif // VK_MANDELBROT_VULKANCONSTANTS_HPP

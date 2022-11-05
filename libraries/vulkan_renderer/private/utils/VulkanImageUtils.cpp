@@ -4,7 +4,6 @@
 
 #include "VulkanMemory.hpp"
 #include "VulkanCommandBuffer.hpp"
-#include "VulkanPhysicalDevice.hpp"
 
 void
 createImage(VkDevice device,

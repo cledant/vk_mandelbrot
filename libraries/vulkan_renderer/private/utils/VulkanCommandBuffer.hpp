@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKAN_VULKANCOMMANDBUFFER_HPP
-#define VK_MANDELBROT_VULKAN_VULKANCOMMANDBUFFER_HPP
+#ifndef VK_MANDELBROT_VULKANCOMMANDBUFFER_HPP
+#define VK_MANDELBROT_VULKANCOMMANDBUFFER_HPP
 
 #include <vector>
 
@@ -19,4 +19,4 @@ void allocateCommandBuffers(VkDevice device,
                             std::vector<VkCommandBuffer> &cmdBuffers,
                             uint32_t nbCmdBuffers);
 
-#endif // VK_MANDELBROT_VULKAN_VULKANCOMMANDBUFFER_HPP
+#endif // VK_MANDELBROT_VULKANCOMMANDBUFFER_HPP

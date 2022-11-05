@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKAN_VULKANRENDERER_HPP
-#define VK_MANDELBROT_VULKAN_VULKANRENDERER_HPP
+#ifndef VK_MANDELBROT_VULKANRENDERER_HPP
+#define VK_MANDELBROT_VULKANRENDERER_HPP
 
 #include "glm/glm.hpp"
 
@@ -95,4 +95,4 @@ class VulkanRenderer final
                                         VkClearColorValue const &cmdClearColor);
 };
 
-#endif // VK_MANDELBROT_VULKAN_VULKANRENDERER_HPP
+#endif // VK_MANDELBROT_VULKANRENDERER_HPP

@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKAN_VULKANSWAPCHAINUTILS_HPP
-#define VK_MANDELBROT_VULKAN_VULKANSWAPCHAINUTILS_HPP
+#ifndef VK_MANDELBROT_VULKANSWAPCHAINUTILS_HPP
+#define VK_MANDELBROT_VULKANSWAPCHAINUTILS_HPP
 
 #include <vector>
 #include <optional>
@@ -36,4 +36,4 @@ std::optional<VkPresentModeKHR> getSwapChainPresentMode(
 VkExtent2D getSwapChainExtent(VkSurfaceCapabilitiesKHR const &capabilities,
                               VkExtent2D actual_extent);
 
-#endif // VK_MANDELBROT_VULKAN_VULKANSWAPCHAINUTILS_HPP
+#endif // VK_MANDELBROT_VULKANSWAPCHAINUTILS_HPP

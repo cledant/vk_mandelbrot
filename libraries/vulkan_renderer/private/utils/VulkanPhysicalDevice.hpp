@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKAN_VULKANPHYSICALDEVICE_HPP
-#define VK_MANDELBROT_VULKAN_VULKANPHYSICALDEVICE_HPP
+#ifndef VK_MANDELBROT_VULKANPHYSICALDEVICE_HPP
+#define VK_MANDELBROT_VULKANPHYSICALDEVICE_HPP
 
 #include <cstdint>
 #include <vector>
@@ -45,4 +45,4 @@ VkDeviceSize getMinUniformBufferOffsetAlignment(VkPhysicalDevice device);
 bool getLinearBlittingSupport(VkPhysicalDevice device, VkFormat imgFormat);
 VkPhysicalDeviceProperties getPhysicalDeviceProperties(VkPhysicalDevice device);
 
-#endif // VK_MANDELBROT_VULKAN_VULKANPHYSICALDEVICE_HPP
+#endif // VK_MANDELBROT_VULKANPHYSICALDEVICE_HPP

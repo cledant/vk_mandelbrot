@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKAN_VULKANDEBUG_HPP
-#define VK_MANDELBROT_VULKAN_VULKANDEBUG_HPP
+#ifndef VK_MANDELBROT_VULKANDEBUG_HPP
+#define VK_MANDELBROT_VULKANDEBUG_HPP
 
 #include <array>
 
@@ -31,4 +31,4 @@ void destroyDebugUtilsMessengerEXT(VkInstance instance,
 char const *getDbgSeverityStr(VkDebugUtilsMessageSeverityFlagBitsEXT severity);
 char const *getDbgMessageTypeStr(VkDebugUtilsMessageTypeFlagsEXT type);
 
-#endif // VK_MANDELBROT_VULKAN_VULKANDEBUG_HPP
+#endif // VK_MANDELBROT_VULKANDEBUG_HPP

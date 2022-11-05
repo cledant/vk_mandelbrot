@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKAN_IOMANAGER_HPP
-#define VK_MANDELBROT_VULKAN_IOMANAGER_HPP
+#ifndef VK_MANDELBROT_IOMANAGER_HPP
+#define VK_MANDELBROT_IOMANAGER_HPP
 
 #include <array>
 #include <vector>
@@ -75,4 +75,4 @@ class IOManager final
     inline void applyMouseVisibility() const;
 };
 
-#endif // VK_MANDELBROT_VULKAN_IOMANAGER_HPP
+#endif // VK_MANDELBROT_IOMANAGER_HPP

@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKAN_VULKANTEXTUREUTILS_HPP
-#define VK_MANDELBROT_VULKAN_VULKANTEXTUREUTILS_HPP
+#ifndef VK_MANDELBROT_VULKANTEXTUREUTILS_HPP
+#define VK_MANDELBROT_VULKANTEXTUREUTILS_HPP
 
 #include <cmath>
 #include <string>
@@ -24,4 +24,4 @@ void loadTextureFromFile(VulkanDevices const &devices,
                          std::string const &filePath,
                          VulkanTexture &toLoad);
 
-#endif // VK_MANDELBROT_VULKAN_VULKANTEXTUREUTILS_HPP
+#endif // VK_MANDELBROT_VULKANTEXTUREUTILS_HPP

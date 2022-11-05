@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKAN_VULKANIMAGE_HPP
-#define VK_MANDELBROT_VULKAN_VULKANIMAGE_HPP
+#ifndef VK_MANDELBROT_VULKANIMAGE_HPP
+#define VK_MANDELBROT_VULKANIMAGE_HPP
 
 #include <string>
 #include <vector>
@@ -34,4 +34,4 @@ VkFormat findSupportedFormat(VkPhysicalDevice physical_device,
                              VkFormatFeatureFlags features);
 bool hasStencilComponent(VkFormat format);
 
-#endif // VK_MANDELBROT_VULKAN_VULKANIMAGE_HPP
+#endif // VK_MANDELBROT_VULKANIMAGE_HPP

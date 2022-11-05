@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKAN_VULKANINSTANCE_HPP
-#define VK_MANDELBROT_VULKAN_VULKANINSTANCE_HPP
+#ifndef VK_MANDELBROT_VULKANINSTANCE_HPP
+#define VK_MANDELBROT_VULKANINSTANCE_HPP
 
 #include <string>
 #include <vector>
@@ -48,4 +48,4 @@ class VulkanInstance final
     static inline bool checkValidationLayerSupport();
 };
 
-#endif // VK_MANDELBROT_VULKAN_VULKANINSTANCE_HPP
+#endif // VK_MANDELBROT_VULKANINSTANCE_HPP

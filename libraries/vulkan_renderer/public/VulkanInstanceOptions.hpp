@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_VULKANINSTANCEOPTIONS_HPP
-#define VK_MANDELBROT_VULKANINSTANCEOPTIONS_HPP
+#ifndef VK_MANDELBROTINSTANCEOPTIONS_HPP
+#define VK_MANDELBROTINSTANCEOPTIONS_HPP
 
 #include <vulkan/vulkan.h>
 
@@ -13,4 +13,4 @@ struct VulkanInstanceOptions final
       VulkanInstanceOptions const &physicalDeviceSupportedOpt) const;
 };
 
-#endif // VK_MANDELBROT_VULKANINSTANCEOPTIONS_HPP
+#endif // VK_MANDELBROTINSTANCEOPTIONS_HPP
