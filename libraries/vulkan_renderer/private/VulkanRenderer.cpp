@@ -140,6 +140,7 @@ void
 VulkanRenderer::clear()
 {
     vkDeviceWaitIdle(_vkInstance.devices.device);
+    _ui.clear();
     _uiRenderPass.clear();
     _mandelbrot.clear();
     _mandelbrotRenderPass.clear();

@@ -36,11 +36,6 @@ class VulkanUiOffscreenRenderPass final
                     int32_t imgH);
     void implClean();
     void implClear();
-
-  private:
-    inline void createUiRenderPass(VkFormat colorImageFormat,
-                                   VkAttachmentLoadOp loadOp,
-                                   VkImageLayout initialLayout);
 };
 
 #endif // VK_MANDELBROT_VULKANUIOFFSCREENRENDERPASS_HPP
