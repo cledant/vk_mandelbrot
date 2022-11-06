@@ -11,11 +11,12 @@
 #include "VulkanInstance.hpp"
 #include "VulkanSwapChain.hpp"
 #include "VulkanSync.hpp"
-#include "common/VulkanDefaultImageBuffer.hpp"
+#include "common/VulkanDefaultImageTexture.hpp"
 #include "renderPass/VulkanDefaultOnscreenRenderPass.hpp"
 #include "renderPass/VulkanDefaultOffscreenRenderPass.hpp"
 #include "toScreen/VulkanToScreenPipeline.hpp"
 #include "mandelbrot/VulkanMandelbrotPipeline.hpp"
+#include "ui/VulkanUiPipeline.hpp"
 
 class VulkanRenderer final
 {
@@ -76,11 +77,13 @@ class VulkanRenderer final
     VulkanInstance _vkInstance;
     VulkanSwapChain _swapChain;
     VulkanSync _sync;
+    VulkanDefaultImageTexture _imageDisplayed;
     VulkanDefaultOnscreenRenderPass _toScreenRenderPass;
     VulkanToScreenPipeline _toScreen;
-    VulkanDefaultImageBuffer _imageDisplayed;
     VulkanDefaultOffscreenRenderPass _mandelbrotRenderPass;
     VulkanMandelbrotPipeline _mandelbrot;
+    VulkanUiOffscreenRenderPass _uiRenderPass;
+    VulkanUiPipeline _ui;
 
     // Cmd Buffers
     std::vector<VkCommandBuffer> _renderCommandBuffers;
@@ -91,6 +94,8 @@ class VulkanRenderer final
     inline void recordMandelbrotRenderCmd(
       uint32_t imgIndex,
       VkClearColorValue const &cmdClearColor);
+    inline void recordUiRenderCmd(uint32_t imgIndex,
+                                  VkClearColorValue const &cmdClearColor);
     inline void recordToScreenRenderCmd(uint32_t imgIndex,
                                         VkClearColorValue const &cmdClearColor);
 };

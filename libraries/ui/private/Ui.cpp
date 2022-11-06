@@ -2,18 +2,21 @@
 
 #include <chrono>
 
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_vulkan.h"
 #include "fmt/format.h"
 
 #include "UiTexts.hpp"
 
 void
-Ui::init(GLFWwindow *win)
+Ui::init(void *win)
 {
     assert(win);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui_ImplGlfw_InitForVulkan(win, true);
+    ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow *>(win), true);
     _avg_fps_time_ref = std::chrono::steady_clock::now();
     // Init input nb particle
     _particle_input_win.windowName = UiTexts::INPUT_PARTICLES_NB_WIN_NAME;

@@ -105,8 +105,12 @@ void
 AVulkanOffscreenRenderPass<Child>::clean()
 {
     static_cast<Child &>(*this).implClean();
-    vkDestroyFramebuffer(_devices.device, framebuffer, nullptr);
-    vkDestroyRenderPass(_devices.device, renderPass, nullptr);
+    if (framebuffer) {
+        vkDestroyFramebuffer(_devices.device, framebuffer, nullptr);
+    }
+    if (renderPass) {
+        vkDestroyRenderPass(_devices.device, renderPass, nullptr);
+    }
 }
 
 #endif // VK_MANDELBROT_AVULKANOFFSCREENRENDERPASS_HPP

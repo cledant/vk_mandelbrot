@@ -72,7 +72,18 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                                _imageDisplayed.depthTex.textureImgView,
                                _swapChain.swapChainExtent.width,
                                _swapChain.swapChainExtent.height);
-    _mandelbrot.init(_vkInstance, _imageDisplayed, _mandelbrotRenderPass);
+    _mandelbrot.init(_vkInstance,
+                     _mandelbrotRenderPass,
+                     _swapChain.swapChainExtent.width,
+                     _swapChain.swapChainExtent.height);
+    _uiRenderPass.init(_vkInstance,
+                       VK_FORMAT_R8G8B8A8_UNORM,
+                       depthFormat,
+                       _imageDisplayed.colorTex.textureImgView,
+                       _imageDisplayed.depthTex.textureImgView,
+                       _swapChain.swapChainExtent.width,
+                       _swapChain.swapChainExtent.height);
+    _ui.init(_vkInstance, _uiRenderPass, _swapChain.currentSwapChainNbImg);
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -109,7 +120,16 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH)
                                  _imageDisplayed.depthTex.textureImgView,
                                  _swapChain.swapChainExtent.width,
                                  _swapChain.swapChainExtent.height);
-    _mandelbrot.resize(_imageDisplayed, _mandelbrotRenderPass);
+    _mandelbrot.resize(_mandelbrotRenderPass,
+                       _swapChain.swapChainExtent.width,
+                       _swapChain.swapChainExtent.height);
+    _uiRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
+                         depthFormat,
+                         _imageDisplayed.colorTex.textureImgView,
+                         _imageDisplayed.depthTex.textureImgView,
+                         _swapChain.swapChainExtent.width,
+                         _swapChain.swapChainExtent.height);
+    _ui.resize(_uiRenderPass, _swapChain.currentSwapChainNbImg);
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -120,6 +140,7 @@ void
 VulkanRenderer::clear()
 {
     vkDeviceWaitIdle(_vkInstance.devices.device);
+    _uiRenderPass.clear();
     _mandelbrot.clear();
     _mandelbrotRenderPass.clear();
     _toScreen.clear();
@@ -255,6 +276,7 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
         recordMandelbrotRenderCmd(imgIndex, cmdClearColor);
         mandelbrotComputeDone = true;
     }
+    recordUiRenderCmd(imgIndex, cmdClearColor);
     recordToScreenRenderCmd(imgIndex, cmdClearColor);
 
     if (vkEndCommandBuffer(_renderCommandBuffers[imgIndex]) != VK_SUCCESS) {
@@ -268,8 +290,6 @@ VulkanRenderer::recordMandelbrotRenderCmd(
   uint32_t imgIndex,
   VkClearColorValue const &cmdClearColor)
 {
-    // Update push constant
-
     // Begin Mandelbrot renderpass
     std::array<VkClearValue, 2> clear_vals{};
     clear_vals[0].color = cmdClearColor;
@@ -290,6 +310,33 @@ VulkanRenderer::recordMandelbrotRenderCmd(
                          VK_SUBPASS_CONTENTS_INLINE);
     _mandelbrot.generateCommands(_renderCommandBuffers[imgIndex],
                                  mandelbrotConstants);
+    vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
+}
+
+void
+VulkanRenderer::recordUiRenderCmd(uint32_t imgIndex,
+                                  VkClearColorValue const &cmdClearColor)
+{
+    // Begin Ui renderpass
+
+    std::array<VkClearValue, 2> clear_vals{};
+    clear_vals[0].color = cmdClearColor;
+    clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
+    VkRenderPassBeginInfo rp_begin_info{};
+    rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    rp_begin_info.renderPass = _uiRenderPass.renderPass;
+    rp_begin_info.framebuffer = _mandelbrotRenderPass.framebuffer;
+    rp_begin_info.renderArea.offset = { 0, 0 };
+    rp_begin_info.renderArea.extent = {
+        static_cast<uint32_t>(_imageDisplayed.colorTex.width),
+        static_cast<uint32_t>(_imageDisplayed.colorTex.height),
+    };
+    rp_begin_info.clearValueCount = clear_vals.size();
+    rp_begin_info.pClearValues = clear_vals.data();
+    vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
+                         &rp_begin_info,
+                         VK_SUBPASS_CONTENTS_INLINE);
+    _ui.generateCommands(_renderCommandBuffers[imgIndex]);
     vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
 }
 

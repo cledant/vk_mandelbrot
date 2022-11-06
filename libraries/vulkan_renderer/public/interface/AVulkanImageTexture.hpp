@@ -1,5 +1,5 @@
-#ifndef VK_MANDELBROT_AVULKANIMAGEBUFFER_HPP
-#define VK_MANDELBROT_AVULKANIMAGEBUFFER_HPP
+#ifndef VK_MANDELBROT_AVULKANIMAGETEXTURE_HPP
+#define VK_MANDELBROT_AVULKANIMAGETEXTURE_HPP
 
 #include <vector>
 
@@ -9,15 +9,16 @@
 #include "VulkanSwapChain.hpp"
 
 template<class Child>
-class AVulkanImageBuffer
+class AVulkanImageTexture
 {
   public:
-    AVulkanImageBuffer() = default;
-    virtual ~AVulkanImageBuffer() = default;
-    AVulkanImageBuffer(AVulkanImageBuffer const &src) = default;
-    AVulkanImageBuffer &operator=(AVulkanImageBuffer const &rhs) = default;
-    AVulkanImageBuffer(AVulkanImageBuffer &&src) noexcept = default;
-    AVulkanImageBuffer &operator=(AVulkanImageBuffer &&rhs) noexcept = default;
+    AVulkanImageTexture() = default;
+    virtual ~AVulkanImageTexture() = default;
+    AVulkanImageTexture(AVulkanImageTexture const &src) = default;
+    AVulkanImageTexture &operator=(AVulkanImageTexture const &rhs) = default;
+    AVulkanImageTexture(AVulkanImageTexture &&src) noexcept = default;
+    AVulkanImageTexture &operator=(AVulkanImageTexture &&rhs) noexcept =
+      default;
     void init(VulkanInstance const &vkInstance,
               VkFormat colorImageFormat,
               VkFormat depthFormat,
@@ -49,11 +50,11 @@ class AVulkanImageBuffer
 
 template<class Child>
 void
-AVulkanImageBuffer<Child>::init(VulkanInstance const &vkInstance,
-                                VkFormat colorImageFormat,
-                                VkFormat depthFormat,
-                                int32_t imgW,
-                                int32_t imgH)
+AVulkanImageTexture<Child>::init(VulkanInstance const &vkInstance,
+                                 VkFormat colorImageFormat,
+                                 VkFormat depthFormat,
+                                 int32_t imgW,
+                                 int32_t imgH)
 {
     _devices = vkInstance.devices;
     _queues = vkInstance.queues;
@@ -64,10 +65,10 @@ AVulkanImageBuffer<Child>::init(VulkanInstance const &vkInstance,
 
 template<class Child>
 void
-AVulkanImageBuffer<Child>::resize(VkFormat colorImageFormat,
-                                  VkFormat depthFormat,
-                                  int32_t imgW,
-                                  int32_t imgH)
+AVulkanImageTexture<Child>::resize(VkFormat colorImageFormat,
+                                   VkFormat depthFormat,
+                                   int32_t imgW,
+                                   int32_t imgH)
 {
     static_cast<Child &>(*this).implResize(
       colorImageFormat, depthFormat, imgW, imgH);
@@ -75,7 +76,7 @@ AVulkanImageBuffer<Child>::resize(VkFormat colorImageFormat,
 
 template<class Child>
 void
-AVulkanImageBuffer<Child>::clear()
+AVulkanImageTexture<Child>::clear()
 {
     static_cast<Child &>(*this).implClear();
     clean();
@@ -89,7 +90,7 @@ AVulkanImageBuffer<Child>::clear()
 
 template<class Child>
 void
-AVulkanImageBuffer<Child>::clean()
+AVulkanImageTexture<Child>::clean()
 {
     static_cast<Child &>(*this).implClean();
     descriptorImage = {};
@@ -97,4 +98,4 @@ AVulkanImageBuffer<Child>::clean()
     depthTex.clear();
 }
 
-#endif // VK_MANDELBROT_AVULKANIMAGEBUFFER_HPP
+#endif // VK_MANDELBROT_AVULKANIMAGETEXTURE_HPP

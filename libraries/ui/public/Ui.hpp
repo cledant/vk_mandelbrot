@@ -3,41 +3,14 @@
 
 #include <chrono>
 
-#define GLFW_INCLUDE_VULKAN
-#include "GLFW/glfw3.h"
-#include "imgui.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_vulkan.h"
-
 #include "VulkanInstance.hpp"
 #include "VulkanSwapChain.hpp"
+#include "UiEvents.hpp"
 #include "UiInfoOverview.hpp"
 #include "UiSimpleInputWindow.hpp"
 #include "UiRGBColorInputWindow.hpp"
 #include "UiAboutBox.hpp"
 #include "UiTextBox.hpp"
-
-enum UiEventTypes
-{
-    UET_EXIT,
-    UET_MOUSE_EXCLUSIVE,
-    UET_INVERT_MOUSE_AXIS,
-    UET_FULLSCREEN,
-    UET_PAUSE_START_PARTICLES,
-    UET_RESET_PARTICLES,
-    UET_GENERATE_SPHERE,
-    UET_GENERATE_CUBE,
-    UET_SET_PARTICLES_NUMBER,
-    UET_SET_PARTICLES_COLOR,
-    UET_GENERATE_DISK,
-    UET_SET_PARTICLE_MAX_SPEED,
-    UET_TOTAL_NB,
-};
-
-struct UiEvent
-{
-    bool events[UET_TOTAL_NB] = { false };
-};
 
 class Ui final
 {
@@ -49,7 +22,7 @@ class Ui final
     Ui(Ui &&src) = delete;
     Ui &operator=(Ui &&rhs) = delete;
 
-    void init(GLFWwindow *win);
+    void init(void *win);
     void clear();
 
     [[nodiscard]] UiEvent getUiEvent() const;
@@ -106,8 +79,8 @@ class Ui final
     bool _show_info_fps = false;
 
     // Help
-    UiAboutBox _about_box;
-    UiTextBox _help_box;
+    UiAboutBox _about_box{};
+    UiTextBox _help_box{};
 
     // Menu Bar
     void _draw_menu_bar();
@@ -122,7 +95,7 @@ class Ui final
     UiEvent _ui_events{};
 
     // Informations
-    UiInfoOverview _info_overview;
+    UiInfoOverview _info_overview{};
 };
 
 #endif // VK_MANDELBROT_UI_HPP

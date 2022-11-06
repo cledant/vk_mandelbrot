@@ -11,11 +11,11 @@
 #include "utils/VulkanTextureUtils.hpp"
 #include "utils/VulkanFrameBufferUtils.hpp"
 
-#include "interface/AVulkanImageBuffer.hpp"
+#include "interface/AVulkanImageTexture.hpp"
 
 template<class Child>
 void
-AVulkanImageBuffer<Child>::defaultCreateColorResources(
+AVulkanImageTexture<Child>::defaultCreateColorResources(
   VkFormat colorImageFormat,
   int32_t imgW,
   int32_t imgH)
@@ -25,7 +25,7 @@ AVulkanImageBuffer<Child>::defaultCreateColorResources(
 
 template<class Child>
 void
-AVulkanImageBuffer<Child>::defaultCreateDepthResources(VkFormat depthFormat,
+AVulkanImageTexture<Child>::defaultCreateDepthResources(VkFormat depthFormat,
                                                        int32_t imgW,
                                                        int32_t imgH)
 {

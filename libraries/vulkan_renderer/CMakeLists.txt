@@ -10,6 +10,8 @@ add_library(vulkan_renderer STATIC
         private/VulkanInstanceOptions.cpp
         private/renderPass/VulkanDefaultOnscreenRenderPass.cpp
         private/renderPass/VulkanDefaultOffscreenRenderPass.cpp
+        private/ui/VulkanUiPipeline.cpp
+        private/ui/VulkanUiOffscreenRenderPass.cpp
         private/utils/VulkanPhysicalDevice.cpp
         private/utils/VulkanSwapChainUtils.cpp
         private/utils/VulkanShader.cpp
@@ -39,9 +41,11 @@ set_target_properties(vulkan_renderer PROPERTIES
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO)
 add_dependencies(vulkan_renderer
+        imgui_glfw_vulkan
         fmt)
 target_link_libraries(vulkan_renderer
         glm
         stb
-        fmt)
+        fmt
+        imgui_glfw_vulkan)
 target_compile_options(vulkan_renderer PRIVATE -Wall -Wextra -Werror)

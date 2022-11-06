@@ -15,6 +15,7 @@ Engine::init()
     };
 
     _ioManager.createWindow(std::move(win_opts));
+    _ui.init(_ioManager.getWindow());
     _vkRenderer.createInstance(app_info::APP_NAME,
                                engine_name,
                                VK_MAKE_VERSION(app_info::APP_VERSION_MAJOR,
@@ -39,8 +40,10 @@ Engine::run()
 {
     while (!_ioManager.shouldClose()) {
         _eventHandler.processEvents(_ioManager.getEvents());
+        _ui.drawUi();
         _vkRenderer.draw();
     }
     _vkRenderer.clear();
+    _ui.clear();
     _ioManager.deleteWindow();
 }

@@ -41,13 +41,12 @@ AVulkanOffscreenRenderPass<Child>::defaultCreateRenderPass(
     VkAttachmentDescription depth_attachment{};
     depth_attachment.format = depthImageFormat;
     depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    depth_attachment.loadOp = loadOp;
     depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    depth_attachment.finalLayout =
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    depth_attachment.initialLayout = initialLayout;
+    depth_attachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
     VkAttachmentReference depth_attachment_ref{};
     depth_attachment_ref.attachment = 1;
@@ -60,22 +59,16 @@ AVulkanOffscreenRenderPass<Child>::defaultCreateRenderPass(
     subpass.pColorAttachments = &color_attachment_ref;
     subpass.pDepthStencilAttachment = &depth_attachment_ref;
 
-    std::array<VkSubpassDependency, 2> sub_dep{};
+    std::array<VkSubpassDependency, 1> sub_dep{};
     sub_dep[0].srcSubpass = VK_SUBPASS_EXTERNAL;
     sub_dep[0].dstSubpass = 0;
-    sub_dep[0].srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    sub_dep[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    sub_dep[0].srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    sub_dep[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    sub_dep[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
-    sub_dep[1].srcSubpass = 0;
-    sub_dep[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-    sub_dep[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    sub_dep[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    sub_dep[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    sub_dep[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    sub_dep[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+    sub_dep[0].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                              VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+    sub_dep[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                              VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+    sub_dep[0].srcAccessMask = 0;
+    sub_dep[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+                               VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
     std::array<VkAttachmentDescription, 2> attachments = { color_attachment,
                                                            depth_attachment };

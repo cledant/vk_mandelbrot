@@ -1,9 +1,9 @@
-#include "common/VulkanDefaultImageBuffer.hpp"
+#include "common/VulkanDefaultImageTexture.hpp"
 
 #include "interface/AVulkanImageBufferPrivate.hpp"
 
 void
-VulkanDefaultImageBuffer::implInit(VkFormat colorImageFormat,
+VulkanDefaultImageTexture::implInit(VkFormat colorImageFormat,
                                    VkFormat depthImageFormat,
                                    int32_t imgW,
                                    int32_t imgH)
@@ -16,7 +16,7 @@ VulkanDefaultImageBuffer::implInit(VkFormat colorImageFormat,
 }
 
 void
-VulkanDefaultImageBuffer::implResize(VkFormat colorImageFormat,
+VulkanDefaultImageTexture::implResize(VkFormat colorImageFormat,
                                      VkFormat depthImageFormat,
                                      int32_t imgW,
                                      int32_t imgH)
@@ -31,11 +31,11 @@ VulkanDefaultImageBuffer::implResize(VkFormat colorImageFormat,
 }
 
 void
-VulkanDefaultImageBuffer::implClean()
+VulkanDefaultImageTexture::implClean()
 {
 }
 
 void
-VulkanDefaultImageBuffer::implClear()
+VulkanDefaultImageTexture::implClear()
 {
 }

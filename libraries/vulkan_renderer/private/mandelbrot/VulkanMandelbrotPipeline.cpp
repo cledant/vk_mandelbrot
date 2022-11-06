@@ -10,8 +10,9 @@
 void
 VulkanMandelbrotPipeline::init(
   VulkanInstance const &vkInstance,
-  VulkanDefaultImageBuffer const &imgBuffer,
-  VulkanDefaultOffscreenRenderPass const &renderPass)
+  VulkanDefaultOffscreenRenderPass const &renderPass,
+  int32_t imgW,
+  int32_t imgH)
 {
     _devices = vkInstance.devices;
     _cmdPools = vkInstance.cmdPools;
@@ -20,14 +21,15 @@ VulkanMandelbrotPipeline::init(
     _pipelineData.init(_devices, _cmdPools, _queues);
     _pipelineDescription.init(_devices);
     createDescriptorPool();
-    createGfxPipeline(imgBuffer, renderPass);
+    createGfxPipeline(renderPass, imgW, imgH);
     createDescriptorSets(_pipelineData);
 }
 
 void
 VulkanMandelbrotPipeline::resize(
-  VulkanDefaultImageBuffer const &imgBuffer,
-  VulkanDefaultOffscreenRenderPass const &renderPass)
+  VulkanDefaultOffscreenRenderPass const &renderPass,
+  int32_t imgW,
+  int32_t imgH)
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
@@ -37,7 +39,7 @@ VulkanMandelbrotPipeline::resize(
     _pipelineData.init(_devices, _cmdPools, _queues);
     _pipelineDescription.init(_devices);
     createDescriptorPool();
-    createGfxPipeline(imgBuffer, renderPass);
+    createGfxPipeline(renderPass, imgW, imgH);
     createDescriptorSets(_pipelineData);
 }
 
@@ -92,8 +94,9 @@ VulkanMandelbrotPipeline::generateCommands(
 
 void
 VulkanMandelbrotPipeline::createGfxPipeline(
-  VulkanDefaultImageBuffer const &imgBuffer,
-  VulkanDefaultOffscreenRenderPass const &renderPass)
+  VulkanDefaultOffscreenRenderPass const &renderPass,
+  int32_t imgW,
+  int32_t imgH)
 {
     // Shaders
     auto vert_shader = loadShader(
@@ -144,16 +147,16 @@ VulkanMandelbrotPipeline::createGfxPipeline(
     // Viewport
     VkViewport viewport{};
     viewport.x = 0.0f;
-    viewport.y = static_cast<float>(imgBuffer.colorTex.height);
-    viewport.height = -static_cast<float>(imgBuffer.colorTex.height);
-    viewport.width = static_cast<float>(imgBuffer.colorTex.width);
+    viewport.y = static_cast<float>(imgH);
+    viewport.height = -static_cast<float>(imgH);
+    viewport.width = static_cast<float>(imgW);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
     scissor.offset = { 0, 0 };
-    scissor.extent = { static_cast<uint32_t>(imgBuffer.colorTex.width),
-                       static_cast<uint32_t>(imgBuffer.colorTex.height) };
+    scissor.extent = { static_cast<uint32_t>(imgW),
+                       static_cast<uint32_t>(imgH) };
 
     VkPipelineViewportStateCreateInfo viewport_state_info{};
     viewport_state_info.sType =

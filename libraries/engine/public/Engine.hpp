@@ -4,6 +4,7 @@
 #include "IOManager.hpp"
 #include "EventHandler.hpp"
 #include "VulkanRenderer.hpp"
+#include "Ui.hpp"
 
 class Engine final
 {
@@ -21,6 +22,7 @@ class Engine final
   private:
     IOManager _ioManager;
     VulkanRenderer _vkRenderer;
+    Ui _ui;
     EventHandler _eventHandler;
 };
 
