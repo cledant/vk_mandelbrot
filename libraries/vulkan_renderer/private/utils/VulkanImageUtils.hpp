@@ -20,6 +20,10 @@ void transitionImageLayout(VulkanDevices const &devices,
                            VulkanTexture const &texture,
                            VkImageLayout old_layout,
                            VkImageLayout new_layout);
+void transitionImageLayout(VkCommandBuffer cmdBuffer,
+                           VulkanTexture const &texture,
+                           VkImageLayout old_layout,
+                           VkImageLayout new_layout);
 void copyBufferToImage(VulkanDevices const &devices,
                        VulkanCommandPools const &cmdPools,
                        VulkanQueues const &queues,

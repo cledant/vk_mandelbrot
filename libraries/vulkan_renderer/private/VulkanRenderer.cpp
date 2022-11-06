@@ -55,6 +55,11 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                             VK_FORMAT_D24_UNORM_S8_UINT },
                           VK_IMAGE_TILING_OPTIMAL,
                           VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+    _imageMandelbrot.init(_vkInstance,
+                          VK_FORMAT_R8G8B8A8_UNORM,
+                          depthFormat,
+                          _swapChain.swapChainExtent.width,
+                          _swapChain.swapChainExtent.height);
     _imageDisplayed.init(_vkInstance,
                          VK_FORMAT_R8G8B8A8_UNORM,
                          depthFormat,
@@ -68,8 +73,8 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _mandelbrotRenderPass.init(_vkInstance,
                                VK_FORMAT_R8G8B8A8_UNORM,
                                depthFormat,
-                               _imageDisplayed.colorTex.textureImgView,
-                               _imageDisplayed.depthTex.textureImgView,
+                               _imageMandelbrot.colorTex.textureImgView,
+                               _imageMandelbrot.depthTex.textureImgView,
                                _swapChain.swapChainExtent.width,
                                _swapChain.swapChainExtent.height);
     _mandelbrot.init(_vkInstance,
@@ -107,6 +112,10 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH)
                             VK_FORMAT_D24_UNORM_S8_UINT },
                           VK_IMAGE_TILING_OPTIMAL,
                           VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+    _imageMandelbrot.resize(VK_FORMAT_R8G8B8A8_UNORM,
+                            depthFormat,
+                            _swapChain.swapChainExtent.width,
+                            _swapChain.swapChainExtent.height);
     _imageDisplayed.resize(VK_FORMAT_R8G8B8A8_UNORM,
                            depthFormat,
                            _swapChain.swapChainExtent.width,
@@ -116,8 +125,8 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH)
       _swapChain, _toScreenRenderPass, _imageDisplayed.descriptorImage);
     _mandelbrotRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
                                  depthFormat,
-                                 _imageDisplayed.colorTex.textureImgView,
-                                 _imageDisplayed.depthTex.textureImgView,
+                                 _imageMandelbrot.colorTex.textureImgView,
+                                 _imageMandelbrot.depthTex.textureImgView,
                                  _swapChain.swapChainExtent.width,
                                  _swapChain.swapChainExtent.height);
     _mandelbrot.resize(_mandelbrotRenderPass,
@@ -147,6 +156,7 @@ VulkanRenderer::clear()
     _toScreen.clear();
     _toScreenRenderPass.clear();
     _imageDisplayed.clear();
+    _imageMandelbrot.clear();
     _sync.clear();
     _swapChain.clear();
     _vkInstance.clear();
@@ -301,11 +311,12 @@ VulkanRenderer::recordMandelbrotRenderCmd(
     rp_begin_info.framebuffer = _mandelbrotRenderPass.framebuffer;
     rp_begin_info.renderArea.offset = { 0, 0 };
     rp_begin_info.renderArea.extent = {
-        static_cast<uint32_t>(_imageDisplayed.colorTex.width),
-        static_cast<uint32_t>(_imageDisplayed.colorTex.height),
+        static_cast<uint32_t>(_imageMandelbrot.colorTex.width),
+        static_cast<uint32_t>(_imageMandelbrot.colorTex.height),
     };
     rp_begin_info.clearValueCount = clear_vals.size();
     rp_begin_info.pClearValues = clear_vals.data();
+
     vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
                          &rp_begin_info,
                          VK_SUBPASS_CONTENTS_INLINE);
@@ -318,15 +329,69 @@ void
 VulkanRenderer::recordUiRenderCmd(uint32_t imgIndex,
                                   VkClearColorValue const &cmdClearColor)
 {
-    // Begin Ui renderpass
+    // TODO: refactor
+    // Copy imageMandelbrot into imageDisplayed
+    VkImageCopy imageCopyRegionColor{};
+    imageCopyRegionColor.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    imageCopyRegionColor.srcSubresource.layerCount = 1;
+    imageCopyRegionColor.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    imageCopyRegionColor.dstSubresource.layerCount = 1;
+    imageCopyRegionColor.extent.width = _imageMandelbrot.colorTex.width;
+    imageCopyRegionColor.extent.height = _imageMandelbrot.colorTex.height;
+    imageCopyRegionColor.extent.depth = 1;
 
+    VkImageCopy imageCopyRegionDepth{};
+    imageCopyRegionDepth.srcSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+    imageCopyRegionDepth.srcSubresource.layerCount = 1;
+    imageCopyRegionDepth.dstSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+    imageCopyRegionDepth.dstSubresource.layerCount = 1;
+    imageCopyRegionDepth.extent.width = _imageMandelbrot.depthTex.width;
+    imageCopyRegionDepth.extent.height = _imageMandelbrot.depthTex.height;
+    imageCopyRegionDepth.extent.depth = 1;
+
+    // Transition layouts for transfert
+    transitionImageLayout(_renderCommandBuffers[imgIndex],
+                          _imageMandelbrot.colorTex,
+                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    transitionImageLayout(_renderCommandBuffers[imgIndex],
+                          _imageMandelbrot.depthTex,
+                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+    transitionImageLayout(_renderCommandBuffers[imgIndex],
+                          _imageDisplayed.colorTex,
+                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    transitionImageLayout(_renderCommandBuffers[imgIndex],
+                          _imageDisplayed.depthTex,
+                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+    // Issue the copy commands
+    vkCmdCopyImage(_renderCommandBuffers[imgIndex],
+                   _imageMandelbrot.colorTex.textureImg,
+                   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                   _imageDisplayed.colorTex.textureImg,
+                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                   1,
+                   &imageCopyRegionColor);
+    vkCmdCopyImage(_renderCommandBuffers[imgIndex],
+                   _imageMandelbrot.depthTex.textureImg,
+                   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                   _imageDisplayed.depthTex.textureImg,
+                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                   1,
+                   &imageCopyRegionDepth);
+
+    // Begin Ui renderpass
     std::array<VkClearValue, 2> clear_vals{};
     clear_vals[0].color = cmdClearColor;
     clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
     VkRenderPassBeginInfo rp_begin_info{};
     rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     rp_begin_info.renderPass = _uiRenderPass.renderPass;
-    rp_begin_info.framebuffer = _mandelbrotRenderPass.framebuffer;
+    rp_begin_info.framebuffer = _uiRenderPass.framebuffer;
     rp_begin_info.renderArea.offset = { 0, 0 };
     rp_begin_info.renderArea.extent = {
         static_cast<uint32_t>(_imageDisplayed.colorTex.width),
@@ -334,6 +399,7 @@ VulkanRenderer::recordUiRenderCmd(uint32_t imgIndex,
     };
     rp_begin_info.clearValueCount = clear_vals.size();
     rp_begin_info.pClearValues = clear_vals.data();
+
     vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
                          &rp_begin_info,
                          VK_SUBPASS_CONTENTS_INLINE);
@@ -357,6 +423,7 @@ VulkanRenderer::recordToScreenRenderCmd(uint32_t imgIndex,
     rp_begin_info.renderArea.extent = _swapChain.swapChainExtent;
     rp_begin_info.clearValueCount = clear_vals.size();
     rp_begin_info.pClearValues = clear_vals.data();
+
     vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
                          &rp_begin_info,
                          VK_SUBPASS_CONTENTS_INLINE);

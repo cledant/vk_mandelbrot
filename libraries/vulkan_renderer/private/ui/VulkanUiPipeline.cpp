@@ -75,7 +75,8 @@ VulkanUiPipeline::initImgui(VulkanUiOffscreenRenderPass const &renderPass,
     if (vkCreateDescriptorPool(
           _devices.device, &pool_info, nullptr, &_descriptorPool) !=
         VK_SUCCESS) {
-        throw std::runtime_error("VulkanUi: failed to create descriptor pool");
+        throw std::runtime_error(
+          "VulkanUiPipeline: failed to create descriptor pool");
     }
     init_info.DescriptorPool = _descriptorPool;
     init_info.Instance = _instance;

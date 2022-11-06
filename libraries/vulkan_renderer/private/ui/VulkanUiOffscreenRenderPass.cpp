@@ -21,7 +21,8 @@ VulkanUiOffscreenRenderPass::implInit(VkFormat colorImageFormat,
     defaultCreateRenderPass(colorImageFormat,
                             depthImageFormat,
                             VK_ATTACHMENT_LOAD_OP_LOAD,
-                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    defaultCreateFramebuffer(colorTexImgView, depthTexImgView, imgW, imgH);
 }
 
 void
@@ -42,7 +43,8 @@ VulkanUiOffscreenRenderPass::implResize(VkFormat colorImageFormat,
     defaultCreateRenderPass(colorImageFormat,
                             depthImageFormat,
                             VK_ATTACHMENT_LOAD_OP_LOAD,
-                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    defaultCreateFramebuffer(colorTexImgView, depthTexImgView, imgW, imgH);
 }
 
 void

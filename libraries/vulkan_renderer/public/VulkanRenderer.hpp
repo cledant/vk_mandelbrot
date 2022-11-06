@@ -77,6 +77,7 @@ class VulkanRenderer final
     VulkanInstance _vkInstance;
     VulkanSwapChain _swapChain;
     VulkanSync _sync;
+    VulkanDefaultImageTexture _imageMandelbrot;
     VulkanDefaultImageTexture _imageDisplayed;
     VulkanDefaultOnscreenRenderPass _toScreenRenderPass;
     VulkanToScreenPipeline _toScreen;
