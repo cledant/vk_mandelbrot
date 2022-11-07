@@ -361,11 +361,11 @@ VulkanRenderer::recordUiRenderCmd(uint32_t imgIndex,
 
     transitionImageLayout(_renderCommandBuffers[imgIndex],
                           _imageDisplayed.colorTex,
-                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                          VK_IMAGE_LAYOUT_UNDEFINED,
                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     transitionImageLayout(_renderCommandBuffers[imgIndex],
                           _imageDisplayed.depthTex,
-                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                          VK_IMAGE_LAYOUT_UNDEFINED,
                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
     // Issue the copy commands
@@ -383,6 +383,16 @@ VulkanRenderer::recordUiRenderCmd(uint32_t imgIndex,
                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                    1,
                    &imageCopyRegionDepth);
+
+    // Transition layouts
+    transitionImageLayout(_renderCommandBuffers[imgIndex],
+                          _imageMandelbrot.colorTex,
+                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    transitionImageLayout(_renderCommandBuffers[imgIndex],
+                          _imageMandelbrot.depthTex,
+                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     // Begin Ui renderpass
     std::array<VkClearValue, 2> clear_vals{};
