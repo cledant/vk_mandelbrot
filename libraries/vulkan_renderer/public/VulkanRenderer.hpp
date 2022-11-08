@@ -86,15 +86,18 @@ class VulkanRenderer final
     VulkanUiOffscreenRenderPass _uiRenderPass;
     VulkanUiPipeline _ui;
 
-    // Cmd Buffers
     std::vector<VkCommandBuffer> _renderCommandBuffers;
 
+    // Cmd buffer related
     inline void emitDrawCmds(uint32_t imgIndex);
     inline void recordRenderCmd(uint32_t imgIndex,
                                 VkClearColorValue const &clearColor);
+
+    // Sub-functions for recordRenderCmd
     inline void recordMandelbrotRenderCmd(
       uint32_t imgIndex,
       VkClearColorValue const &cmdClearColor);
+    inline void copyImageTexture(uint32_t imgIndex);
     inline void recordUiRenderCmd(uint32_t imgIndex,
                                   VkClearColorValue const &cmdClearColor);
     inline void recordToScreenRenderCmd(uint32_t imgIndex,

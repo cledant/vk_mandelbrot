@@ -14,16 +14,6 @@ void createImage(VkDevice device,
 void allocateImage(VulkanDevices const &devices,
                    VulkanTexture &texture,
                    VkMemoryPropertyFlags properties);
-void transitionImageLayout(VulkanDevices const &devices,
-                           VulkanCommandPools const &cmdPools,
-                           VulkanQueues const &queues,
-                           VulkanTexture const &texture,
-                           VkImageLayout oldLayout,
-                           VkImageLayout newLayout);
-void transitionImageLayout(VkCommandBuffer cmdBuffer,
-                           VulkanTexture const &texture,
-                           VkImageLayout oldLayout,
-                           VkImageLayout newLayout);
 void copyBufferToImage(VulkanDevices const &devices,
                        VulkanCommandPools const &cmdPools,
                        VulkanQueues const &queues,

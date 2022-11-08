@@ -21,6 +21,7 @@ add_library(vulkan_renderer STATIC
         private/utils/VulkanTextureUtils.cpp
         private/utils/VulkanDescriptorUtils.cpp
         private/utils/VulkanPipelineUtils.cpp
+        private/utils/VulkanTransitionLayout.cpp
         private/toScreen/VulkanToScreenPipeline.cpp
         private/toScreen/VulkanToScreenPipelineData.cpp
         private/toScreen/VulkanToScreenPipelineDescription.cpp

@@ -4,6 +4,7 @@
 
 #include "utils/VulkanImageUtils.hpp"
 #include "utils/VulkanTextureUtils.hpp"
+#include "utils/VulkanTransitionLayout.hpp"
 
 void
 VulkanTexture::loadTextureOnGPU(VulkanDevices const &devices,

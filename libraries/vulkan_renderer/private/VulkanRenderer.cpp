@@ -239,6 +239,7 @@ VulkanRenderer::draw()
       (_sync.currentFrame + 1) % VulkanSync::MAX_FRAME_INFLIGHT;
 }
 
+// Cmd buffer related
 void
 VulkanRenderer::emitDrawCmds(uint32_t imgIndex)
 {
@@ -287,6 +288,7 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
         recordMandelbrotRenderCmd(imgIndex, cmdClearColor);
         mandelbrotComputeDone = true;
     }
+    copyImageTexture(imgIndex);
     recordUiRenderCmd(imgIndex, cmdClearColor);
     recordToScreenRenderCmd(imgIndex, cmdClearColor);
 
@@ -296,6 +298,7 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
     }
 }
 
+// Sub-functions for recordRenderCmd
 void
 VulkanRenderer::recordMandelbrotRenderCmd(
   uint32_t imgIndex,
@@ -326,74 +329,36 @@ VulkanRenderer::recordMandelbrotRenderCmd(
 }
 
 void
+VulkanRenderer::copyImageTexture(uint32_t imgIndex)
+{
+    // Setup for correct image layout for transfers
+    _imageMandelbrot.transitionDepthColorImageLayout(
+      _renderCommandBuffers[imgIndex],
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    _imageDisplayed.transitionDepthColorImageLayout(
+      _renderCommandBuffers[imgIndex],
+      VK_IMAGE_LAYOUT_UNDEFINED,
+      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+    _imageDisplayed.copyColorDepthImageContent(_imageMandelbrot,
+                                               _renderCommandBuffers[imgIndex]);
+
+    // Setup for correct image layout for later usage
+    _imageMandelbrot.transitionDepthColorImageLayout(
+      _renderCommandBuffers[imgIndex],
+      VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    _imageDisplayed.transitionDepthColorImageLayout(
+      _renderCommandBuffers[imgIndex],
+      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+}
+
+void
 VulkanRenderer::recordUiRenderCmd(uint32_t imgIndex,
                                   VkClearColorValue const &cmdClearColor)
 {
-    // TODO: refactor
-    // Copy imageMandelbrot into imageDisplayed
-    VkImageCopy imageCopyRegionColor{};
-    imageCopyRegionColor.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    imageCopyRegionColor.srcSubresource.layerCount = 1;
-    imageCopyRegionColor.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    imageCopyRegionColor.dstSubresource.layerCount = 1;
-    imageCopyRegionColor.extent.width = _imageMandelbrot.colorTex.width;
-    imageCopyRegionColor.extent.height = _imageMandelbrot.colorTex.height;
-    imageCopyRegionColor.extent.depth = 1;
-
-    VkImageCopy imageCopyRegionDepth{};
-    imageCopyRegionDepth.srcSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-    imageCopyRegionDepth.srcSubresource.layerCount = 1;
-    imageCopyRegionDepth.dstSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-    imageCopyRegionDepth.dstSubresource.layerCount = 1;
-    imageCopyRegionDepth.extent.width = _imageMandelbrot.depthTex.width;
-    imageCopyRegionDepth.extent.height = _imageMandelbrot.depthTex.height;
-    imageCopyRegionDepth.extent.depth = 1;
-
-    // Transition layouts for transfert
-    transitionImageLayout(_renderCommandBuffers[imgIndex],
-                          _imageMandelbrot.colorTex,
-                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-    transitionImageLayout(_renderCommandBuffers[imgIndex],
-                          _imageMandelbrot.depthTex,
-                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-
-    transitionImageLayout(_renderCommandBuffers[imgIndex],
-                          _imageDisplayed.colorTex,
-                          VK_IMAGE_LAYOUT_UNDEFINED,
-                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    transitionImageLayout(_renderCommandBuffers[imgIndex],
-                          _imageDisplayed.depthTex,
-                          VK_IMAGE_LAYOUT_UNDEFINED,
-                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-
-    // Issue the copy commands
-    vkCmdCopyImage(_renderCommandBuffers[imgIndex],
-                   _imageMandelbrot.colorTex.textureImg,
-                   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                   _imageDisplayed.colorTex.textureImg,
-                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                   1,
-                   &imageCopyRegionColor);
-    vkCmdCopyImage(_renderCommandBuffers[imgIndex],
-                   _imageMandelbrot.depthTex.textureImg,
-                   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                   _imageDisplayed.depthTex.textureImg,
-                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                   1,
-                   &imageCopyRegionDepth);
-
-    // Transition layouts
-    transitionImageLayout(_renderCommandBuffers[imgIndex],
-                          _imageMandelbrot.colorTex,
-                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    transitionImageLayout(_renderCommandBuffers[imgIndex],
-                          _imageMandelbrot.depthTex,
-                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
     // Begin Ui renderpass
     std::array<VkClearValue, 2> clear_vals{};
     clear_vals[0].color = cmdClearColor;
