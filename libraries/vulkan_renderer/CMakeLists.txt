@@ -8,10 +8,8 @@ add_library(vulkan_renderer STATIC
         private/VulkanSwapChain.cpp
         private/VulkanSync.cpp
         private/VulkanInstanceOptions.cpp
-        private/renderPass/VulkanDefaultOnscreenRenderPass.cpp
-        private/renderPass/VulkanDefaultOffscreenRenderPass.cpp
-        private/ui/VulkanUiPipeline.cpp
-        private/ui/VulkanUiOffscreenRenderPass.cpp
+        private/defaultRenderPass/VulkanDefaultOnscreenRenderPass.cpp
+        private/defaultRenderPass/VulkanDefaultOffscreenRenderPass.cpp
         private/utils/VulkanPhysicalDevice.cpp
         private/utils/VulkanSwapChainUtils.cpp
         private/utils/VulkanShader.cpp
@@ -22,12 +20,14 @@ add_library(vulkan_renderer STATIC
         private/utils/VulkanDescriptorUtils.cpp
         private/utils/VulkanPipelineUtils.cpp
         private/utils/VulkanTransitionLayout.cpp
-        private/toScreen/VulkanToScreenPipeline.cpp
-        private/toScreen/VulkanToScreenPipelineData.cpp
-        private/toScreen/VulkanToScreenPipelineDescription.cpp
-        private/mandelbrot/VulkanMandelbrotPipeline.cpp
-        private/mandelbrot/VulkanMandelbrotPipelineData.cpp
-        private/mandelbrot/VulkanMandelbrotPipelineDescription.cpp
+        private/pipelines/ui/VulkanUiPipeline.cpp
+        private/pipelines/ui/VulkanUiOffscreenRenderPass.cpp
+        private/pipelines/toScreen/VulkanToScreenPipeline.cpp
+        private/pipelines/toScreen/VulkanToScreenPipelineData.cpp
+        private/pipelines/toScreen/VulkanToScreenPipelineDescription.cpp
+        private/pipelines/mandelbrot/VulkanMandelbrotPipeline.cpp
+        private/pipelines/mandelbrot/VulkanMandelbrotPipelineData.cpp
+        private/pipelines/mandelbrot/VulkanMandelbrotPipelineDescription.cpp
         private/common/VulkanBuffer.cpp
         private/common/VulkanTexture.cpp
         private/common/VulkanTextureStaging.cpp

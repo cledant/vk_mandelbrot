@@ -12,11 +12,11 @@
 #include "VulkanSwapChain.hpp"
 #include "VulkanSync.hpp"
 #include "common/VulkanDefaultImageTexture.hpp"
-#include "renderPass/VulkanDefaultOnscreenRenderPass.hpp"
-#include "renderPass/VulkanDefaultOffscreenRenderPass.hpp"
-#include "toScreen/VulkanToScreenPipeline.hpp"
-#include "mandelbrot/VulkanMandelbrotPipeline.hpp"
-#include "ui/VulkanUiPipeline.hpp"
+#include "defaultRenderPass/VulkanDefaultOnscreenRenderPass.hpp"
+#include "defaultRenderPass/VulkanDefaultOffscreenRenderPass.hpp"
+#include "pipelines/toScreen/VulkanToScreenPipeline.hpp"
+#include "pipelines/mandelbrot/VulkanMandelbrotPipeline.hpp"
+#include "pipelines/ui/VulkanUiPipeline.hpp"
 
 class VulkanRenderer final
 {

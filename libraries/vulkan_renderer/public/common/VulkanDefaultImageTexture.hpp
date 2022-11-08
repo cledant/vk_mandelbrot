@@ -3,7 +3,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "interface/AVulkanImageTexture.hpp"
+#include "interfaces/AVulkanImageTexture.hpp"
 
 class VulkanDefaultImageTexture final
   : public AVulkanImageTexture<VulkanDefaultImageTexture>

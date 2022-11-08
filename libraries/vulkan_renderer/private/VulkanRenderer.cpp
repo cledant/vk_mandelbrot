@@ -8,6 +8,7 @@
 #include "utils/VulkanCommandBuffer.hpp"
 #include "utils/VulkanMemory.hpp"
 #include "utils/VulkanImageUtils.hpp"
+#include "interfaces/AVulkanImageBufferPrivate.hpp"
 
 void
 VulkanRenderer::createInstance(std::string &&appName,

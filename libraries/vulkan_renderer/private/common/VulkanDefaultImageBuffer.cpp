@@ -1,6 +1,6 @@
 #include "common/VulkanDefaultImageTexture.hpp"
 
-#include "interface/AVulkanImageBufferPrivate.hpp"
+#include "interfaces/AVulkanImageBufferPrivate.hpp"
 
 void
 VulkanDefaultImageTexture::implInit(VkFormat colorImageFormat,
