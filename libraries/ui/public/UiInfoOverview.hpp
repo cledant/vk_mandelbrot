@@ -9,15 +9,15 @@ struct UiInfoOverview final
 {
     float avgFps{};
     float currentFps{};
+    float renderScale{};
+    float zoom{};
     glm::vec3 cameraPos{};
-    glm::vec3 gravityCenterPos{};
-    uint32_t nbParticles{};
-    uint32_t maxSpeedParticle{};
-    glm::vec2 cursorPositionWindow{};
-    glm::vec3 cursorPosition3D{};
-    float particleMass{};
+    uint32_t maxIteration{};
 
+  private:
     void draw(bool &fps, bool &info) const;
+
+    friend class Ui;
 };
 
 #endif // VK_MANDELBROT_UIINFOOVERVIEW_HPP

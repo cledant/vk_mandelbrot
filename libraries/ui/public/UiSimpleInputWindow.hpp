@@ -16,7 +16,10 @@ struct UiSimpleInputWindow final
     bool isInputOpen = false;
     UiTextBox errorWin{};
 
+  private:
     bool drawInputWindow();
+
+    friend class Ui;
 };
 
 #endif // VK_MANDELBROT_UISIMPLEINPUTWINDOW_HPP

@@ -5,7 +5,6 @@
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_vulkan.h"
-#include "fmt/format.h"
 
 #include "UiTexts.hpp"
 
@@ -17,26 +16,10 @@ Ui::init(void *win)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow *>(win), true);
-    _avg_fps_time_ref = std::chrono::steady_clock::now();
-    // Init input nb particle
-    _particle_input_win.windowName = UiTexts::INPUT_PARTICLES_NB_WIN_NAME;
-    _particle_input_win.windowText = UiTexts::INPUT_PARTICLES_NB_WIN_TEXT;
-    _particle_input_win.errorWin.windowName =
-      UiTexts::INPUT_PARTICLES_ERROR_WIN_NAME;
-    _particle_input_win.winW = 300;
-    // Init input max speed particle
-    _max_speed_particles_input_win.windowName =
-      UiTexts::INPUT_PARTICLES_SPEED_WIN_NAME;
-    _max_speed_particles_input_win.windowText =
-      UiTexts::INPUT_PARTICLES_SPEED_WIN_TEXT;
-    _max_speed_particles_input_win.errorWin.windowName =
-      UiTexts::INPUT_PARTICLES_ERROR_WIN_NAME;
-    _max_speed_particles_input_win.winW = 300;
-    // Init input particle color
-    _particle_color_input.windowName = UiTexts::INPUT_PARTICLES_COLOR_WIN_NAME;
+    _avgFpsTimeRef = std::chrono::steady_clock::now();
     // Init help
-    _help_box.windowName = UiTexts::INPUT_PARTICLES_HELP_WIN_NAME;
-    _help_box.windowText = UiTexts::INPUT_PARTICLES_HELP_WIN_TEXT;
+    helpBox.windowName = UiTexts::INPUT_HELP_WIN_NAME;
+    helpBox.windowText = UiTexts::INPUT_HELP_WIN_TEXT;
 }
 
 void
@@ -46,30 +29,10 @@ Ui::clear()
     ImGui::DestroyContext();
 }
 
-UiEvent
+UiEvent const &
 Ui::getUiEvent() const
 {
-    return (_ui_events);
-}
-
-uint32_t
-Ui::getNbParticles() const
-{
-    return (_nb_particles);
-}
-
-uint32_t
-Ui::getParticleMaxSpeed() const
-{
-    return (_max_speed_particles);
-}
-
-glm::vec3
-Ui::getParticlesColor() const
-{
-    return (glm::vec3(_particle_color_input.color.x,
-                      _particle_color_input.color.y,
-                      _particle_color_input.color.z));
+    return (_uiEvents);
 }
 
 bool
@@ -80,260 +43,65 @@ Ui::isUiHovered() const
 }
 
 void
-Ui::toggleInfoPosition()
+Ui::draw()
 {
-    _show_info_position = !_show_info_position;
-}
-
-void
-Ui::toggleShowFps()
-{
-    _show_info_fps = !_show_info_fps;
-}
-
-void
-Ui::toggleHelp()
-{
-    _help_box.isOpen = !_help_box.isOpen;
-}
-
-void
-Ui::toggleAbout()
-{
-    _about_box.isOpen = !_about_box.isOpen;
-}
-
-void
-Ui::toggleDisplayUi()
-{
-    _display_ui = !_display_ui;
-}
-
-void
-Ui::toggleFullscreen()
-{
-    _fullscreen = !_fullscreen;
-}
-
-void
-Ui::toggleCameraMvt()
-{
-    _toggle_camera_mvt = !_toggle_camera_mvt;
-}
-
-void
-Ui::toggleInvertCameraYAxis()
-{
-    _invert_camera_y_axis = !_invert_camera_y_axis;
-}
-
-// Position Info
-void
-Ui::setCameraPos(glm::vec3 const &cameraPos)
-{
-    _info_overview.cameraPos = cameraPos;
-}
-
-void
-Ui::setCursorPositionWindow(glm::vec2 const &cursorPos)
-{
-    _info_overview.cursorPositionWindow = cursorPos;
-}
-
-void
-Ui::setCursorPosition3D(glm::vec3 const &cursorPos)
-{
-    _info_overview.cursorPosition3D = cursorPos;
-}
-
-void
-Ui::setGravityCenterPos(glm::vec3 const &gravityCenterPos)
-{
-    _info_overview.gravityCenterPos = gravityCenterPos;
-}
-
-void
-Ui::setNbParticles(uint32_t nbParticles)
-{
-    _info_overview.nbParticles = nbParticles;
-    _nb_particles = nbParticles;
-}
-
-void
-Ui::setParticleMaxSpeed(uint32_t maxSpeed)
-{
-    _max_speed_particles = maxSpeed;
-    _info_overview.maxSpeedParticle = maxSpeed;
-}
-
-void
-Ui::setParticleMass(float mass)
-{
-    _info_overview.particleMass = mass;
-}
-
-void
-Ui::drawUi()
-{
-    _compute_fps();
+    computeFps();
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    if (!_display_ui) {
+    if (!displayUi) {
         ImGui::Render();
         return;
     }
 
-    _draw_menu_bar();
-    _info_overview.draw(_show_info_fps, _show_info_position);
-    _about_box.draw();
-    _help_box.draw();
-    _ui_events.events[UET_SET_PARTICLES_COLOR] =
-      _particle_color_input.drawInputWindow();
-    _draw_particles_nb_input();
-    _draw_particles_speed_input();
-
+    drawMenuBar();
+    infoOverview.draw(showInfoFps, showInfoPosition);
+    _aboutBox.draw();
+    helpBox.draw();
     ImGui::Render();
 }
 
 void
-Ui::_draw_edit_panel()
+Ui::drawMenuBar()
 {
-    if (ImGui::MenuItem("Set Number of particles")) {
-        _particle_input_win.isInputOpen = !_particle_input_win.isInputOpen;
-    }
-    ImGui::Separator();
-    if (ImGui::MenuItem("Set Particles base color")) {
-        _particle_color_input.isInputOpen = !_particle_color_input.isInputOpen;
-    }
-    ImGui::Separator();
-    if (ImGui::MenuItem("Set Particles max speed")) {
-        _max_speed_particles_input_win.isInputOpen =
-          !_max_speed_particles_input_win.isInputOpen;
-    }
-    ImGui::Separator();
-    _ui_events.events[UET_PAUSE_START_PARTICLES] =
-      ImGui::MenuItem("Pause / Resume particles movement", "F2");
-    ImGui::Separator();
-    _ui_events.events[UET_RESET_PARTICLES] =
-      ImGui::MenuItem("Reset simulation", "F3");
-    ImGui::Separator();
-    if (ImGui::BeginMenu("Particle distribution")) {
-        if ((_ui_events.events[UET_GENERATE_SPHERE] =
-               ImGui::MenuItem("Sphere", "", &_generate_sphere))) {
-            _generate_cube = false;
-            _generate_disk = false;
-        }
-        if ((_ui_events.events[UET_GENERATE_CUBE] =
-               ImGui::MenuItem("Cube", "", &_generate_cube))) {
-            _generate_sphere = false;
-            _generate_disk = false;
-        }
-        if ((_ui_events.events[UET_GENERATE_DISK] =
-               ImGui::MenuItem("Disk", "", &_generate_disk))) {
-            _generate_sphere = false;
-            _generate_cube = false;
-        }
-        ImGui::EndMenu();
-    }
-    ImGui::EndMenu();
-}
-
-void
-Ui::_draw_particles_nb_input()
-{
-    auto trigger_nb_particle = _particle_input_win.drawInputWindow();
-    if (trigger_nb_particle) {
-        try {
-            auto parsed_nb_particle = std::stoul(_particle_input_win.input);
-            if (parsed_nb_particle <= UINT32_MAX) {
-                _ui_events.events[UET_SET_PARTICLES_NUMBER] = true;
-                _nb_particles = parsed_nb_particle;
-                _info_overview.nbParticles = _nb_particles;
-            } else {
-                _particle_input_win.isInputOpen = false;
-                _particle_input_win.errorWin.isOpen = true;
-                _particle_input_win.errorWin.windowText = fmt::format(
-                  "Nb particles should be between {} and {}", 0, UINT32_MAX);
-            }
-        } catch (std::exception const &e) {
-            _particle_input_win.isInputOpen = false;
-            _particle_input_win.errorWin.isOpen = true;
-            _particle_input_win.errorWin.windowText = "Invalid number";
-        }
-    }
-    _particle_input_win.errorWin.draw();
-}
-
-void
-Ui::_draw_particles_speed_input()
-{
-    auto trigger_max_speed_particle =
-      _max_speed_particles_input_win.drawInputWindow();
-    if (trigger_max_speed_particle) {
-        try {
-            auto parsed_max_speed =
-              std::stoul(_max_speed_particles_input_win.input);
-            if (parsed_max_speed <= UINT32_MAX) {
-                _max_speed_particles = parsed_max_speed;
-                _ui_events.events[UET_SET_PARTICLE_MAX_SPEED] = true;
-                _info_overview.maxSpeedParticle = _max_speed_particles;
-            } else {
-                _max_speed_particles_input_win.isInputOpen = false;
-                _max_speed_particles_input_win.errorWin.isOpen = true;
-                _max_speed_particles_input_win.errorWin.windowText =
-                  fmt::format(
-                    "Speed should be between {} and {}", 0, UINT32_MAX);
-            }
-        } catch (std::exception const &e) {
-            _max_speed_particles_input_win.isInputOpen = false;
-            _max_speed_particles_input_win.errorWin.isOpen = true;
-            _max_speed_particles_input_win.errorWin.windowText =
-              "Invalid number";
-        }
-    }
-    _max_speed_particles_input_win.errorWin.draw();
-}
-
-void
-Ui::_draw_menu_bar()
-{
-    _ui_events = {};
+    _uiEvents = {};
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
-            _ui_events.events[UET_EXIT] = ImGui::MenuItem("Exit", "F10");
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("Edit")) {
-            _draw_edit_panel();
-        }
-        if (ImGui::BeginMenu("Controls")) {
-            _ui_events.events[UET_MOUSE_EXCLUSIVE] = ImGui::MenuItem(
-              "Toggle Camera Movement", "F4", &_toggle_camera_mvt);
+            _uiEvents.events[UET_SAVE_TO_FILE] =
+              ImGui::MenuItem("Save fractal to file", "");
             ImGui::Separator();
-            _ui_events.events[UET_INVERT_MOUSE_AXIS] = ImGui::MenuItem(
-              "Inverse Mouse Y Axis", "F5", &_invert_camera_y_axis);
+            if (ImGui::BeginMenu("Settings")) {
+                if ((_uiEvents.events[UET_VSYNC] =
+                       ImGui::MenuItem("Vsync", "", &_vsync))) {
+                }
+                ImGui::Separator();
+                if ((_uiEvents.events[UET_FULLSCREEN] =
+                       ImGui::MenuItem("Fullscreen", "F11", &fullscreen))) {
+                }
+                ImGui::EndMenu();
+            }
+            ImGui::Separator();
+            _uiEvents.events[UET_EXIT] = ImGui::MenuItem("Exit", "F12");
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("View")) {
-            ImGui::MenuItem("Info", "F6", &_show_info_position);
+            ImGui::MenuItem("Display control menu", "F2", &displayControlMenu);
             ImGui::Separator();
-            ImGui::MenuItem("Show Fps", "F7", &_show_info_fps);
+            ImGui::MenuItem("Display UI", "F3", &displayUi);
             ImGui::Separator();
-            _ui_events.events[UET_FULLSCREEN] =
-              ImGui::MenuItem("Fullscreen", "F8", &_fullscreen);
+            ImGui::MenuItem("Info", "F4", &showInfoPosition);
             ImGui::Separator();
-            ImGui::MenuItem("Display UI", "F9", &_display_ui);
+            ImGui::MenuItem("Show Fps", "F5", &showInfoFps);
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Help")) {
             if (ImGui::MenuItem("Help", "F1")) {
-                _help_box.isOpen = !_help_box.isOpen;
+                helpBox.isOpen = !helpBox.isOpen;
             }
             ImGui::Separator();
             if (ImGui::MenuItem("About")) {
-                _about_box.isOpen = !_about_box.isOpen;
+                _aboutBox.isOpen = !_aboutBox.isOpen;
             }
             ImGui::EndMenu();
         }
@@ -342,18 +110,18 @@ Ui::_draw_menu_bar()
 }
 
 void
-Ui::_compute_fps()
+Ui::computeFps()
 {
-    ++_nb_frame;
+    ++_nbFrames;
     auto now = std::chrono::steady_clock::now();
-    std::chrono::duration<double> diff_frame = now - _prev_frame_time_ref;
-    _info_overview.currentFps = 1.0f / diff_frame.count();
-    _prev_frame_time_ref = now;
+    std::chrono::duration<double> diff_frame = now - _prevFrameTimeRef;
+    infoOverview.currentFps = 1.0f / diff_frame.count();
+    _prevFrameTimeRef = now;
 
-    std::chrono::duration<double> diff_avg = now - _avg_fps_time_ref;
+    std::chrono::duration<double> diff_avg = now - _avgFpsTimeRef;
     if (diff_avg.count() > 1.0f) {
-        _info_overview.avgFps = _nb_frame;
-        _nb_frame = 0;
-        _avg_fps_time_ref = now;
+        infoOverview.avgFps = _nbFrames;
+        _nbFrames = 0;
+        _avgFpsTimeRef = now;
     }
 }

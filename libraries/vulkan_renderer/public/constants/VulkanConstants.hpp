@@ -13,8 +13,8 @@ struct mandelbrotPushConstants final
 
     alignas(16) glm::vec4 color = DEFAULT_COLOR;
     alignas(16) glm::vec4 maxIterColor = DEFAULT_MAX_ITER_COLOR;
-    alignas(4) float fwW{};
-    alignas(4) float fwH{};
+    alignas(4) float fbW{};
+    alignas(4) float fbH{};
     alignas(4) uint32_t maxIter = DEFAULT_MAX_ITER;
     alignas(4) float zoom = DEFAULT_ZOOM;
     alignas(4) float zoomMultScreenRatio{};

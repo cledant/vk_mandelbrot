@@ -5,7 +5,10 @@ struct UiAboutBox final
 {
     bool isOpen = false;
 
+  private:
     void draw();
+
+    friend class Ui;
 };
 
-#endif // PARTICLE_SYSTEM_VULKAN_UIABOUTBOX_HPP
+#endif // VK_MANDELBROT_UIABOUTBOX_HPP

@@ -13,7 +13,10 @@ struct UiRGBColorInputWindow final
     ImVec4 color{};
     bool isInputOpen = false;
 
-    bool drawInputWindow();
+  private:
+    bool draw();
+
+    friend class Ui;
 };
 
 #endif // VK_MANDELBROT_UIRGBCOLORINPUTWINDOW_HPP

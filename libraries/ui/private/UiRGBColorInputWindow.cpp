@@ -3,7 +3,7 @@
 #include "imgui.h"
 
 bool
-UiRGBColorInputWindow::drawInputWindow()
+UiRGBColorInputWindow::draw()
 {
     static constexpr ImGuiWindowFlags const WIN_FLAGS =
       ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings |

@@ -284,8 +284,8 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
 
     if (!mandelbrotComputeDone) {
         // Update push constant values
-        mandelbrotConstants.fwW = _imageDisplayed.colorTex.width;
-        mandelbrotConstants.fwH = _imageDisplayed.colorTex.height;
+        mandelbrotConstants.fbW = _imageDisplayed.colorTex.width;
+        mandelbrotConstants.fbH = _imageDisplayed.colorTex.height;
         recordMandelbrotRenderCmd(imgIndex, cmdClearColor);
         mandelbrotComputeDone = true;
     }

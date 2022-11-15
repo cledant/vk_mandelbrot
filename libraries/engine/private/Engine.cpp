@@ -40,7 +40,7 @@ Engine::run()
 {
     while (!_ioManager.shouldClose()) {
         _eventHandler.processEvents(_ioManager.getEvents());
-        _ui.drawUi();
+        _ui.draw();
         _vkRenderer.draw();
     }
     _vkRenderer.clear();

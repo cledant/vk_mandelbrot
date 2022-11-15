@@ -155,8 +155,8 @@ IOManager::getEvents() const
     IOEvents io{};
 
     glfwPollEvents();
-    io.events[IOET_QUIT] = _keys[GLFW_KEY_ESCAPE];
-    io.events[IOET_FULLSCREEN] = _keys[GLFW_KEY_F2];
+    io.events[IOET_QUIT] = _keys[GLFW_KEY_F12];
+    io.events[IOET_FULLSCREEN] = _keys[GLFW_KEY_F11];
     io.events[IOET_UP] = _keys[GLFW_KEY_W];
     io.events[IOET_DOWN] = _keys[GLFW_KEY_S];
     io.events[IOET_RIGHT] = _keys[GLFW_KEY_D];
