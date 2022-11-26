@@ -166,6 +166,11 @@ IOManager::getEvents() const
     io.events[IOET_INC_ITER] = _keys[GLFW_KEY_EQUAL];
     io.events[IOET_DEC_ITER] = _keys[GLFW_KEY_MINUS];
     io.events[IOET_RESET_ITER] = _keys[GLFW_KEY_P];
+    io.events[IOET_DISPLAY_CONTROL_MENU] = _keys[GLFW_KEY_F2];
+    io.events[IOET_DISPLAY_UI] = _keys[GLFW_KEY_F3];
+    io.events[IOET_DISPLAY_INFO] = _keys[GLFW_KEY_F4];
+    io.events[IOET_DISPLAY_FPS] = _keys[GLFW_KEY_F5];
+    io.events[IOET_DISPLAY_HELP] = _keys[GLFW_KEY_F1];
     io.multiplier = _keys[GLFW_KEY_LEFT_SHIFT];
     io.mousePosition = _mousePosition;
     io.mouseScroll = _mouseScroll;

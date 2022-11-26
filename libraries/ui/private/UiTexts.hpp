@@ -10,7 +10,9 @@ constexpr char const *INPUT_HELP_WIN_TEXT =
   "\tScroll up: increase zoom on mouse cursor\n"
   "\tScroll down: decrease zoom on mouse cursor\n"
   "\tWASD: move camera position\n"
-  "\tLeft Shift: movement multiplier for WASD";
+  "\tEqual/Minus: increase/decrease iteration\n"
+  "\tP: reset iteration\n"
+  "\tLeft Shift: movement multiplier for WASD and iteration";
 
 }
 

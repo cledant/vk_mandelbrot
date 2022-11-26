@@ -178,6 +178,61 @@ EventHandler::resetIter()
 }
 
 void
+EventHandler::displayControlMenu()
+{
+    if (_timers.acceptEvent[ET_CONFIG]) {
+        _ui->displayControlMenu = !_ui->displayControlMenu;
+
+        _timers.acceptEvent[ET_CONFIG] = 0;
+        _timers.updated[ET_CONFIG] = 1;
+    }
+}
+
+void
+EventHandler::displayUi()
+{
+    if (_timers.acceptEvent[ET_CONFIG]) {
+        _ui->displayUi = !_ui->displayUi;
+
+        _timers.acceptEvent[ET_CONFIG] = 0;
+        _timers.updated[ET_CONFIG] = 1;
+    }
+}
+
+void
+EventHandler::displayInfo()
+{
+    if (_timers.acceptEvent[ET_CONFIG]) {
+        _ui->showInfoPosition = !_ui->showInfoPosition;
+
+        _timers.acceptEvent[ET_CONFIG] = 0;
+        _timers.updated[ET_CONFIG] = 1;
+    }
+}
+
+void
+EventHandler::displayFps()
+{
+    if (_timers.acceptEvent[ET_CONFIG]) {
+        _ui->showInfoFps = !_ui->showInfoFps;
+
+        _timers.acceptEvent[ET_CONFIG] = 0;
+        _timers.updated[ET_CONFIG] = 1;
+    }
+}
+
+void
+EventHandler::displayHelp()
+{
+    if (_timers.acceptEvent[ET_CONFIG]) {
+        _ui->helpBox.isOpen = !_ui->helpBox.isOpen;
+
+        _timers.acceptEvent[ET_CONFIG] = 0;
+        _timers.updated[ET_CONFIG] = 1;
+    }
+}
+
+void
 EventHandler::initMultipliers(IOEvents const &ioEvents)
 {
     _iterStepValue =
@@ -271,7 +326,12 @@ EventHandler::processIoEvents(IOEvents const &ioEvents)
                          &EventHandler::resetZoomScreenCenter,
                          &EventHandler::incIter,
                          &EventHandler::decIter,
-                         &EventHandler::resetIter };
+                         &EventHandler::resetIter,
+                         &EventHandler::displayControlMenu,
+                         &EventHandler::displayUi,
+                         &EventHandler::displayInfo,
+                         &EventHandler::displayFps,
+                         &EventHandler::displayHelp };
 
     for (uint32_t i = 0; i < IOET_NB; ++i) {
         if (ioEvents.events[i]) {

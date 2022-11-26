@@ -81,6 +81,11 @@ class EventHandler final
     inline void incIter();
     inline void decIter();
     inline void resetIter();
+    inline void displayControlMenu();
+    inline void displayUi();
+    inline void displayInfo();
+    inline void displayFps();
+    inline void displayHelp();
 
     // processEvents subFunctions
     inline void initMultipliers(IOEvents const &ioEvents);
