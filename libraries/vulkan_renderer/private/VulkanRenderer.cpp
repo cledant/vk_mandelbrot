@@ -198,44 +198,43 @@ VulkanRenderer::draw()
                     VK_TRUE,
                     UINT64_MAX);
 
-    uint32_t img_index;
+    uint32_t imgIndex;
     auto result =
       vkAcquireNextImageKHR(_vkInstance.devices.device,
                             _swapChain.swapChain,
                             UINT64_MAX,
                             _sync.imageAvailableSem[_sync.currentFrame],
                             VK_NULL_HANDLE,
-                            &img_index);
+                            &imgIndex);
     if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         return;
     }
 
-    if (_sync.imgsInflightFence[img_index] != VK_NULL_HANDLE) {
+    if (_sync.imgsInflightFence[imgIndex] != VK_NULL_HANDLE) {
         vkWaitForFences(_vkInstance.devices.device,
                         1,
-                        &_sync.imgsInflightFence[img_index],
+                        &_sync.imgsInflightFence[imgIndex],
                         VK_TRUE,
                         UINT64_MAX);
     }
-    _sync.imgsInflightFence[img_index] =
-      _sync.inflightFence[_sync.currentFrame];
+    _sync.imgsInflightFence[imgIndex] = _sync.inflightFence[_sync.currentFrame];
 
-    recordRenderCmd(img_index, clearColor);
-    emitDrawCmds(img_index);
+    recordRenderCmd(imgIndex, clearColor);
+    emitDrawCmds(imgIndex);
 
-    VkSwapchainKHR swap_chains[] = { _swapChain.swapChain };
-    VkSemaphore present_wait_sems[] = {
+    VkSwapchainKHR swapChains[] = { _swapChain.swapChain };
+    VkSemaphore presentWaitSems[] = {
         _sync.allRenderFinishedSem[_sync.currentFrame],
     };
-    VkPresentInfoKHR present_info{};
-    present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    present_info.waitSemaphoreCount = 1;
-    present_info.pWaitSemaphores = present_wait_sems;
-    present_info.swapchainCount = 1;
-    present_info.pSwapchains = swap_chains;
-    present_info.pImageIndices = &img_index;
-    present_info.pResults = nullptr;
-    vkQueuePresentKHR(_vkInstance.queues.presentQueue, &present_info);
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = presentWaitSems;
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = swapChains;
+    presentInfo.pImageIndices = &imgIndex;
+    presentInfo.pResults = nullptr;
+    vkQueuePresentKHR(_vkInstance.queues.presentQueue, &presentInfo);
     _sync.currentFrame =
       (_sync.currentFrame + 1) % VulkanSync::MAX_FRAME_INFLIGHT;
 }
@@ -245,23 +244,30 @@ void
 VulkanRenderer::emitDrawCmds(uint32_t imgIndex)
 {
     // Send scene rendering
-    VkSemaphore finish_scene_sig_sems[] = {
+    VkSemaphore waitSceneSigSems[] = {
+        _sync.imageAvailableSem[_sync.currentFrame],
+    };
+    VkSemaphore finishSceneSigSems[] = {
         _sync.allRenderFinishedSem[_sync.currentFrame],
     };
-    VkSubmitInfo submit_info{};
-    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submit_info.pWaitSemaphores = nullptr;
-    submit_info.pWaitDstStageMask = nullptr;
-    submit_info.waitSemaphoreCount = 0;
-    submit_info.pSignalSemaphores = finish_scene_sig_sems;
-    submit_info.signalSemaphoreCount = 1;
-    submit_info.pCommandBuffers = &_renderCommandBuffers[imgIndex];
-    submit_info.commandBufferCount = 1;
+    VkPipelineStageFlags waitStages[] = {
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+    };
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.pWaitSemaphores = waitSceneSigSems;
+    submitInfo.pWaitDstStageMask = waitStages;
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = finishSceneSigSems;
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pCommandBuffers = &_renderCommandBuffers[imgIndex];
+    submitInfo.commandBufferCount = 1;
     vkResetFences(
       _vkInstance.devices.device, 1, &_sync.inflightFence[_sync.currentFrame]);
     if (vkQueueSubmit(_vkInstance.queues.graphicQueue,
                       1,
-                      &submit_info,
+                      &submitInfo,
                       _sync.inflightFence[_sync.currentFrame]) != VK_SUCCESS) {
         throw std::runtime_error(
           "VulkanRenderer: Failed to submit render draw command buffer");
