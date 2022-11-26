@@ -29,8 +29,8 @@ Ui::clear()
     ImGui::DestroyContext();
 }
 
-UiEvent const &
-Ui::getUiEvent() const
+UiEvents const &
+Ui::getUiEvents() const
 {
     return (_uiEvents);
 }

@@ -6,6 +6,7 @@
 #include "IOEvents.hpp"
 #include "IOManager.hpp"
 #include "VulkanRenderer.hpp"
+#include "Ui.hpp"
 
 class EventHandler final
 {
@@ -17,10 +18,11 @@ class EventHandler final
     EventHandler(EventHandler &&src) = delete;
     EventHandler &operator=(EventHandler &&rhs) = delete;
 
-    void setIOManager(IOManager *io_manager);
+    void setIOManager(IOManager *ioManager);
     void setVkRenderer(VulkanRenderer *renderer);
+    void setUi(Ui *ui);
 
-    void processEvents(IOEvents const &ioEvents);
+    void processEvents();
 
   private:
     // Timer related
@@ -42,13 +44,13 @@ class EventHandler final
 
     struct EventTimers final
     {
-        std::array<uint8_t, ET_NB_EVENT_TIMER_TYPES> accept_event{};
+        std::array<uint8_t, ET_NB_EVENT_TIMER_TYPES> acceptEvent{};
         std::array<uint8_t, ET_NB_EVENT_TIMER_TYPES> updated{};
         std::array<std::chrono::steady_clock::time_point,
                    ET_NB_EVENT_TIMER_TYPES>
-          time_ref{};
-        std::array<double, ET_NB_EVENT_TIMER_TYPES> timer_diff{};
-        std::array<double, ET_NB_EVENT_TIMER_TYPES> timer_values = {
+          timeRef{};
+        std::array<double, ET_NB_EVENT_TIMER_TYPES> timerDiff{};
+        std::array<double, ET_NB_EVENT_TIMER_TYPES> timerValues = {
             SYSTEM_TIMER_SECONDS,      CONFIG_TIMER_SECONDS,
             FAST_ACTION_TIMER_SECONDS, FAST_ACTION_TIMER_SECONDS,
             FAST_ACTION_TIMER_SECONDS, FAST_ACTION_TIMER_SECONDS
@@ -80,21 +82,31 @@ class EventHandler final
     inline void decIter();
     inline void resetIter();
 
-    glm::vec2 computeMouseOffset(glm::vec2 const &mousePos,
-                                 glm::ivec2 const &fbSize);
+    // processEvents subFunctions
+    inline void initMultipliers(IOEvents const &ioEvents);
+    inline void zoomHandling(IOEvents const &ioEvents, glm::vec2 const &fbSize);
+    inline void keyboardMvtHandling();
+    inline glm::vec2 computeMouseOffset(glm::vec2 const &mousePos,
+                                        glm::ivec2 const &fbSize);
+    inline void processIoEvents(IOEvents const &ioEvents);
+    inline void processUiEvents(UiEvents const &uiEvents);
 
+    // Pointers to managers
     IOManager *_ioManager{};
     VulkanRenderer *_renderer{};
+    Ui *_ui{};
 
+    // Timers
     EventTimers _timers{};
 
+    // Values for mandelbrot computation
+    glm::ivec2 _keyboardMvt{};
     uint32_t _iterStepValue{};
     float _keyboardMvtStepValue{};
     float _zoomStepValue{};
-
-    glm::ivec2 _keyboardMvt{};
     float _screenRatio{};
     float _zoomVal = DEFAULT_ZOOM;
+    bool _skipZoomHandling{};
 };
 
 #endif // VK_MANDELBROT_EVENTHANDLER_HPP

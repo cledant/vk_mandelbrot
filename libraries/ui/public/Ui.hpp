@@ -25,7 +25,7 @@ class Ui final
     void init(void *win);
     void clear();
 
-    [[nodiscard]] UiEvent const &getUiEvent() const;
+    [[nodiscard]] UiEvents const &getUiEvents() const;
     [[nodiscard]] bool isUiHovered() const;
 
     // Triggers from keyboard
@@ -56,7 +56,7 @@ class Ui final
     std::chrono::steady_clock::time_point _prevFrameTimeRef;
 
     // Events from ui interaction
-    UiEvent _uiEvents{};
+    UiEvents _uiEvents{};
 };
 
 #endif // VK_MANDELBROT_UI_HPP

@@ -27,6 +27,7 @@ Engine::init()
                                IOManager::getRequiredInstanceExtension());
     _eventHandler.setIOManager(&_ioManager);
     _eventHandler.setVkRenderer(&_vkRenderer);
+    _eventHandler.setUi(&_ui);
     auto fb_size = _ioManager.getFramebufferSize();
     _vkRenderer.init(
       _ioManager.createVulkanSurface(_vkRenderer.getVkInstance()),
@@ -39,7 +40,7 @@ void
 Engine::run()
 {
     while (!_ioManager.shouldClose()) {
-        _eventHandler.processEvents(_ioManager.getEvents());
+        _eventHandler.processEvents();
         _ui.draw();
         _vkRenderer.draw();
     }

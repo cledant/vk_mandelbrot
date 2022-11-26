@@ -10,7 +10,7 @@ enum UiEventTypes
     UET_TOTAL_NB,
 };
 
-struct UiEvent
+struct UiEvents
 {
     bool events[UET_TOTAL_NB] = { false };
 };
