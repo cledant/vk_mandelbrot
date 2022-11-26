@@ -28,7 +28,7 @@ VulkanInstance::createInstance(std::string const &app_name,
     app_info.applicationVersion = app_version;
     app_info.pEngineName = engine_name.c_str();
     app_info.engineVersion = engine_version;
-    app_info.apiVersion = VK_API_VERSION_1_2;
+    app_info.apiVersion = VK_API_VERSION_1_3;
 
     VkInstanceCreateInfo create_info{};
 
@@ -66,7 +66,9 @@ VulkanInstance::init(VkSurfaceKHR windowSurface,
     selectPhysicalDevice(options);
     createQueues();
     cmdPools.renderCommandPool =
-      createCommandPool(devices.device, queues.graphicFamilyIndex, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+      createCommandPool(devices.device,
+                        queues.graphicFamilyIndex,
+                        VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
     cmdPools.computeCommandPool =
       (queues.computeFamilyIndex == queues.graphicFamilyIndex)
         ? cmdPools.renderCommandPool

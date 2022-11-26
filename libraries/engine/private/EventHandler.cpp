@@ -35,6 +35,7 @@ EventHandler::processEvents()
     auto ioEvents = _ioManager->getEvents();
     auto fbSize = _ioManager->getFramebufferSize();
 
+    // Values init
     _keyboardMvt = glm::ivec2(0);
     _skipZoomHandling = false;
 
