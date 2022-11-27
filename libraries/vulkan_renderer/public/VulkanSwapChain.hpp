@@ -17,8 +17,11 @@ class VulkanSwapChain final
     VulkanSwapChain(VulkanSwapChain &&src) = delete;
     VulkanSwapChain &operator=(VulkanSwapChain &&rhs) = delete;
 
-    void init(VulkanInstance const &vkInstance, uint32_t fbW, uint32_t fbH);
-    void resize(uint32_t fbW, uint32_t fbH);
+    void init(VulkanInstance const &vkInstance,
+              uint32_t fbW,
+              uint32_t fbH,
+              bool vsync);
+    void resize(uint32_t fbW, uint32_t fbH, bool vsync);
     void clean();
     void clear();
 
@@ -33,7 +36,9 @@ class VulkanSwapChain final
     VulkanDevices _devices{};
     VkSurfaceKHR _surface{};
 
-    inline void createSwapChain(uint32_t framebufferW, uint32_t framebufferH);
+    inline void createSwapChain(uint32_t framebufferW,
+                                uint32_t framebufferH,
+                                bool vsync);
     inline void createImageView();
 };
 

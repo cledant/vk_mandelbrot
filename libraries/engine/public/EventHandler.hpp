@@ -70,7 +70,7 @@ class EventHandler final
     // Default val
     static constexpr float const DEFAULT_ZOOM = 1.0f;
 
-    // IO Event handling functions
+    // IO Events handling functions
     inline void closeWinEvent();
     inline void toggleFullscreen();
     inline void up();
@@ -87,10 +87,17 @@ class EventHandler final
     inline void displayFps();
     inline void displayHelp();
 
+    // Ui Events handling functions
+    inline void uiCloseWinEvent();
+    inline void uiToggleFullscreen();
+    inline void uiToggleVsync();
+    inline void uiSaveFractalToFile();
+
     // processEvents subFunctions
     inline void initMultipliers(IOEvents const &ioEvents);
     inline void zoomHandling(IOEvents const &ioEvents, glm::vec2 const &fbSize);
     inline void keyboardMvtHandling();
+    inline void recreateSwapchain();
     inline glm::vec2 computeMouseOffset(glm::vec2 const &mousePos,
                                         glm::ivec2 const &fbSize);
     inline void processIoEvents(IOEvents const &ioEvents);
@@ -111,7 +118,11 @@ class EventHandler final
     float _zoomStepValue{};
     float _screenRatio{};
     float _zoomVal = DEFAULT_ZOOM;
+
+    // Other
     bool _skipZoomHandling{};
+    bool _recreateSwapchain{};
+    bool _vsync = true;
 };
 
 #endif // VK_MANDELBROT_EVENTHANDLER_HPP

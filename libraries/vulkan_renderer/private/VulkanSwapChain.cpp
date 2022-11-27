@@ -9,19 +9,20 @@
 void
 VulkanSwapChain::init(VulkanInstance const &vkInstance,
                       uint32_t fbW,
-                      uint32_t fbH)
+                      uint32_t fbH,
+                      bool vsync)
 {
     _devices = vkInstance.devices;
     _surface = vkInstance.surface;
-    createSwapChain(fbW, fbH);
+    createSwapChain(fbW, fbH, vsync);
     createImageView();
 }
 
 void
-VulkanSwapChain::resize(uint32_t fbW, uint32_t fbH)
+VulkanSwapChain::resize(uint32_t fbW, uint32_t fbH, bool vsync)
 {
     clean();
-    createSwapChain(fbW, fbH);
+    createSwapChain(fbW, fbH, vsync);
     createImageView();
 }
 
@@ -43,7 +44,9 @@ VulkanSwapChain::clear()
 }
 
 void
-VulkanSwapChain::createSwapChain(uint32_t framebufferW, uint32_t framebufferH)
+VulkanSwapChain::createSwapChain(uint32_t framebufferW,
+                                 uint32_t framebufferH,
+                                 bool vsync)
 {
     // Creating swap chain
     VkExtent2D actual_extent = { framebufferW, framebufferH };
@@ -85,7 +88,11 @@ VulkanSwapChain::createSwapChain(uint32_t framebufferW, uint32_t framebufferH)
     }
     create_info.preTransform = scs.capabilities.currentTransform;
     create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    create_info.presentMode = scs.present_mode.value();
+    if (!vsync) {
+        create_info.presentMode = scs.present_mode.value();
+    } else {
+        create_info.presentMode = VK_PRESENT_MODE_FIFO_KHR;
+    }
     create_info.clipped = VK_TRUE;
     create_info.oldSwapchain = nullptr;
     if (vkCreateSwapchainKHR(

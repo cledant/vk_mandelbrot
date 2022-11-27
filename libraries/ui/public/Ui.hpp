@@ -43,7 +43,7 @@ class Ui final
     void draw();
 
   private:
-    bool _vsync = false;
+    bool _vsync = true;
     UiAboutBox _aboutBox{};
 
     // Draw related

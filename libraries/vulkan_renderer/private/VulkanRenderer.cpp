@@ -47,7 +47,7 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     assert(surface);
 
     _vkInstance.init(surface, options);
-    _swapChain.init(_vkInstance, winW, winH);
+    _swapChain.init(_vkInstance, winW, winH, options.vsync);
     _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
     auto depthFormat =
       findSupportedFormat(_vkInstance.devices.physicalDevice,
@@ -97,14 +97,14 @@ VulkanRenderer::init(VkSurfaceKHR surface,
 }
 
 void
-VulkanRenderer::resize(uint32_t winW, uint32_t winH)
+VulkanRenderer::resize(uint32_t winW, uint32_t winH, bool vsync)
 {
     vkDeviceWaitIdle(_vkInstance.devices.device);
     if (winW <= 0 || winH <= 0) {
         return;
     }
 
-    _swapChain.resize(winW, winH);
+    _swapChain.resize(winW, winH, vsync);
     _sync.resize(_swapChain.currentSwapChainNbImg);
     auto depthFormat =
       findSupportedFormat(_vkInstance.devices.physicalDevice,

@@ -33,11 +33,11 @@ EventHandler::processEvents()
     assert(_ui);
 
     auto ioEvents = _ioManager->getEvents();
-    auto fbSize = _ioManager->getFramebufferSize();
 
     // Values init
     _keyboardMvt = glm::ivec2(0);
     _skipZoomHandling = false;
+    _recreateSwapchain = false;
 
     // Checking Timers
     auto now = std::chrono::steady_clock::now();
@@ -50,17 +50,9 @@ EventHandler::processEvents()
     initMultipliers(ioEvents);
     processIoEvents(ioEvents);
     processUiEvents(_ui->getUiEvents());
-    zoomHandling(ioEvents, fbSize);
+    recreateSwapchain();
+    zoomHandling(ioEvents, _ioManager->getFramebufferSize());
     keyboardMvtHandling();
-
-    // Resized window case
-    if (_ioManager->wasResized()) {
-        fbSize = _ioManager->getFramebufferSize();
-        _renderer->resize(fbSize.x, fbSize.y);
-        _screenRatio =
-          static_cast<float>(fbSize.x) / static_cast<float>(fbSize.y);
-        _renderer->mandelbrotComputeDone = false;
-    }
 
     // Setting timers origin
     for (uint32_t i = 0; i < ET_NB_EVENT_TIMER_TYPES; ++i) {
@@ -87,6 +79,7 @@ EventHandler::toggleFullscreen()
 {
     if (_timers.acceptEvent[ET_SYSTEM]) {
         _ioManager->toggleFullscreen();
+        _recreateSwapchain = true;
 
         _timers.acceptEvent[ET_SYSTEM] = 0;
         _timers.updated[ET_SYSTEM] = 1;
@@ -233,6 +226,30 @@ EventHandler::displayHelp()
 }
 
 void
+EventHandler::uiCloseWinEvent()
+{
+    _ioManager->triggerClose();
+}
+
+void
+EventHandler::uiToggleFullscreen()
+{
+    _ioManager->toggleFullscreen();
+}
+
+void
+EventHandler::uiToggleVsync()
+{
+    _vsync = !_vsync;
+    _recreateSwapchain = true;
+}
+
+void
+EventHandler::uiSaveFractalToFile()
+{
+}
+
+void
 EventHandler::initMultipliers(IOEvents const &ioEvents)
 {
     _iterStepValue =
@@ -298,6 +315,19 @@ EventHandler::keyboardMvtHandling()
     }
 }
 
+void
+EventHandler::recreateSwapchain()
+{
+    if (_recreateSwapchain || _ioManager->wasResized()) {
+        auto fbSize = _ioManager->getFramebufferSize();
+
+        _renderer->resize(fbSize.x, fbSize.y, _vsync);
+        _screenRatio =
+          static_cast<float>(fbSize.x) / static_cast<float>(fbSize.y);
+        _renderer->mandelbrotComputeDone = false;
+    }
+}
+
 glm::vec2
 EventHandler::computeMouseOffset(glm::vec2 const &mousePos,
                                  glm::ivec2 const &fbSize)
@@ -343,7 +373,15 @@ EventHandler::processIoEvents(IOEvents const &ioEvents)
 void
 EventHandler::processUiEvents(UiEvents const &uiEvents)
 {
-    (void)uiEvents;
+    static const std::array<void (EventHandler::*)(), UET_TOTAL_NB>
+      keyboardEvents = { &EventHandler::uiCloseWinEvent,
+                         &EventHandler::uiToggleFullscreen,
+                         &EventHandler::uiToggleVsync,
+                         &EventHandler::uiSaveFractalToFile };
 
-    // TODO
+    for (uint32_t i = 0; i < UET_TOTAL_NB; ++i) {
+        if (uiEvents.events[i]) {
+            std::invoke(keyboardEvents[i], this);
+        }
+    }
 }

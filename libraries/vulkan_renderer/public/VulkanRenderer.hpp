@@ -29,11 +29,8 @@ class VulkanRenderer final
     VulkanRenderer &operator=(VulkanRenderer &&rhs) = delete;
 
     // Default Values
-    static constexpr VulkanInstanceOptions const DEFAULT_RENDERER_OPTIONS = {
-        VK_FALSE,
-        VK_TRUE,
-        VK_FALSE
-    };
+    static constexpr VulkanInstanceOptions const
+      DEFAULT_RENDERER_OPTIONS = { VK_FALSE, VK_TRUE, VK_FALSE, VK_TRUE };
     static constexpr VkClearColorValue const DEFAULT_CLEAR_COLOR = {
         { 0.0f, 0.0f, 0.0f, 1.0f }
     };
@@ -56,7 +53,7 @@ class VulkanRenderer final
               VulkanInstanceOptions const &options,
               uint32_t winW,
               uint32_t winH);
-    void resize(uint32_t winW, uint32_t winH);
+    void resize(uint32_t winW, uint32_t winH, bool vsync);
     void clear();
 
     // Info related
