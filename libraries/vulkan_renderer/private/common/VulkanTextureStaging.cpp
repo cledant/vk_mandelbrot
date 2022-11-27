@@ -8,7 +8,36 @@
 
 #include "utils/VulkanTextureUtils.hpp"
 
-VkDeviceSize
+void
+VulkanTextureStaging::allocate(VulkanDevices const &devices,
+                               int32_t texW,
+                               int32_t texH,
+                               int32_t nbChan,
+                               bool cubemap)
+{
+    width = texW;
+    height = texH;
+    isCubemap = cubemap;
+    VkDeviceSize img_size = texW * texH * nbChan;
+    if (cubemap) {
+        img_size *= 6;
+    }
+
+    stagingBuffer.allocate(devices,
+                           img_size,
+                           VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                             VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+    void *data;
+    vkMapMemory(devices.device, stagingBuffer.memory, 0, img_size, 0, &data);
+    memset(data, 0, static_cast<size_t>(img_size));
+    vkUnmapMemory(devices.device, stagingBuffer.memory);
+    mipLevel = computeMipmapLevel(texW, texH);
+    nbChannel = nbChan;
+}
+
+void
 VulkanTextureStaging::stageTexture(VulkanDevices const &devices,
                                    std::string const &filepath)
 {
@@ -34,10 +63,9 @@ VulkanTextureStaging::stageTexture(VulkanDevices const &devices,
     stbi_image_free(pixels);
     mipLevel = computeMipmapLevel(width, height);
     nbChannel = img_chan;
-    return (img_size);
 }
 
-VkDeviceSize
+void
 VulkanTextureStaging::stageTexture(VulkanDevices const &devices,
                                    std::string const &cubemapFolder,
                                    std::string const &filetype)
@@ -93,10 +121,9 @@ VulkanTextureStaging::stageTexture(VulkanDevices const &devices,
     isCubemap = true;
     mipLevel = computeMipmapLevel(width, height);
     nbChannel = img_chan;
-    return (img_size);
 }
 
-VkDeviceSize
+void
 VulkanTextureStaging::stageTexture(VulkanDevices const &devices,
                                    uint8_t const *buff,
                                    int32_t texW,
@@ -124,7 +151,6 @@ VulkanTextureStaging::stageTexture(VulkanDevices const &devices,
     vkUnmapMemory(devices.device, stagingBuffer.memory);
     mipLevel = computeMipmapLevel(texW, texH);
     nbChannel = nbChan;
-    return (img_size);
 }
 
 void
@@ -135,4 +161,14 @@ VulkanTextureStaging::clear()
     height = 0;
     mipLevel = 0;
     isCubemap = false;
+}
+
+bool
+VulkanTextureStaging::saveTextureToFile(VulkanDevices const &devices,
+                                        std::string const &filepath) const
+{
+    // TODO: actual copy on disk
+    (void)devices;
+    (void)filepath;
+    return (true);
 }

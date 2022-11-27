@@ -41,6 +41,7 @@ class VulkanRenderer final
     VkClearColorValue clearColor = DEFAULT_CLEAR_COLOR;
     mandelbrotPushConstants mandelbrotConstants{};
     bool mandelbrotComputeDone{};
+    bool screenshotNextFrame{};
 
     // Instance related
     void createInstance(std::string &&appName,
@@ -65,6 +66,9 @@ class VulkanRenderer final
     // Render related
     void draw();
 
+    // Screenshot related
+    bool saveScreenshotToFile(std::string const &totalFilePath) const;
+
   private:
     std::string _appName;
     std::string _engineName;
@@ -85,6 +89,8 @@ class VulkanRenderer final
 
     std::vector<VkCommandBuffer> _renderCommandBuffers;
 
+    VulkanTextureStaging _screenshot{};
+
     // Cmd buffer related
     inline void emitDrawCmds(uint32_t imgIndex);
     inline void recordRenderCmd(uint32_t imgIndex,
@@ -99,6 +105,9 @@ class VulkanRenderer final
                                   VkClearColorValue const &cmdClearColor);
     inline void recordToScreenRenderCmd(uint32_t imgIndex,
                                         VkClearColorValue const &cmdClearColor);
+
+    // Screenshot related fct
+    void copyFrameToHostMemory(size_t imgIndex);
 };
 
 #endif // VK_MANDELBROT_VULKANRENDERER_HPP

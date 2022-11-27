@@ -54,17 +54,24 @@ struct VulkanTextureStaging final
     uint32_t nbChannel{};
     bool isCubemap{};
 
-    VkDeviceSize stageTexture(VulkanDevices const &devices,
-                              std::string const &filepath);
-    VkDeviceSize stageTexture(VulkanDevices const &devices,
-                              std::string const &cubemapFolder,
-                              std::string const &filetype);
-    VkDeviceSize stageTexture(VulkanDevices const &devices,
-                              uint8_t const *buff,
-                              int32_t texW,
-                              int32_t texH,
-                              int32_t nbChan,
-                              bool cubemap);
+    void allocate(VulkanDevices const &devices,
+                  int32_t texW,
+                  int32_t texH,
+                  int32_t nbChan,
+                  bool cubemap);
+    void stageTexture(VulkanDevices const &devices,
+                      std::string const &filepath);
+    void stageTexture(VulkanDevices const &devices,
+                      std::string const &cubemapFolder,
+                      std::string const &filetype);
+    void stageTexture(VulkanDevices const &devices,
+                      uint8_t const *buff,
+                      int32_t texW,
+                      int32_t texH,
+                      int32_t nbChan,
+                      bool cubemap);
+    [[nodiscard]] bool saveTextureToFile(VulkanDevices const &devices,
+                                         std::string const &filepath) const;
     void clear();
 };
 
@@ -85,6 +92,10 @@ struct VulkanTexture final
                           VulkanQueues const &queues,
                           VulkanTextureStaging const &stagingTexture,
                           VkFormat format);
+    void loadTextureOnCPU(VulkanDevices const &devices,
+                          VulkanCommandPools const &cmdPools,
+                          VulkanQueues const &queues,
+                          VulkanTextureStaging const &stagingTexture);
     void createColorTexture(VulkanDevices const &devices,
                             int32_t texW,
                             int32_t texH,

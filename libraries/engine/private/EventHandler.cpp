@@ -32,6 +32,14 @@ EventHandler::processEvents()
     assert(_renderer);
     assert(_ui);
 
+    if (_saveScreenshotTofile) {
+        // TODO: generate totalfilepath
+        auto ret = _renderer->saveScreenshotToFile("totalpath");
+        // TODO: use ret to display success or error on UI
+        (void)ret;
+        _saveScreenshotTofile = false;
+    }
+
     auto ioEvents = _ioManager->getEvents();
 
     // Values init
@@ -63,6 +71,7 @@ EventHandler::processEvents()
     }
 }
 
+// IO Events handling functions
 void
 EventHandler::closeWinEvent()
 {
@@ -226,6 +235,19 @@ EventHandler::displayHelp()
 }
 
 void
+EventHandler::takeScreenshot()
+{
+    if (_timers.acceptEvent[ET_SYSTEM]) {
+        _renderer->screenshotNextFrame = true;
+        _saveScreenshotTofile = true;
+
+        _timers.acceptEvent[ET_SYSTEM] = 0;
+        _timers.updated[ET_SYSTEM] = 1;
+    }
+}
+
+// Ui Events handling functions
+void
 EventHandler::uiCloseWinEvent()
 {
     _ioManager->triggerClose();
@@ -235,6 +257,7 @@ void
 EventHandler::uiToggleFullscreen()
 {
     _ioManager->toggleFullscreen();
+    _recreateSwapchain = true;
 }
 
 void
@@ -247,6 +270,10 @@ EventHandler::uiToggleVsync()
 void
 EventHandler::uiSaveFractalToFile()
 {
+    if (!_recreateSwapchain) {
+        _renderer->screenshotNextFrame = true;
+        _saveScreenshotTofile = true;
+    }
 }
 
 void
@@ -361,7 +388,8 @@ EventHandler::processIoEvents(IOEvents const &ioEvents)
                          &EventHandler::displayUi,
                          &EventHandler::displayInfo,
                          &EventHandler::displayFps,
-                         &EventHandler::displayHelp };
+                         &EventHandler::displayHelp,
+                         &EventHandler::takeScreenshot };
 
     for (uint32_t i = 0; i < IOET_NB; ++i) {
         if (ioEvents.events[i]) {

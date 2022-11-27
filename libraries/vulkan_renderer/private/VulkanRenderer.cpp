@@ -61,6 +61,11 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                           depthFormat,
                           _swapChain.swapChainExtent.width,
                           _swapChain.swapChainExtent.height);
+    _screenshot.allocate(_vkInstance.devices,
+                         _swapChain.swapChainExtent.width,
+                         _swapChain.swapChainExtent.height,
+                         4,
+                         false);
     _imageDisplayed.init(_vkInstance,
                          VK_FORMAT_R8G8B8A8_UNORM,
                          depthFormat,
@@ -117,6 +122,12 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH, bool vsync)
                             depthFormat,
                             _swapChain.swapChainExtent.width,
                             _swapChain.swapChainExtent.height);
+    _screenshot.clear();
+    _screenshot.allocate(_vkInstance.devices,
+                         _swapChain.swapChainExtent.width,
+                         _swapChain.swapChainExtent.height,
+                         4,
+                         false);
     _imageDisplayed.resize(VK_FORMAT_R8G8B8A8_UNORM,
                            depthFormat,
                            _swapChain.swapChainExtent.width,
@@ -157,6 +168,7 @@ VulkanRenderer::clear()
     _toScreen.clear();
     _toScreenRenderPass.clear();
     _imageDisplayed.clear();
+    _screenshot.clear();
     _imageMandelbrot.clear();
     _sync.clear();
     _swapChain.clear();
@@ -235,8 +247,19 @@ VulkanRenderer::draw()
     presentInfo.pImageIndices = &imgIndex;
     presentInfo.pResults = nullptr;
     vkQueuePresentKHR(_vkInstance.queues.presentQueue, &presentInfo);
+    if (screenshotNextFrame) {
+        copyFrameToHostMemory(_sync.currentFrame);
+        screenshotNextFrame = false;
+    }
     _sync.currentFrame =
       (_sync.currentFrame + 1) % VulkanSync::MAX_FRAME_INFLIGHT;
+}
+
+// Screenshot related
+bool
+VulkanRenderer::saveScreenshotToFile(std::string const &totalFilePath) const
+{
+    return (_screenshot.saveTextureToFile(_vkInstance.devices, totalFilePath));
 }
 
 // Cmd buffer related
@@ -411,4 +434,15 @@ VulkanRenderer::recordToScreenRenderCmd(uint32_t imgIndex,
                          VK_SUBPASS_CONTENTS_INLINE);
     _toScreen.generateCommands(_renderCommandBuffers[imgIndex], imgIndex);
     vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
+}
+
+void
+VulkanRenderer::copyFrameToHostMemory(size_t imgIndex)
+{
+    vkWaitForFences(_vkInstance.devices.device,
+                    1,
+                    &_sync.inflightFence[imgIndex],
+                    VK_TRUE,
+                    UINT64_MAX);
+    // TODO: actual copy from _imageMandelbrot to screenshot
 }

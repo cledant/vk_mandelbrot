@@ -40,6 +40,19 @@ VulkanTexture::loadTextureOnGPU(VulkanDevices const &devices,
 }
 
 void
+VulkanTexture::loadTextureOnCPU(VulkanDevices const &devices,
+                                VulkanCommandPools const &cmdPools,
+                                VulkanQueues const &queues,
+                                VulkanTextureStaging const &stagingTexture)
+{
+    // TODO: actual copy from image to buffer
+    (void)devices;
+    (void)cmdPools;
+    (void)queues;
+    (void)stagingTexture;
+}
+
+void
 VulkanTexture::createColorTexture(VulkanDevices const &devices,
                                   int32_t texW,
                                   int32_t texH,

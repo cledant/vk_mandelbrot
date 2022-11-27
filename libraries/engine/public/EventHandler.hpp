@@ -86,6 +86,7 @@ class EventHandler final
     inline void displayInfo();
     inline void displayFps();
     inline void displayHelp();
+    inline void takeScreenshot();
 
     // Ui Events handling functions
     inline void uiCloseWinEvent();
@@ -123,6 +124,7 @@ class EventHandler final
     bool _skipZoomHandling{};
     bool _recreateSwapchain{};
     bool _vsync = true;
+    bool _saveScreenshotTofile{};
 };
 
 #endif // VK_MANDELBROT_EVENTHANDLER_HPP

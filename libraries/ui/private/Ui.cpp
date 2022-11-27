@@ -69,7 +69,7 @@ Ui::drawMenuBar()
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             _uiEvents.events[UET_SAVE_TO_FILE] =
-              ImGui::MenuItem("Save fractal to file", "");
+              ImGui::MenuItem("Save fractal to file", "F10");
             ImGui::Separator();
             if (ImGui::BeginMenu("Settings")) {
                 if ((_uiEvents.events[UET_VSYNC] =

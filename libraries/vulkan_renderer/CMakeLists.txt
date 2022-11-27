@@ -31,7 +31,7 @@ add_library(vulkan_renderer STATIC
         private/common/VulkanBuffer.cpp
         private/common/VulkanTexture.cpp
         private/common/VulkanTextureStaging.cpp
-        private/common/VulkanDefaultImageBuffer.cpp)
+        private/common/VulkanDefaultImageTexture.cpp)
 target_include_directories(vulkan_renderer
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/public
