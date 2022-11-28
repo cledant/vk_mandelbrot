@@ -101,7 +101,6 @@ class VulkanRenderer final
     inline void recordMandelbrotRenderCmd(
       uint32_t imgIndex,
       VkClearColorValue const &cmdClearColor);
-    inline void copyImageTexture(uint32_t imgIndex);
     inline void recordUiRenderCmd(uint32_t imgIndex,
                                   VkClearColorValue const &cmdClearColor);
     inline void recordToScreenRenderCmd(uint32_t imgIndex,

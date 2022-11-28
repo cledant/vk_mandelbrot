@@ -318,7 +318,13 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
         recordMandelbrotRenderCmd(imgIndex, cmdClearColor);
         mandelbrotComputeDone = true;
     }
-    copyImageTexture(imgIndex);
+    _imageDisplayed.copyColorDepthTexturesContent(
+      _imageMandelbrot,
+      _renderCommandBuffers[imgIndex],
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      VK_IMAGE_LAYOUT_UNDEFINED,
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     recordUiRenderCmd(imgIndex, cmdClearColor);
     recordToScreenRenderCmd(imgIndex, cmdClearColor);
 
@@ -356,33 +362,6 @@ VulkanRenderer::recordMandelbrotRenderCmd(
     _mandelbrot.generateCommands(_renderCommandBuffers[imgIndex],
                                  mandelbrotConstants);
     vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
-}
-
-void
-VulkanRenderer::copyImageTexture(uint32_t imgIndex)
-{
-    // Setup for correct image layout for transfers
-    _imageMandelbrot.transitionDepthColorImageLayout(
-      _renderCommandBuffers[imgIndex],
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-    _imageDisplayed.transitionDepthColorImageLayout(
-      _renderCommandBuffers[imgIndex],
-      VK_IMAGE_LAYOUT_UNDEFINED,
-      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-
-    _imageDisplayed.copyColorDepthImageContent(_imageMandelbrot,
-                                               _renderCommandBuffers[imgIndex]);
-
-    // Setup for correct image layout for later usage
-    _imageMandelbrot.transitionDepthColorImageLayout(
-      _renderCommandBuffers[imgIndex],
-      VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    _imageDisplayed.transitionDepthColorImageLayout(
-      _renderCommandBuffers[imgIndex],
-      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
 void

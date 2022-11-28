@@ -32,12 +32,12 @@ VulkanToScreenPipelineData::init(VulkanDevices const &devices,
                             VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     // Copying data into staging buffer
-    copyOnCpuCoherentMemory(devices.device,
+    copyOnHostVisibleMemory(devices.device,
                             staging_buff.memory,
                             0,
                             verticesSize,
                             SURFACE_DISPLAY_VERTICES.data());
-    copyOnCpuCoherentMemory(devices.device,
+    copyOnHostVisibleMemory(devices.device,
                             staging_buff.memory,
                             indicesOffset,
                             indicesSize,
@@ -50,12 +50,12 @@ VulkanToScreenPipelineData::init(VulkanDevices const &devices,
                     VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
                     VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    copyBufferOnGpu(devices.device,
-                    cmdPools.renderCommandPool,
-                    queues.graphicQueue,
-                    data.buffer,
-                    staging_buff.buffer,
-                    total_size);
+    copyBufferOnGpuSingleCmd(devices.device,
+                             cmdPools.renderCommandPool,
+                             queues.graphicQueue,
+                             data.buffer,
+                             staging_buff.buffer,
+                             total_size);
 
     staging_buff.clear();
 }

@@ -64,12 +64,12 @@ allocateBuffer(VkPhysicalDevice physical_device,
 }
 
 void
-copyBufferOnGpu(VkDevice device,
-                VkCommandPool command_pool,
-                VkQueue gfx_queue,
-                VkBuffer dst_buffer,
-                VkBuffer src_buffer,
-                VkDeviceSize size)
+copyBufferOnGpuSingleCmd(VkDevice device,
+                         VkCommandPool command_pool,
+                         VkQueue gfx_queue,
+                         VkBuffer dst_buffer,
+                         VkBuffer src_buffer,
+                         VkDeviceSize size)
 {
     VkCommandBuffer cmd_buffer = beginSingleTimeCommands(device, command_pool);
 
@@ -83,20 +83,22 @@ copyBufferOnGpu(VkDevice device,
 }
 
 void
-copyBufferOnGpu(VkDevice device,
-                VkCommandPool command_pool,
-                VkQueue gfx_queue,
-                VkBuffer dst_buffer,
-                VkBuffer src_buffer,
-                VkBufferCopy copy_region)
+copyBufferOnGpuSingleCmd(VkDevice device,
+                         VkCommandPool command_pool,
+                         VkQueue gfx_queue,
+                         VkBuffer dst_buffer,
+                         VkBuffer src_buffer,
+                         VkBufferCopy copy_region)
 {
     VkCommandBuffer cmd_buffer = beginSingleTimeCommands(device, command_pool);
+
     vkCmdCopyBuffer(cmd_buffer, src_buffer, dst_buffer, 1, &copy_region);
+
     endSingleTimeCommands(device, command_pool, cmd_buffer, gfx_queue);
 }
 
 void
-copyOnCpuCoherentMemory(VkDevice device,
+copyOnHostVisibleMemory(VkDevice device,
                         VkDeviceMemory memory,
                         VkDeviceSize offset,
                         VkDeviceSize size,
@@ -133,11 +135,11 @@ copyCpuBufferToGpu(VkDevice device,
                      VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     // Copy on staging buffer
-    copyOnCpuCoherentMemory(
+    copyOnHostVisibleMemory(
       device, staging_buffer_memory, 0, copyRegion.size, srcData);
 
     // Copy on GPU
-    copyBufferOnGpu(
+    copyBufferOnGpuSingleCmd(
       device, commandPool, queue, dstBuffer, staging_buffer, copyRegion);
 
     // Cleaning

@@ -118,12 +118,12 @@ setPipelineStageFlags(VkImageMemoryBarrier &barrier,
 }
 
 void
-transitionImageLayout(VulkanDevices const &devices,
-                      VulkanCommandPools const &cmdPools,
-                      VulkanQueues const &queues,
-                      VulkanTexture const &texture,
-                      VkImageLayout oldLayout,
-                      VkImageLayout newLayout)
+transitionImageLayoutSingleCmd(VulkanDevices const &devices,
+                               VulkanCommandPools const &cmdPools,
+                               VulkanQueues const &queues,
+                               VulkanTexture const &texture,
+                               VkImageLayout oldLayout,
+                               VkImageLayout newLayout)
 {
     auto cmd_buffer =
       beginSingleTimeCommands(devices.device, cmdPools.renderCommandPool);

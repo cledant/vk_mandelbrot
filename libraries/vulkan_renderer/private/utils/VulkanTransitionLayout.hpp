@@ -5,12 +5,12 @@
 
 #include "common/VulkanCommonStruct.hpp"
 
-void transitionImageLayout(VulkanDevices const &devices,
-                           VulkanCommandPools const &cmdPools,
-                           VulkanQueues const &queues,
-                           VulkanTexture const &texture,
-                           VkImageLayout oldLayout,
-                           VkImageLayout newLayout);
+void transitionImageLayoutSingleCmd(VulkanDevices const &devices,
+                                    VulkanCommandPools const &cmdPools,
+                                    VulkanQueues const &queues,
+                                    VulkanTexture const &texture,
+                                    VkImageLayout oldLayout,
+                                    VkImageLayout newLayout);
 void transitionImageLayout(VkCommandBuffer cmdBuffer,
                            VulkanTexture const &texture,
                            VkImageLayout oldLayout,

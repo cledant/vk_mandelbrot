@@ -26,15 +26,15 @@ VulkanTexture::loadTextureOnGPU(VulkanDevices const &devices,
                 VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                   VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
     allocateImage(_devices, *this, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    transitionImageLayout(_devices,
-                          cmdPools,
-                          queues,
-                          *this,
-                          VK_IMAGE_LAYOUT_UNDEFINED,
-                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    copyBufferToImage(
+    transitionImageLayoutSingleCmd(_devices,
+                                   cmdPools,
+                                   queues,
+                                   *this,
+                                   VK_IMAGE_LAYOUT_UNDEFINED,
+                                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    copyBufferToImageSingleCmd(
       _devices, cmdPools, queues, stagingTexture.stagingBuffer, *this);
-    generateMipmaps(_devices, cmdPools, queues, *this);
+    generateMipmapsSingleCmd(_devices, cmdPools, queues, *this);
     createImageView(_devices, *this, VK_IMAGE_ASPECT_COLOR_BIT);
     createTextureSampler(devices, *this);
 }
@@ -98,12 +98,13 @@ VulkanTexture::createDepthTexture(VulkanDevices const &devices,
                   VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
     allocateImage(_devices, *this, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     createImageView(devices, *this, VK_IMAGE_ASPECT_DEPTH_BIT);
-    transitionImageLayout(devices,
-                          cmdPools,
-                          queues,
-                          *this,
-                          VK_IMAGE_LAYOUT_UNDEFINED,
-                          VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+    transitionImageLayoutSingleCmd(
+      devices,
+      cmdPools,
+      queues,
+      *this,
+      VK_IMAGE_LAYOUT_UNDEFINED,
+      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 }
 
 void

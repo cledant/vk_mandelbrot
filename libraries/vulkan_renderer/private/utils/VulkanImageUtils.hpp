@@ -14,17 +14,22 @@ void createImage(VkDevice device,
 void allocateImage(VulkanDevices const &devices,
                    VulkanTexture &texture,
                    VkMemoryPropertyFlags properties);
-void copyBufferToImage(VulkanDevices const &devices,
-                       VulkanCommandPools const &cmdPools,
-                       VulkanQueues const &queues,
-                       VulkanBuffer const &stagingBuffer,
-                       VulkanTexture const &texture);
+void copyBufferToImageSingleCmd(VulkanDevices const &devices,
+                                VulkanCommandPools const &cmdPools,
+                                VulkanQueues const &queues,
+                                VulkanBuffer const &stagingBuffer,
+                                VulkanTexture const &texture);
 void copyImageToBuffer(VulkanDevices const &devices,
                        VulkanCommandPools const &cmdPools,
                        VulkanQueues const &queues,
                        VulkanBuffer const &stagingBuffer,
                        VulkanTexture const &texture);
-void copyImageToImage();
+void copyImageToImage(VkCommandBuffer cmdBuffer,
+                      VkImage srcImg,
+                      VkImage dstImg,
+                      int32_t imgWidth,
+                      int32_t imgHeight,
+                      VkImageAspectFlags imgAspect);
 void createImageView(VulkanDevices const &devices,
                      VulkanTexture &texture,
                      VkImageAspectFlags aspect_flags);

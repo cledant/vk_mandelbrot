@@ -32,22 +32,24 @@ class AVulkanImageTexture
     void clean();
     void clear();
 
-    void transitionColorImageLayout(VkCommandBuffer cmdBuffer,
-                                    VkImageLayout oldLayout,
-                                    VkImageLayout newLayout);
-    void transitionDepthImageLayout(VkCommandBuffer cmdBuffer,
-                                    VkImageLayout oldLayout,
-                                    VkImageLayout newLayout);
-    void transitionDepthColorImageLayout(VkCommandBuffer cmdBuffer,
-                                         VkImageLayout oldLayout,
-                                         VkImageLayout newLayout);
-
-    void copyColorImageContent(AVulkanImageTexture const &srcTex,
-                               VkCommandBuffer cmdBuffer);
-    void copyDepthImageContent(AVulkanImageTexture const &srcTex,
-                               VkCommandBuffer cmdBuffer);
-    void copyColorDepthImageContent(AVulkanImageTexture const &srcTex,
-                                    VkCommandBuffer cmdBuffer);
+    void copyColorTextureContent(AVulkanImageTexture const &srcTex,
+                                 VkCommandBuffer cmdBuffer,
+                                 VkImageLayout srcInitialLayout,
+                                 VkImageLayout srcFinalLayout,
+                                 VkImageLayout dslInitialLayout,
+                                 VkImageLayout dstFinalLayout) const;
+    void copyDepthTextureContent(AVulkanImageTexture const &srcTex,
+                                 VkCommandBuffer cmdBuffer,
+                                 VkImageLayout srcInitialLayout,
+                                 VkImageLayout srcFinalLayout,
+                                 VkImageLayout dslInitialLayout,
+                                 VkImageLayout dstFinalLayout) const;
+    void copyColorDepthTexturesContent(AVulkanImageTexture const &srcTex,
+                                       VkCommandBuffer cmdBuffer,
+                                       VkImageLayout srcInitialLayout,
+                                       VkImageLayout srcFinalLayout,
+                                       VkImageLayout dslInitialLayout,
+                                       VkImageLayout dstFinalLayout) const;
 
     VulkanTexture colorTex{};
     VulkanTexture depthTex{};

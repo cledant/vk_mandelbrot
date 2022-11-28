@@ -6,10 +6,10 @@
 #include "VulkanPhysicalDevice.hpp"
 
 void
-generateMipmaps(VulkanDevices const &devices,
-                VulkanCommandPools const &cmdPools,
-                VulkanQueues const &queues,
-                VulkanTexture const &texture)
+generateMipmapsSingleCmd(VulkanDevices const &devices,
+                         VulkanCommandPools const &cmdPools,
+                         VulkanQueues const &queues,
+                         VulkanTexture const &texture)
 {
     if (!getLinearBlittingSupport(devices.physicalDevice,
                                   texture.textureFormat)) {

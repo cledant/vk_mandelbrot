@@ -61,11 +61,11 @@ allocateImage(VulkanDevices const &devices,
 }
 
 void
-copyBufferToImage(VulkanDevices const &devices,
-                  VulkanCommandPools const &cmdPools,
-                  VulkanQueues const &queues,
-                  VulkanBuffer const &stagingBuffer,
-                  VulkanTexture const &texture)
+copyBufferToImageSingleCmd(VulkanDevices const &devices,
+                           VulkanCommandPools const &cmdPools,
+                           VulkanQueues const &queues,
+                           VulkanBuffer const &stagingBuffer,
+                           VulkanTexture const &texture)
 {
     auto cmd_buffer =
       beginSingleTimeCommands(devices.device, cmdPools.renderCommandPool);
@@ -101,12 +101,38 @@ copyImageToBuffer(VulkanDevices const &devices,
                   VulkanBuffer const &stagingBuffer,
                   VulkanTexture const &texture)
 {
-    // TODO
+    // TODO: not single cmd
     (void)devices;
     (void)cmdPools;
     (void)queues;
     (void)stagingBuffer;
     (void)texture;
+}
+
+void
+copyImageToImage(VkCommandBuffer cmdBuffer,
+                 VkImage srcImg,
+                 VkImage dstImg,
+                 int32_t imgWidth,
+                 int32_t imgHeight,
+                 VkImageAspectFlags imgAspect)
+{
+    VkImageCopy imageRegion{};
+    imageRegion.srcSubresource.aspectMask = imgAspect;
+    imageRegion.srcSubresource.layerCount = 1;
+    imageRegion.dstSubresource.aspectMask = imgAspect;
+    imageRegion.dstSubresource.layerCount = 1;
+    imageRegion.extent.width = imgWidth;
+    imageRegion.extent.height = imgHeight;
+    imageRegion.extent.depth = 1;
+
+    vkCmdCopyImage(cmdBuffer,
+                   srcImg,
+                   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                   dstImg,
+                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                   1,
+                   &imageRegion);
 }
 
 void
