@@ -67,7 +67,8 @@ class VulkanRenderer final
     void draw();
 
     // Screenshot related
-    bool saveScreenshotToFile(std::string const &totalFilePath) const;
+    [[nodiscard]] bool saveScreenshotToFile(
+      std::string const &totalFilePath) const;
 
   private:
     std::string _appName;

@@ -34,7 +34,7 @@ EventHandler::processEvents()
 
     if (_saveScreenshotTofile) {
         // TODO: generate totalfilepath
-        auto ret = _renderer->saveScreenshotToFile("totalpath");
+        auto ret = _renderer->saveScreenshotToFile("./fractalImg.png");
         // TODO: use ret to display success or error on UI
         (void)ret;
         _saveScreenshotTofile = false;

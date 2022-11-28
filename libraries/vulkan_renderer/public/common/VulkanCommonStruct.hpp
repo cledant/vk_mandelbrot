@@ -43,6 +43,8 @@ struct VulkanBuffer final
 
   private:
     VulkanDevices _devices{};
+
+    friend struct VulkanTextureStaging;
 };
 
 struct VulkanTextureStaging final
@@ -70,8 +72,7 @@ struct VulkanTextureStaging final
                       int32_t texH,
                       int32_t nbChan,
                       bool cubemap);
-    [[nodiscard]] bool saveTextureToFile(VulkanDevices const &devices,
-                                         std::string const &filepath) const;
+    [[nodiscard]] bool saveTextureToFile(std::string const &filepath) const;
     void clear();
 };
 
@@ -92,10 +93,9 @@ struct VulkanTexture final
                           VulkanQueues const &queues,
                           VulkanTextureStaging const &stagingTexture,
                           VkFormat format);
-    void loadTextureOnCPU(VulkanDevices const &devices,
-                          VulkanCommandPools const &cmdPools,
+    void loadTextureOnCPU(VulkanCommandPools const &cmdPools,
                           VulkanQueues const &queues,
-                          VulkanTextureStaging const &stagingTexture);
+                          VulkanTextureStaging const &stagingTexture) const;
     void createColorTexture(VulkanDevices const &devices,
                             int32_t texW,
                             int32_t texH,

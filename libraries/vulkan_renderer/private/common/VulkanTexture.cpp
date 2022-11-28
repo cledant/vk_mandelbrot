@@ -40,13 +40,16 @@ VulkanTexture::loadTextureOnGPU(VulkanDevices const &devices,
 }
 
 void
-VulkanTexture::loadTextureOnCPU(VulkanDevices const &devices,
-                                VulkanCommandPools const &cmdPools,
-                                VulkanQueues const &queues,
-                                VulkanTextureStaging const &stagingTexture)
+VulkanTexture::loadTextureOnCPU(
+  VulkanCommandPools const &cmdPools,
+  VulkanQueues const &queues,
+  VulkanTextureStaging const &stagingTexture) const
 {
-    // TODO: actual copy from image to buffer
-    (void)devices;
+    if (!width || !height) {
+        return;
+    }
+
+    // TODO: finish
     (void)cmdPools;
     (void)queues;
     (void)stagingTexture;

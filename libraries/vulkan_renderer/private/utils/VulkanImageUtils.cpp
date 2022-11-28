@@ -95,6 +95,21 @@ copyBufferToImage(VulkanDevices const &devices,
 }
 
 void
+copyImageToBuffer(VulkanDevices const &devices,
+                  VulkanCommandPools const &cmdPools,
+                  VulkanQueues const &queues,
+                  VulkanBuffer const &stagingBuffer,
+                  VulkanTexture const &texture)
+{
+    // TODO
+    (void)devices;
+    (void)cmdPools;
+    (void)queues;
+    (void)stagingBuffer;
+    (void)texture;
+}
+
+void
 createImageView(VulkanDevices const &devices,
                 VulkanTexture &texture,
                 VkImageAspectFlags aspect_flags)

@@ -259,7 +259,7 @@ VulkanRenderer::draw()
 bool
 VulkanRenderer::saveScreenshotToFile(std::string const &totalFilePath) const
 {
-    return (_screenshot.saveTextureToFile(_vkInstance.devices, totalFilePath));
+    return (_screenshot.saveTextureToFile(totalFilePath));
 }
 
 // Cmd buffer related
@@ -444,5 +444,6 @@ VulkanRenderer::copyFrameToHostMemory(size_t imgIndex)
                     &_sync.inflightFence[imgIndex],
                     VK_TRUE,
                     UINT64_MAX);
-    // TODO: actual copy from _imageMandelbrot to screenshot
+    _imageMandelbrot.colorTex.loadTextureOnCPU(
+      _vkInstance.cmdPools, _vkInstance.queues, _screenshot);
 }
