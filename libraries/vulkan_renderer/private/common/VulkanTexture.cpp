@@ -5,6 +5,7 @@
 #include "utils/VulkanImageUtils.hpp"
 #include "utils/VulkanTextureUtils.hpp"
 #include "utils/VulkanTransitionLayout.hpp"
+#include "utils/VulkanCommandBuffer.hpp"
 
 void
 VulkanTexture::loadTextureOnGPU(VulkanDevices const &devices,
@@ -49,10 +50,23 @@ VulkanTexture::loadTextureOnCPU(
         return;
     }
 
-    // TODO: finish
-    (void)cmdPools;
-    (void)queues;
-    (void)stagingTexture;
+    auto cmdBuffer =
+      beginSingleTimeCommands(_devices.device, cmdPools.renderCommandPool);
+
+    transitionImageLayout(cmdBuffer,
+                          *this,
+                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    copyImageToBuffer(cmdBuffer, stagingTexture.stagingBuffer, *this);
+    transitionImageLayout(cmdBuffer,
+                          *this,
+                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    endSingleTimeCommands(_devices.device,
+                          cmdPools.renderCommandPool,
+                          cmdBuffer,
+                          queues.graphicQueue);
 }
 
 void

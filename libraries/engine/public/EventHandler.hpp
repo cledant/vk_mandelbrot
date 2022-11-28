@@ -30,6 +30,7 @@ class EventHandler final
     static constexpr double const CONFIG_TIMER_SECONDS = 0.5;
     static constexpr double const ACTION_TIMER_SECONDS = 0.25;
     static constexpr double const FAST_ACTION_TIMER_SECONDS = 0.01;
+    static constexpr double const SCREENSHOT_TIMER_SECONDS = 0.5;
 
     enum EventTimersTypes
     {
@@ -39,6 +40,7 @@ class EventHandler final
         ET_MIDDLE_MOUSE,
         ET_RIGHT_MOUSE,
         ET_KEYBOARD_MOVEMENTS,
+        ET_SCREENSHOT,
         ET_NB_EVENT_TIMER_TYPES
     };
 
@@ -53,7 +55,8 @@ class EventHandler final
         std::array<double, ET_NB_EVENT_TIMER_TYPES> timerValues = {
             SYSTEM_TIMER_SECONDS,      CONFIG_TIMER_SECONDS,
             FAST_ACTION_TIMER_SECONDS, FAST_ACTION_TIMER_SECONDS,
-            FAST_ACTION_TIMER_SECONDS, FAST_ACTION_TIMER_SECONDS
+            FAST_ACTION_TIMER_SECONDS, FAST_ACTION_TIMER_SECONDS,
+            SCREENSHOT_TIMER_SECONDS
         };
     };
 

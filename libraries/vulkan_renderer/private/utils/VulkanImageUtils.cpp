@@ -95,18 +95,28 @@ copyBufferToImageSingleCmd(VulkanDevices const &devices,
 }
 
 void
-copyImageToBuffer(VulkanDevices const &devices,
-                  VulkanCommandPools const &cmdPools,
-                  VulkanQueues const &queues,
+copyImageToBuffer(VkCommandBuffer cmdBuffer,
                   VulkanBuffer const &stagingBuffer,
                   VulkanTexture const &texture)
 {
-    // TODO: not single cmd
-    (void)devices;
-    (void)cmdPools;
-    (void)queues;
-    (void)stagingBuffer;
-    (void)texture;
+    VkBufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = (texture.isCubemap) ? 6 : 1;
+    region.imageOffset = { 0, 0, 0 };
+    region.imageExtent = { static_cast<uint32_t>(texture.width),
+                           static_cast<uint32_t>(texture.height),
+                           1 };
+    vkCmdCopyImageToBuffer(cmdBuffer,
+                           texture.textureImg,
+                           VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                           stagingBuffer.buffer,
+                           1,
+                           &region);
 }
 
 void

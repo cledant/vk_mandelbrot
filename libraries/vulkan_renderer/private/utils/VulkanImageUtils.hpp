@@ -19,9 +19,7 @@ void copyBufferToImageSingleCmd(VulkanDevices const &devices,
                                 VulkanQueues const &queues,
                                 VulkanBuffer const &stagingBuffer,
                                 VulkanTexture const &texture);
-void copyImageToBuffer(VulkanDevices const &devices,
-                       VulkanCommandPools const &cmdPools,
-                       VulkanQueues const &queues,
+void copyImageToBuffer(VkCommandBuffer cmdBuffer,
                        VulkanBuffer const &stagingBuffer,
                        VulkanTexture const &texture);
 void copyImageToImage(VkCommandBuffer cmdBuffer,

@@ -237,12 +237,12 @@ EventHandler::displayHelp()
 void
 EventHandler::takeScreenshot()
 {
-    if (_timers.acceptEvent[ET_SYSTEM]) {
+    if (_timers.acceptEvent[ET_SCREENSHOT]) {
         _renderer->screenshotNextFrame = true;
         _saveScreenshotTofile = true;
 
-        _timers.acceptEvent[ET_SYSTEM] = 0;
-        _timers.updated[ET_SYSTEM] = 1;
+        _timers.acceptEvent[ET_SCREENSHOT] = 0;
+        _timers.updated[ET_SCREENSHOT] = 1;
     }
 }
 
@@ -270,10 +270,8 @@ EventHandler::uiToggleVsync()
 void
 EventHandler::uiSaveFractalToFile()
 {
-    if (!_recreateSwapchain) {
-        _renderer->screenshotNextFrame = true;
-        _saveScreenshotTofile = true;
-    }
+    _renderer->screenshotNextFrame = true;
+    _saveScreenshotTofile = true;
 }
 
 void
