@@ -57,6 +57,7 @@ EventHandler::processEvents()
     recreateSwapchain();
     zoomHandling(ioEvents, _ioManager->getFramebufferSize());
     keyboardMvtHandling();
+    setUiInfoValues();
 
     // Setting timers origin
     for (uint32_t i = 0; i < ET_NB_EVENT_TIMER_TYPES; ++i) {
@@ -409,12 +410,22 @@ EventHandler::processUiEvents(UiEvents const &uiEvents)
 }
 
 void
+EventHandler::setUiInfoValues()
+{
+    _ui->infoOverview.maxIteration = _renderer->mandelbrotConstants.maxIter;
+    _ui->infoOverview.renderScale = 1.0f;
+    _ui->infoOverview.zoom = _renderer->mandelbrotConstants.zoom;
+    _ui->infoOverview.cameraPos = _renderer->mandelbrotConstants.offset;
+}
+
+void
 EventHandler::screenshotHandling()
 {
     // TODO: use ret to display success or error on UI
     if (_saveScreenshotTofile) {
         auto screenshot = _renderer->generateScreenshot();
         auto filepath = generateScrenshotName(".");
+
         _screenshotsResults.emplace_back(
           std::async(std::launch::async,
                      &EventHandler::saveScreenshotHelper,
@@ -423,7 +434,7 @@ EventHandler::screenshotHandling()
         _saveScreenshotTofile = false;
     }
 
-    // Looping on promises
+    // Handling in progress tasks
     for (auto it = _screenshotsResults.begin();
          it != _screenshotsResults.end();) {
         if (it->wait_for(std::chrono::nanoseconds(0)) ==

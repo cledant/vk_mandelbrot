@@ -24,7 +24,7 @@ endif ()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 #Checking Vulkan
-find_package(Vulkan REQUIRED FATAL_ERROR)
+find_package(Vulkan REQUIRED)
 find_program(GLSLC_PROGRAM glslc REQUIRED FATAL_ERROR)
 
 #Setting global C/CXX compile options

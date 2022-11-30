@@ -11,7 +11,7 @@ struct UiInfoOverview final
     float currentFps{};
     float renderScale{};
     float zoom{};
-    glm::vec3 cameraPos{};
+    glm::vec2 cameraPos{};
     uint32_t maxIteration{};
 
   private:

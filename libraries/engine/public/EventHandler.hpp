@@ -107,6 +107,7 @@ class EventHandler final
                                         glm::ivec2 const &fbSize);
     inline void processIoEvents(IOEvents const &ioEvents);
     inline void processUiEvents(UiEvents const &uiEvents);
+    inline void setUiInfoValues();
 
     // Screenshot related functions
     inline void screenshotHandling();
