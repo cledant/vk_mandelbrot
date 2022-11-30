@@ -3,9 +3,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
 #include <stdexcept>
 #include <array>
 
@@ -168,28 +165,4 @@ VulkanTextureStaging::clear()
     height = 0;
     mipLevel = 0;
     isCubemap = false;
-}
-
-bool
-VulkanTextureStaging::saveTextureToFile(std::string const &filepath) const
-{
-    if (!stagingBuffer.size) {
-        return (false);
-    }
-
-    void *data;
-    vkMapMemory(stagingBuffer._devices.device,
-                stagingBuffer.memory,
-                0,
-                stagingBuffer.size,
-                0,
-                &data);
-    auto ret = stbi_write_png(filepath.c_str(),
-                              width,
-                              height,
-                              static_cast<int32_t>(nbChannel),
-                              data,
-                              static_cast<int32_t>(width * nbChannel));
-    vkUnmapMemory(stagingBuffer._devices.device, stagingBuffer.memory);
-    return (ret);
 }

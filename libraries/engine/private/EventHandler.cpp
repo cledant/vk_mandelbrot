@@ -2,7 +2,10 @@
 
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "glm/gtc/matrix_transform.hpp"
+#include "fmt/core.h"
+#include "fmt/chrono.h"
 
+#include <chrono>
 #include <functional>
 
 void
@@ -32,15 +35,7 @@ EventHandler::processEvents()
     assert(_renderer);
     assert(_ui);
 
-    if (_saveScreenshotTofile) {
-        // TODO: generate totalfilepath
-        auto ret = _renderer->saveScreenshotToFile("./fractalImg.png");
-        // TODO: use ret to display success or error on UI
-        (void)ret;
-        _saveScreenshotTofile = false;
-    }
-
-    auto ioEvents = _ioManager->getEvents();
+    screenshotHandling();
 
     // Values init
     _keyboardMvt = glm::ivec2(0);
@@ -55,6 +50,7 @@ EventHandler::processEvents()
         _timers.acceptEvent[i] = (time_diff.count() > _timers.timerValues[i]);
     }
 
+    auto ioEvents = _ioManager->getEvents();
     initMultipliers(ioEvents);
     processIoEvents(ioEvents);
     processUiEvents(_ui->getUiEvents());
@@ -238,7 +234,7 @@ void
 EventHandler::takeScreenshot()
 {
     if (_timers.acceptEvent[ET_SCREENSHOT]) {
-        _renderer->screenshotNextFrame = true;
+        _renderer->saveNextFrame = true;
         _saveScreenshotTofile = true;
 
         _timers.acceptEvent[ET_SCREENSHOT] = 0;
@@ -270,7 +266,7 @@ EventHandler::uiToggleVsync()
 void
 EventHandler::uiSaveFractalToFile()
 {
-    _renderer->screenshotNextFrame = true;
+    _renderer->saveNextFrame = true;
     _saveScreenshotTofile = true;
 }
 
@@ -410,4 +406,61 @@ EventHandler::processUiEvents(UiEvents const &uiEvents)
             std::invoke(keyboardEvents[i], this);
         }
     }
+}
+
+void
+EventHandler::screenshotHandling()
+{
+    // TODO: use ret to display success or error on UI
+    if (_saveScreenshotTofile) {
+        auto screenshot = _renderer->generateScreenshot();
+        auto filepath = generateScrenshotName(".");
+        _screenshotsResults.emplace_back(
+          std::async(std::launch::async,
+                     &EventHandler::saveScreenshotHelper,
+                     std::move(screenshot),
+                     std::move(filepath)));
+        _saveScreenshotTofile = false;
+    }
+
+    // Looping on promises
+    for (auto it = _screenshotsResults.begin();
+         it != _screenshotsResults.end();) {
+        if (it->wait_for(std::chrono::nanoseconds(0)) ==
+            std::future_status::ready) {
+            auto result = it->get();
+
+            if (result) {
+                fmt::print("Saved !\n");
+            } else {
+                fmt::print("Failed !\n");
+            }
+            std::swap(*it, _screenshotsResults.back());
+            _screenshotsResults.pop_back();
+        } else {
+            ++it;
+        }
+    }
+}
+
+std::string
+EventHandler::generateScrenshotName(std::string const &folderpath)
+{
+    using namespace std::chrono;
+
+    auto now = system_clock::now();
+    auto nowEpoch = now.time_since_epoch();
+    nowEpoch -= duration_cast<seconds>(nowEpoch);
+
+    return (fmt::format("{}/mandelbrot_{:%Y-%m-%d:%H:%M:%S}:{:03}.png",
+                        folderpath,
+                        now,
+                        duration_cast<milliseconds>(nowEpoch).count()));
+}
+
+bool
+EventHandler::saveScreenshotHelper(VulkanScreenshot &&screenshot,
+                                   std::string &&filepath)
+{
+    return (screenshot.saveScreenshotToFile(filepath));
 }

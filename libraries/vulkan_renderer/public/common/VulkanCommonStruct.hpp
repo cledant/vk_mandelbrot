@@ -2,6 +2,7 @@
 #define VK_MANDELBROT_VULKANCOMMONSTRUCT_HPP
 
 #include <string>
+#include <memory>
 
 #include <vulkan/vulkan.h>
 
@@ -72,7 +73,6 @@ struct VulkanTextureStaging final
                       int32_t texH,
                       int32_t nbChan,
                       bool cubemap);
-    [[nodiscard]] bool saveTextureToFile(std::string const &filepath) const;
     void clear();
 };
 
@@ -121,6 +121,16 @@ struct VulkanSimpleVertex final
 {
     glm::vec3 position{};
     glm::vec2 texCoord{};
+};
+
+struct VulkanScreenshot final
+{
+    std::unique_ptr<uint8_t[]> data;
+    int32_t width{};
+    int32_t height{};
+    uint32_t nbChannel{};
+
+    [[nodiscard]] bool saveScreenshotToFile(std::string const &filepath) const;
 };
 
 #endif // VK_MANDELBROT_VULKANCOMMONSTRUCT_HPP

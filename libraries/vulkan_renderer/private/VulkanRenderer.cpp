@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <cassert>
+#include <cstring>
 
 #include "VulkanDebug.hpp"
 #include "utils/VulkanCommandBuffer.hpp"
@@ -61,11 +62,11 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                           depthFormat,
                           _swapChain.swapChainExtent.width,
                           _swapChain.swapChainExtent.height);
-    _screenshot.allocate(_vkInstance.devices,
-                         _swapChain.swapChainExtent.width,
-                         _swapChain.swapChainExtent.height,
-                         4,
-                         false);
+    _capturedFrame.allocate(_vkInstance.devices,
+                            _swapChain.swapChainExtent.width,
+                            _swapChain.swapChainExtent.height,
+                            4,
+                            false);
     _imageDisplayed.init(_vkInstance,
                          VK_FORMAT_R8G8B8A8_UNORM,
                          depthFormat,
@@ -122,12 +123,12 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH, bool vsync)
                             depthFormat,
                             _swapChain.swapChainExtent.width,
                             _swapChain.swapChainExtent.height);
-    _screenshot.clear();
-    _screenshot.allocate(_vkInstance.devices,
-                         _swapChain.swapChainExtent.width,
-                         _swapChain.swapChainExtent.height,
-                         4,
-                         false);
+    _capturedFrame.clear();
+    _capturedFrame.allocate(_vkInstance.devices,
+                            _swapChain.swapChainExtent.width,
+                            _swapChain.swapChainExtent.height,
+                            4,
+                            false);
     _imageDisplayed.resize(VK_FORMAT_R8G8B8A8_UNORM,
                            depthFormat,
                            _swapChain.swapChainExtent.width,
@@ -168,7 +169,7 @@ VulkanRenderer::clear()
     _toScreen.clear();
     _toScreenRenderPass.clear();
     _imageDisplayed.clear();
-    _screenshot.clear();
+    _capturedFrame.clear();
     _imageMandelbrot.clear();
     _sync.clear();
     _swapChain.clear();
@@ -247,19 +248,38 @@ VulkanRenderer::draw()
     presentInfo.pImageIndices = &imgIndex;
     presentInfo.pResults = nullptr;
     vkQueuePresentKHR(_vkInstance.queues.presentQueue, &presentInfo);
-    if (screenshotNextFrame) {
+    if (saveNextFrame) {
         copyFrameToHostMemory(_sync.currentFrame);
-        screenshotNextFrame = false;
+        saveNextFrame = false;
     }
     _sync.currentFrame =
       (_sync.currentFrame + 1) % VulkanSync::MAX_FRAME_INFLIGHT;
 }
 
 // Screenshot related
-bool
-VulkanRenderer::saveScreenshotToFile(std::string const &totalFilePath) const
+VulkanScreenshot
+VulkanRenderer::generateScreenshot() const
 {
-    return (_screenshot.saveTextureToFile(totalFilePath));
+    VulkanScreenshot screenshot{};
+
+    screenshot.width = _capturedFrame.width;
+    screenshot.height = _capturedFrame.height;
+    screenshot.nbChannel = _capturedFrame.nbChannel;
+    screenshot.data.reset(
+      new uint8_t[_capturedFrame.width * _capturedFrame.height *
+                  _capturedFrame.nbChannel]);
+
+    void *data;
+    vkMapMemory(_vkInstance.devices.device,
+                _capturedFrame.stagingBuffer.memory,
+                0,
+                _capturedFrame.stagingBuffer.size,
+                0,
+                &data);
+    memcpy(screenshot.data.get(), data, _capturedFrame.stagingBuffer.size);
+    vkUnmapMemory(_vkInstance.devices.device,
+                  _capturedFrame.stagingBuffer.memory);
+    return (screenshot);
 }
 
 // Cmd buffer related
@@ -424,5 +444,5 @@ VulkanRenderer::copyFrameToHostMemory(size_t imgIndex)
                     VK_TRUE,
                     UINT64_MAX);
     _imageMandelbrot.colorTex.loadTextureOnCPU(
-      _vkInstance.cmdPools, _vkInstance.queues, _screenshot);
+      _vkInstance.cmdPools, _vkInstance.queues, _capturedFrame);
 }

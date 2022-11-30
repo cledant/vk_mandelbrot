@@ -2,6 +2,7 @@
 #define VK_MANDELBROT_EVENTHANDLER_HPP
 
 #include <chrono>
+#include <future>
 
 #include "IOEvents.hpp"
 #include "IOManager.hpp"
@@ -30,7 +31,7 @@ class EventHandler final
     static constexpr double const CONFIG_TIMER_SECONDS = 0.5;
     static constexpr double const ACTION_TIMER_SECONDS = 0.25;
     static constexpr double const FAST_ACTION_TIMER_SECONDS = 0.01;
-    static constexpr double const SCREENSHOT_TIMER_SECONDS = 0.5;
+    static constexpr double const SCREENSHOT_TIMER_SECONDS = 0.35;
 
     enum EventTimersTypes
     {
@@ -107,6 +108,13 @@ class EventHandler final
     inline void processIoEvents(IOEvents const &ioEvents);
     inline void processUiEvents(UiEvents const &uiEvents);
 
+    // Screenshot related functions
+    inline void screenshotHandling();
+    [[nodiscard]] static inline std::string generateScrenshotName(
+      std::string const &folderpath);
+    static inline bool saveScreenshotHelper(VulkanScreenshot &&screenshot,
+                                            std::string &&filepath);
+
     // Pointers to managers
     IOManager *_ioManager{};
     VulkanRenderer *_renderer{};
@@ -128,6 +136,7 @@ class EventHandler final
     bool _recreateSwapchain{};
     bool _vsync = true;
     bool _saveScreenshotTofile{};
+    std::vector<std::future<bool>> _screenshotsResults;
 };
 
 #endif // VK_MANDELBROT_EVENTHANDLER_HPP
