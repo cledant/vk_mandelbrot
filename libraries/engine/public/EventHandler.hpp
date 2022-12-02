@@ -112,7 +112,7 @@ class EventHandler final
     // Screenshot related functions
     inline void screenshotHandling();
     [[nodiscard]] static inline std::string generateScrenshotName(
-      std::string const &folderpath);
+      std::string const &folderPath);
     static inline bool saveScreenshotHelper(VulkanScreenshot &&screenshot,
                                             std::string &&filepath);
 

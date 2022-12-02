@@ -14,6 +14,10 @@ constexpr char const *INPUT_HELP_WIN_TEXT =
   "\tP: reset iteration\n"
   "\tLeft Shift: movement multiplier for WASD and iteration";
 
+static constexpr char const *NOTIFICATION_SAVE_SCREENSHOT_FAILED =
+  "Failed to save screenshot";
+static constexpr char const *NOTIFICATION_SAVE_SCREENSHOT_OK =
+  "Screenshot saved";
 }
 
 #endif // VK_MANDELBROT_UITEXTS_HPP

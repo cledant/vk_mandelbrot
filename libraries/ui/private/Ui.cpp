@@ -57,6 +57,7 @@ Ui::draw()
 
     drawMenuBar();
     infoOverview.draw(showInfoFps, showInfoPosition);
+    notifications.draw();
     _aboutBox.draw();
     helpBox.draw();
     ImGui::Render();

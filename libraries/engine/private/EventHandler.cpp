@@ -421,7 +421,6 @@ EventHandler::setUiInfoValues()
 void
 EventHandler::screenshotHandling()
 {
-    // TODO: use ret to display success or error on UI
     if (_saveScreenshotTofile) {
         auto screenshot = _renderer->generateScreenshot();
         auto filepath = generateScrenshotName(".");
@@ -439,13 +438,10 @@ EventHandler::screenshotHandling()
          it != _screenshotsResults.end();) {
         if (it->wait_for(std::chrono::nanoseconds(0)) ==
             std::future_status::ready) {
-            auto result = it->get();
 
-            if (result) {
-                fmt::print("Saved !\n");
-            } else {
-                fmt::print("Failed !\n");
-            }
+            auto now = std::chrono::steady_clock::now();
+            ++_ui->notifications.numberOfNotifications[it->get()];
+            _ui->notifications.lastNotificationTime = now;
             std::swap(*it, _screenshotsResults.back());
             _screenshotsResults.pop_back();
         } else {

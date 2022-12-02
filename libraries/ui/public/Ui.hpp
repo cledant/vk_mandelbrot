@@ -11,6 +11,7 @@
 #include "UiRGBColorInputWindow.hpp"
 #include "UiAboutBox.hpp"
 #include "UiTextBox.hpp"
+#include "UiNotifications.hpp"
 
 class Ui final
 {
@@ -38,6 +39,7 @@ class Ui final
 
     // Updated from outside
     UiInfoOverview infoOverview{};
+    UiNotifications notifications{};
 
     // Draw related
     void draw();
