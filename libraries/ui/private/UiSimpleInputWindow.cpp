@@ -8,8 +8,7 @@ UiSimpleInputWindow::drawInputWindow()
     static constexpr ImGuiWindowFlags const WIN_FLAGS =
       ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
       ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove;
-    static ImVec2 const WIN_SIZE = ImVec2(winW, winH);
-    static ImVec2 const WIN_POS_PIVOT = { 0.5f, 0.5f };
+    static constexpr ImVec2 const WIN_POS_PIVOT = { 0.5f, 0.5f };
     static constexpr ImGuiInputTextFlags const INPUT_TEXT_FLAGS =
       ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_NoUndoRedo;
 
@@ -23,7 +22,7 @@ UiSimpleInputWindow::drawInputWindow()
     ImVec2 window_pos{ viewport_center.x, viewport_center.y };
     bool trigger = false;
 
-    ImGui::SetNextWindowSize(WIN_SIZE);
+    ImGui::SetNextWindowSize(ImVec2(winW, winH));
     ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, WIN_POS_PIVOT);
     ImGui::Begin(windowName.c_str(), &isInputOpen, WIN_FLAGS);
 

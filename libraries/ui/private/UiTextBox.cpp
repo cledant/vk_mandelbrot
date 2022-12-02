@@ -9,7 +9,7 @@ UiTextBox::draw()
       ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
       ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
       ImGuiWindowFlags_NoMove;
-    static ImVec2 const WIN_POS_PIVOT = { 0.5f, 0.5f };
+    static constexpr ImVec2 const WIN_POS_PIVOT = { 0.5f, 0.5f };
 
     if (!isOpen) {
         return;

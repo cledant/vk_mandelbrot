@@ -10,14 +10,14 @@ UiInfoOverview::draw(bool &fps, bool &info) const
       ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
       ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
       ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
-    static ImVec2 const WIN_SIZE_INFO = ImVec2(435, 105);
-    static ImVec2 const WIN_SIZE_FPS = ImVec2(165, 50);
-    static ImVec2 const WIN_SIZE_BOTH = ImVec2(435, 140);
-    static ImVec2 const WIN_POS_PIVOT = { 1.0f, 0.0f };
+    static constexpr ImVec2 const WIN_SIZE_INFO = ImVec2(435, 105);
+    static constexpr ImVec2 const WIN_SIZE_FPS = ImVec2(165, 50);
+    static constexpr ImVec2 const WIN_SIZE_BOTH = ImVec2(435, 140);
+    static constexpr ImVec2 const WIN_POS_PIVOT = { 1.0f, 0.0f };
     static constexpr float const WIN_ALPHA = 0.35f;
-    static ImVec4 const RED = { 255, 0, 0, 255 };
-    static ImVec4 const YELLOW = { 255, 255, 0, 255 };
-    static ImVec4 const GREEN = { 0, 255, 0, 255 };
+    static constexpr ImVec4 const RED = { 255, 0, 0, 255 };
+    static constexpr ImVec4 const YELLOW = { 255, 255, 0, 255 };
+    static constexpr ImVec4 const GREEN = { 0, 255, 0, 255 };
 
     if (info || fps) {
         ImGuiViewport const *viewport = ImGui::GetMainViewport();

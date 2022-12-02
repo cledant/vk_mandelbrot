@@ -8,8 +8,7 @@ UiRGBColorInputWindow::draw()
     static constexpr ImGuiWindowFlags const WIN_FLAGS =
       ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings |
       ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
-    static ImVec2 const WIN_SIZE = ImVec2(winW, winH);
-    static ImVec2 const WIN_POS_PIVOT = { 0.5f, 0.5f };
+    static constexpr ImVec2 const WIN_POS_PIVOT = { 0.5f, 0.5f };
     static constexpr ImGuiInputTextFlags const INPUT_COLOR_FLAGS =
       ImGuiColorEditFlags_Float | ImGuiColorEditFlags_PickerHueBar |
       ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoAlpha;
@@ -24,7 +23,7 @@ UiRGBColorInputWindow::draw()
     bool trigger = false;
     static ImVec4 work_color = { 0.0f, 0.5f, 0.3f, 0.0f };
 
-    ImGui::SetNextWindowSize(WIN_SIZE);
+    ImGui::SetNextWindowSize(ImVec2(winW, winH));
     ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, WIN_POS_PIVOT);
     ImGui::Begin(windowName.c_str(), &isInputOpen, WIN_FLAGS);
 
