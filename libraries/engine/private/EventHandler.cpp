@@ -122,8 +122,10 @@ EventHandler::resetZoomScreenCenter()
     if (_timers.acceptEvent[ET_RIGHT_MOUSE]) {
         _skipZoomHandling = true;
         _keyboardMvt = glm::ivec2(0);
-        _renderer->mandelbrotConstants.offset =
-          mandelbrotPushConstants::DEFAULT_OFFSET;
+        _renderer->mandelbrotConstants.offsetX =
+          mandelbrotPushConstants::DEFAULT_OFFSET_X;
+        _renderer->mandelbrotConstants.offsetY =
+          mandelbrotPushConstants::DEFAULT_OFFSET_Y;
         _zoomVal = DEFAULT_ZOOM;
         _renderer->mandelbrotConstants.zoom =
           mandelbrotPushConstants::DEFAULT_ZOOM / _zoomVal;
@@ -291,8 +293,8 @@ EventHandler::zoomHandling(IOEvents const &ioEvents, glm::vec2 const &fbSize)
     bool addOffsetZoomIn{};
     bool addOffsetZoomOut{};
 
-    if (ioEvents.mouseScroll != 0.0f) {
-        if (ioEvents.mouseScroll > 0.0f) {
+    if (ioEvents.mouseScroll != 0.0) {
+        if (ioEvents.mouseScroll > 0.0) {
             _zoomVal *= _zoomStepValue;
             addOffsetZoomIn = true;
         } else {
@@ -300,8 +302,8 @@ EventHandler::zoomHandling(IOEvents const &ioEvents, glm::vec2 const &fbSize)
             addOffsetZoomOut = true;
         }
 
-        if (_zoomVal < 1.0f) {
-            _zoomVal = 1.0f;
+        if (_zoomVal < 1.0) {
+            _zoomVal = 1.0;
             addOffsetZoomOut = false;
         }
 
@@ -309,16 +311,28 @@ EventHandler::zoomHandling(IOEvents const &ioEvents, glm::vec2 const &fbSize)
         _ioManager->resetMouseScroll();
     }
     if (addOffsetZoomOut) {
-        _renderer->mandelbrotConstants.offset -=
-          computeMouseOffset(ioEvents.mousePosition, fbSize);
+        _renderer->mandelbrotConstants.offsetX -= computeMouseOffset(
+          ioEvents.mousePosition.x,
+          fbSize.x,
+          _renderer->mandelbrotConstants.zoomMultScreenRatio);
+        _renderer->mandelbrotConstants.offsetY -=
+          computeMouseOffset(ioEvents.mousePosition.y,
+                             fbSize.y,
+                             _renderer->mandelbrotConstants.zoom);
     }
     _renderer->mandelbrotConstants.zoom =
       mandelbrotPushConstants::DEFAULT_ZOOM / _zoomVal;
     _renderer->mandelbrotConstants.zoomMultScreenRatio =
       _renderer->mandelbrotConstants.zoom * _screenRatio;
     if (addOffsetZoomIn) {
-        _renderer->mandelbrotConstants.offset +=
-          computeMouseOffset(ioEvents.mousePosition, fbSize);
+        _renderer->mandelbrotConstants.offsetX += computeMouseOffset(
+          ioEvents.mousePosition.x,
+          fbSize.x,
+          _renderer->mandelbrotConstants.zoomMultScreenRatio);
+        _renderer->mandelbrotConstants.offsetY +=
+          computeMouseOffset(ioEvents.mousePosition.y,
+                             fbSize.y,
+                             _renderer->mandelbrotConstants.zoom);
     }
 }
 
@@ -326,12 +340,12 @@ void
 EventHandler::keyboardMvtHandling()
 {
     if (_keyboardMvt.x) {
-        _renderer->mandelbrotConstants.offset.x +=
+        _renderer->mandelbrotConstants.offsetX +=
           _keyboardMvt.x * (_keyboardMvtStepValue / _zoomVal);
         _renderer->mandelbrotComputeDone = false;
     }
     if (_keyboardMvt.y) {
-        _renderer->mandelbrotConstants.offset.y -=
+        _renderer->mandelbrotConstants.offsetY -=
           _keyboardMvt.y * (_keyboardMvtStepValue / _zoomVal);
         _renderer->mandelbrotComputeDone = false;
     }
@@ -345,24 +359,15 @@ EventHandler::recreateSwapchain()
 
         _renderer->resize(fbSize.x, fbSize.y, _vsync);
         _screenRatio =
-          static_cast<float>(fbSize.x) / static_cast<float>(fbSize.y);
+          static_cast<double>(fbSize.x) / static_cast<double>(fbSize.y);
         _renderer->mandelbrotComputeDone = false;
     }
 }
 
-glm::vec2
-EventHandler::computeMouseOffset(glm::vec2 const &mousePos,
-                                 glm::ivec2 const &fbSize)
+double
+EventHandler::computeMouseOffset(double mousePos, double fbSize, double zoom)
 {
-    glm::vec2 mouseOffsetPosition{};
-
-    mouseOffsetPosition.x =
-      _renderer->mandelbrotConstants.zoomMultScreenRatio *
-      ((mousePos.x / static_cast<float>(fbSize.x)) - 0.5f);
-    mouseOffsetPosition.y =
-      _renderer->mandelbrotConstants.zoom *
-      ((mousePos.y / static_cast<float>(fbSize.y)) - 0.5f);
-    return (mouseOffsetPosition);
+    return (zoom * ((mousePos / fbSize) - 0.5));
 }
 
 void
@@ -415,7 +420,8 @@ EventHandler::setUiInfoValues()
     _ui->infoOverview.maxIteration = _renderer->mandelbrotConstants.maxIter;
     _ui->infoOverview.renderScale = 1.0f;
     _ui->infoOverview.zoom = _renderer->mandelbrotConstants.zoom;
-    _ui->infoOverview.cameraPos = _renderer->mandelbrotConstants.offset;
+    _ui->infoOverview.cameraPos = { _renderer->mandelbrotConstants.offsetX,
+                                    _renderer->mandelbrotConstants.offsetY };
 }
 
 void

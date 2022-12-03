@@ -16,5 +16,9 @@ VulkanInstanceOptions::hasRequiredOptions(
         fillModeNonSolid != physicalDeviceSupportedOpt.fillModeNonSolid) {
         return (false);
     }
+    if (shaderDouble &&
+        shaderDouble != physicalDeviceSupportedOpt.shaderDouble) {
+        return (false);
+    }
     return (true);
 }

@@ -65,14 +65,14 @@ class EventHandler final
     static constexpr uint32_t const ITER_NO_MULTIPLIER = 1;
     static constexpr uint32_t const ITER_WITH_MULTIPLIER = 100;
 
-    static constexpr float const KEYBOARD_MVT_NO_MULTIPLIER = 0.01f;
-    static constexpr float const KEYBOARD_MVT_WITH_MULTIPLIER = 0.1f;
+    static constexpr double const KEYBOARD_MVT_NO_MULTIPLIER = 0.01;
+    static constexpr double const KEYBOARD_MVT_WITH_MULTIPLIER = 0.1;
 
-    static constexpr float const ZOOM_NO_MULTIPLIER = 2.0f;
-    static constexpr float const ZOOM_WITH_MULTIPLIER = 8.0f;
+    static constexpr double const ZOOM_NO_MULTIPLIER = 2.0;
+    static constexpr double const ZOOM_WITH_MULTIPLIER = 8.0;
 
     // Default val
-    static constexpr float const DEFAULT_ZOOM = 1.0f;
+    static constexpr double const DEFAULT_ZOOM = 1.0;
 
     // IO Events handling functions
     inline void closeWinEvent();
@@ -103,8 +103,9 @@ class EventHandler final
     inline void zoomHandling(IOEvents const &ioEvents, glm::vec2 const &fbSize);
     inline void keyboardMvtHandling();
     inline void recreateSwapchain();
-    inline glm::vec2 computeMouseOffset(glm::vec2 const &mousePos,
-                                        glm::ivec2 const &fbSize);
+    inline double computeMouseOffset(double mousePos,
+                                     double fbSize,
+                                     double zoom);
     inline void processIoEvents(IOEvents const &ioEvents);
     inline void processUiEvents(UiEvents const &uiEvents);
     inline void setUiInfoValues();
@@ -127,10 +128,10 @@ class EventHandler final
     // Values for mandelbrot computation
     glm::ivec2 _keyboardMvt{};
     uint32_t _iterStepValue{};
-    float _keyboardMvtStepValue{};
-    float _zoomStepValue{};
-    float _screenRatio{};
-    float _zoomVal = DEFAULT_ZOOM;
+    double _keyboardMvtStepValue{};
+    double _zoomStepValue{};
+    double _screenRatio{};
+    double _zoomVal = DEFAULT_ZOOM;
 
     // Other
     bool _skipZoomHandling{};
