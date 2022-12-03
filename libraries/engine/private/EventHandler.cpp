@@ -13,7 +13,8 @@ EventHandler::setIOManager(IOManager *ioManager)
 {
     _ioManager = ioManager;
     auto fbSize = _ioManager->getFramebufferSize();
-    _screenRatio = static_cast<float>(fbSize.x) / static_cast<float>(fbSize.y);
+    _screenRatio =
+      static_cast<double>(fbSize.x) / static_cast<double>(fbSize.y);
 }
 
 void
@@ -278,8 +279,6 @@ EventHandler::initMultipliers(IOEvents const &ioEvents)
 {
     _iterStepValue =
       (ioEvents.multiplier) ? ITER_WITH_MULTIPLIER : ITER_NO_MULTIPLIER;
-    _zoomStepValue =
-      (ioEvents.multiplier) ? ZOOM_WITH_MULTIPLIER : ZOOM_NO_MULTIPLIER;
     _keyboardMvtStepValue = (ioEvents.multiplier) ? KEYBOARD_MVT_WITH_MULTIPLIER
                                                   : KEYBOARD_MVT_NO_MULTIPLIER;
 }
@@ -295,10 +294,10 @@ EventHandler::zoomHandling(IOEvents const &ioEvents, glm::vec2 const &fbSize)
 
     if (ioEvents.mouseScroll != 0.0) {
         if (ioEvents.mouseScroll > 0.0) {
-            _zoomVal *= _zoomStepValue;
+            _zoomVal *= ZOOM_MULTIPLIER;
             addOffsetZoomIn = true;
         } else {
-            _zoomVal /= _zoomStepValue;
+            _zoomVal /= ZOOM_MULTIPLIER;
             addOffsetZoomOut = true;
         }
 

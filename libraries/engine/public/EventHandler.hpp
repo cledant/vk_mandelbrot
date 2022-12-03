@@ -68,8 +68,7 @@ class EventHandler final
     static constexpr double const KEYBOARD_MVT_NO_MULTIPLIER = 0.01;
     static constexpr double const KEYBOARD_MVT_WITH_MULTIPLIER = 0.1;
 
-    static constexpr double const ZOOM_NO_MULTIPLIER = 2.0;
-    static constexpr double const ZOOM_WITH_MULTIPLIER = 8.0;
+    static constexpr double const ZOOM_MULTIPLIER = 2.0;
 
     // Default val
     static constexpr double const DEFAULT_ZOOM = 1.0;
@@ -103,7 +102,7 @@ class EventHandler final
     inline void zoomHandling(IOEvents const &ioEvents, glm::vec2 const &fbSize);
     inline void keyboardMvtHandling();
     inline void recreateSwapchain();
-    inline double computeMouseOffset(double mousePos,
+    static inline double computeMouseOffset(double mousePos,
                                      double fbSize,
                                      double zoom);
     inline void processIoEvents(IOEvents const &ioEvents);
@@ -129,7 +128,6 @@ class EventHandler final
     glm::ivec2 _keyboardMvt{};
     uint32_t _iterStepValue{};
     double _keyboardMvtStepValue{};
-    double _zoomStepValue{};
     double _screenRatio{};
     double _zoomVal = DEFAULT_ZOOM;
 
