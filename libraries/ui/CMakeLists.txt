@@ -5,7 +5,6 @@ add_library(ui STATIC
         private/Ui.cpp
         private/UiInfoOverview.cpp
         private/UiSimpleInputWindow.cpp
-        private/UiRGBColorInputWindow.cpp
         private/UiAboutBox.cpp
         private/UiTextBox.cpp
         private/UiNotifications.cpp)
