@@ -60,10 +60,9 @@ else ()
     if (${TARGET_ARCH_OPTIMIZATION} MATCHES "x86-64-v3|x86-64-v4")
         message("Build binary with AVX2 profile")
         set(CMAKE_CXX_FLAGS "-march=core2 -mtune=haswell \
--mavx -mavx2 -mbmi -mbmi2 -mf16c -mfma -mfsgsbase \
+-mavx2 -mbmi -mbmi2 -mf16c -mfma -mfsgsbase \
 -mlzcnt -mmovbe -mpclmul -mpopcnt -mrdrnd \
--msse4 -msse4.1 -msse4.2 -mxsave -mxsaveopt \
--pipe")
+-mxsave -mxsaveopt -pipe")
         set(CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
     elseif (${TARGET_ARCH_OPTIMIZATION} MATCHES "x86-64-v2")
         message("Build binary with SSE4 profile")
@@ -79,11 +78,17 @@ endif ()
 
 #Security settings
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fstack-protector-strong -D_FORTIFY_SOURCE=2" CACHE STRING "" FORCE)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -fstack-protector-strong -D_FORTIFY_SOURCE=2" CACHE STRING "" FORCE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIE -fstack-protector-strong -fstack-clash-protection \
+        -fcf-protection=full -D_FORTIFY_SOURCE=2 -D_GLIBCXX_ASSERTIONS" CACHE STRING "" FORCE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIE -fstack-protector-strong -fstack-clash-protection \
+        -fcf-protection=full -D_FORTIFY_SOURCE=2 -D_GLIBCXX_ASSERTIONS" CACHE STRING "" FORCE)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-pie -Wl,-z,relro -Wl,-z,now -Wl,-z,defs \
+        -Wl,-z,noexecstack")
 else ()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer" CACHE STRING "" FORCE)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -fno-omit-frame-pointer" CACHE STRING "" FORCE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fasynchronous-unwind-tables \
+        -fno-omit-frame-pointer" CACHE STRING "" FORCE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -fasynchronous-unwind-tables \
+        -fno-omit-frame-pointer" CACHE STRING "" FORCE)
 endif ()
 
 #Setup glm
