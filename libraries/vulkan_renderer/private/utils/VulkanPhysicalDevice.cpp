@@ -124,7 +124,7 @@ checkDeviceFeaturesSupport(VkPhysicalDevice device, DeviceRequirement &dr)
         dr.options.fillModeNonSolid = VK_TRUE;
     }
     if (features.shaderFloat64) {
-        dr.options.shaderDouble = VK_TRUE;
+        dr.options.shaderFloat64 = VK_TRUE;
     }
 }
 

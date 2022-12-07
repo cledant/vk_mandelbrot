@@ -9,7 +9,7 @@ struct VulkanInstanceOptions final
     VkBool32 samplerAniso{};
     VkBool32 fillModeNonSolid{};
     VkBool32 vsync{};
-    VkBool32 shaderDouble{};
+    VkBool32 shaderFloat64{};
 
     [[nodiscard]] bool hasRequiredOptions(
       VulkanInstanceOptions const &physicalDeviceSupportedOpt) const;
