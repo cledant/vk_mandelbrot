@@ -7,6 +7,7 @@ enum UiEventTypes
     UET_FULLSCREEN,
     UET_VSYNC,
     UET_SAVE_TO_FILE,
+    UET_RENDERER_SCALE,
     UET_TOTAL_NB,
 };
 

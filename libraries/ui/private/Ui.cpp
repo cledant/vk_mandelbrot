@@ -72,28 +72,28 @@ Ui::drawMenuBar()
             _uiEvents.events[UET_SAVE_TO_FILE] =
               ImGui::MenuItem("Save fractal to file", "F10");
             ImGui::Separator();
-            if (ImGui::BeginMenu("Settings")) {
-                if ((_uiEvents.events[UET_VSYNC] =
-                       ImGui::MenuItem("Vsync", "", &_vsync))) {
-                }
-                ImGui::Separator();
-                if ((_uiEvents.events[UET_FULLSCREEN] =
-                       ImGui::MenuItem("Fullscreen", "F11", &fullscreen))) {
-                }
-                ImGui::EndMenu();
-            }
-            ImGui::Separator();
             _uiEvents.events[UET_EXIT] = ImGui::MenuItem("Exit", "F12");
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("View")) {
-            ImGui::MenuItem("Display control menu", "F2", &displayControlMenu);
+            ImGui::MenuItem("Display UI", "F2", &displayUi);
             ImGui::Separator();
-            ImGui::MenuItem("Display UI", "F3", &displayUi);
+            ImGui::MenuItem("Info", "F3", &showInfoPosition);
             ImGui::Separator();
-            ImGui::MenuItem("Info", "F4", &showInfoPosition);
+            ImGui::MenuItem("Show Fps", "F4", &showInfoFps);
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Renderer")) {
+            if ((_uiEvents.events[UET_VSYNC] =
+                   ImGui::MenuItem("Vsync", "", &vsync))) {
+            }
             ImGui::Separator();
-            ImGui::MenuItem("Show Fps", "F5", &showInfoFps);
+            if ((_uiEvents.events[UET_FULLSCREEN] =
+                   ImGui::MenuItem("Fullscreen", "F11", &fullscreen))) {
+            }
+            ImGui::Separator();
+            _uiEvents.events[UET_RENDERER_SCALE] =
+              rendererScaleSelection.drawMenu();
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Help")) {

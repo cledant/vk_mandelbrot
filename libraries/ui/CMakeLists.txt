@@ -7,7 +7,8 @@ add_library(ui STATIC
         private/UiSimpleInputWindow.cpp
         private/UiAboutBox.cpp
         private/UiTextBox.cpp
-        private/UiNotifications.cpp)
+        private/UiNotifications.cpp
+        private/UiMenuBarRendererScaleSelection.cpp)
 target_include_directories(ui
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/public

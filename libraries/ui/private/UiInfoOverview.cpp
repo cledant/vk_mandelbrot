@@ -68,7 +68,7 @@ UiInfoOverview::draw(bool &fps, bool &info) const
                 ImGui::Text("Camera position: Y = %.30f", cameraPos.y);
                 ImGui::Text("Iteration: %u", maxIteration);
                 ImGui::Text("Zoom : %.30e", 1.0f / zoom);
-                ImGui::Text("Renderer scale : %.2f", renderScale);
+                ImGui::Text("Renderer resolution: %ux%u", rendererW, rendererH);
             }
             ImGui::End();
         }

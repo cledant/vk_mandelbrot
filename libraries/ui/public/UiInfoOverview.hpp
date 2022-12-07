@@ -9,7 +9,8 @@ struct UiInfoOverview final
 {
     float avgFps{};
     float currentFps{};
-    float renderScale{};
+    uint32_t rendererW{};
+    uint32_t rendererH{};
     float zoom{};
     glm::vec2 cameraPos{};
     uint32_t maxIteration{};

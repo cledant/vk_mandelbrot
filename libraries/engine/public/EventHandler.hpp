@@ -84,7 +84,6 @@ class EventHandler final
     inline void incIter();
     inline void decIter();
     inline void resetIter();
-    inline void displayControlMenu();
     inline void displayUi();
     inline void displayInfo();
     inline void displayFps();
@@ -96,6 +95,7 @@ class EventHandler final
     inline void uiToggleFullscreen();
     inline void uiToggleVsync();
     inline void uiSaveFractalToFile();
+    inline void uiRendererScale();
 
     // processEvents subFunctions
     inline void initMultipliers(IOEvents const &ioEvents);
@@ -103,8 +103,8 @@ class EventHandler final
     inline void keyboardMvtHandling();
     inline void recreateSwapchain();
     static inline double computeMouseOffset(double mousePos,
-                                     double fbSize,
-                                     double zoom);
+                                            double fbSize,
+                                            double zoom);
     inline void processIoEvents(IOEvents const &ioEvents);
     inline void processUiEvents(UiEvents const &uiEvents);
     inline void setUiInfoValues();
@@ -134,7 +134,6 @@ class EventHandler final
     // Other
     bool _skipZoomHandling{};
     bool _recreateSwapchain{};
-    bool _vsync = true;
     bool _saveScreenshotTofile{};
     std::vector<std::future<bool>> _screenshotsResults;
 };

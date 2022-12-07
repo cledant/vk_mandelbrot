@@ -8,10 +8,10 @@
 #include "UiEvents.hpp"
 #include "UiInfoOverview.hpp"
 #include "UiSimpleInputWindow.hpp"
-#include "UiRGBColorInputWindow.hpp"
 #include "UiAboutBox.hpp"
 #include "UiTextBox.hpp"
 #include "UiNotifications.hpp"
+#include "UiMenuBarRendererScaleSelection.hpp"
 
 class Ui final
 {
@@ -32,7 +32,6 @@ class Ui final
     // Triggers from keyboard
     bool fullscreen = false;
     bool displayUi = true;
-    bool displayControlMenu = true;
     bool showInfoPosition = false;
     bool showInfoFps = false;
     UiTextBox helpBox{};
@@ -41,11 +40,14 @@ class Ui final
     UiInfoOverview infoOverview{};
     UiNotifications notifications{};
 
+    // Info for outside
+    bool vsync = true;
+    UiMenuBarRendererScaleSelection rendererScaleSelection{};
+
     // Draw related
     void draw();
 
   private:
-    bool _vsync = true;
     UiAboutBox _aboutBox{};
 
     // Draw related

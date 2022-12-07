@@ -4,8 +4,6 @@
 
 #include "imgui.h"
 
-#include "UiTexts.hpp"
-
 void
 UiNotifications::draw()
 {
@@ -17,9 +15,7 @@ UiNotifications::draw()
     }
 
     static constexpr char const *NOTIFICATION_TEXT_ARRAY[UNT_TOTAL + 1]{
-        UiTexts::NOTIFICATION_SAVE_SCREENSHOT_FAILED,
-        UiTexts::NOTIFICATION_SAVE_SCREENSHOT_OK,
-        nullptr
+        "Failed to save screenshot", "Screenshot saved", nullptr
     };
     static constexpr float const WIN_HEIGHT = 30.0f;
     static constexpr ImVec2 const NOTIFICATION_TEXT_SIZE[UNT_TOTAL]{

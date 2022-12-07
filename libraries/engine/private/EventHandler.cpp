@@ -86,6 +86,7 @@ EventHandler::toggleFullscreen()
 {
     if (_timers.acceptEvent[ET_SYSTEM]) {
         _ioManager->toggleFullscreen();
+        _ui->fullscreen = !_ui->fullscreen;
         _recreateSwapchain = true;
 
         _timers.acceptEvent[ET_SYSTEM] = 0;
@@ -180,17 +181,6 @@ EventHandler::resetIter()
 }
 
 void
-EventHandler::displayControlMenu()
-{
-    if (_timers.acceptEvent[ET_CONFIG]) {
-        _ui->displayControlMenu = !_ui->displayControlMenu;
-
-        _timers.acceptEvent[ET_CONFIG] = 0;
-        _timers.updated[ET_CONFIG] = 1;
-    }
-}
-
-void
 EventHandler::displayUi()
 {
     if (_timers.acceptEvent[ET_CONFIG]) {
@@ -263,7 +253,7 @@ EventHandler::uiToggleFullscreen()
 void
 EventHandler::uiToggleVsync()
 {
-    _vsync = !_vsync;
+    _ui->vsync = !_ui->vsync;
     _recreateSwapchain = true;
 }
 
@@ -272,6 +262,12 @@ EventHandler::uiSaveFractalToFile()
 {
     _renderer->saveNextFrame = true;
     _saveScreenshotTofile = true;
+}
+
+void
+EventHandler::uiRendererScale()
+{
+    fmt::print("TODO RENDERER SCALE UPDATE\n");
 }
 
 void
@@ -356,7 +352,7 @@ EventHandler::recreateSwapchain()
     if (_recreateSwapchain || _ioManager->wasResized()) {
         auto fbSize = _ioManager->getFramebufferSize();
 
-        _renderer->resize(fbSize.x, fbSize.y, _vsync);
+        _renderer->resize(fbSize.x, fbSize.y, _ui->vsync);
         _screenRatio =
           static_cast<double>(fbSize.x) / static_cast<double>(fbSize.y);
         _renderer->mandelbrotComputeDone = false;
@@ -383,7 +379,6 @@ EventHandler::processIoEvents(IOEvents const &ioEvents)
                          &EventHandler::incIter,
                          &EventHandler::decIter,
                          &EventHandler::resetIter,
-                         &EventHandler::displayControlMenu,
                          &EventHandler::displayUi,
                          &EventHandler::displayInfo,
                          &EventHandler::displayFps,
@@ -404,7 +399,8 @@ EventHandler::processUiEvents(UiEvents const &uiEvents)
       keyboardEvents = { &EventHandler::uiCloseWinEvent,
                          &EventHandler::uiToggleFullscreen,
                          &EventHandler::uiToggleVsync,
-                         &EventHandler::uiSaveFractalToFile };
+                         &EventHandler::uiSaveFractalToFile,
+                         &EventHandler::uiRendererScale };
 
     for (uint32_t i = 0; i < UET_TOTAL_NB; ++i) {
         if (uiEvents.events[i]) {
@@ -417,7 +413,6 @@ void
 EventHandler::setUiInfoValues()
 {
     _ui->infoOverview.maxIteration = _renderer->mandelbrotConstants.maxIter;
-    _ui->infoOverview.renderScale = 1.0f;
     _ui->infoOverview.zoom = _renderer->mandelbrotConstants.zoom;
     _ui->infoOverview.cameraPos = { _renderer->mandelbrotConstants.offsetX,
                                     _renderer->mandelbrotConstants.offsetY };
