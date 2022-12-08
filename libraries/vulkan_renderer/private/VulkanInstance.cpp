@@ -9,6 +9,7 @@
 #include "VulkanDebug.hpp"
 #include "utils/VulkanPhysicalDevice.hpp"
 #include "utils/VulkanCommandBuffer.hpp"
+#include "utils/VulkanImageUtils.hpp"
 
 VkInstance
 VulkanInstance::createInstance(std::string const &app_name,
@@ -73,6 +74,13 @@ VulkanInstance::init(VkSurfaceKHR windowSurface,
       (queues.computeFamilyIndex == queues.graphicFamilyIndex)
         ? cmdPools.renderCommandPool
         : createCommandPool(devices.device, queues.computeFamilyIndex, 0);
+    depthFormat =
+      findSupportedFormat(devices.physicalDevice,
+                          { VK_FORMAT_D32_SFLOAT,
+                            VK_FORMAT_D32_SFLOAT_S8_UINT,
+                            VK_FORMAT_D24_UNORM_S8_UINT },
+                          VK_IMAGE_TILING_OPTIMAL,
+                          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
 void
@@ -95,6 +103,7 @@ VulkanInstance::clear()
     devices = VulkanDevices{};
     queues = VulkanQueues{};
     cmdPools = VulkanCommandPools{};
+    depthFormat = {};
 }
 
 void

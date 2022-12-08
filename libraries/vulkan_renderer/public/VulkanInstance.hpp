@@ -31,6 +31,7 @@ class VulkanInstance final
     VkInstance instance{};
     VkSurfaceKHR surface{};
     VkDebugUtilsMessengerEXT debugMessenger{};
+    VkFormat depthFormat{};
 
     VulkanDevices devices;
     char deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE]{};

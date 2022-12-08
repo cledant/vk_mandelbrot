@@ -53,16 +53,9 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
 
     // Textures
-    auto depthFormat =
-      findSupportedFormat(_vkInstance.devices.physicalDevice,
-                          { VK_FORMAT_D32_SFLOAT,
-                            VK_FORMAT_D32_SFLOAT_S8_UINT,
-                            VK_FORMAT_D24_UNORM_S8_UINT },
-                          VK_IMAGE_TILING_OPTIMAL,
-                          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
     _imageMandelbrot.init(_vkInstance,
                           VK_FORMAT_R8G8B8A8_UNORM,
-                          depthFormat,
+                          _vkInstance.depthFormat,
                           _swapChain.swapChainExtent.width,
                           _swapChain.swapChainExtent.height);
     _capturedFrame.allocate(_vkInstance.devices,
@@ -72,7 +65,7 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                             false);
     _imageDisplayed.init(_vkInstance,
                          VK_FORMAT_R8G8B8A8_UNORM,
-                         depthFormat,
+                         _vkInstance.depthFormat,
                          _swapChain.swapChainExtent.width,
                          _swapChain.swapChainExtent.height);
 
@@ -85,7 +78,7 @@ VulkanRenderer::init(VkSurfaceKHR surface,
 
     _mandelbrotRenderPass.init(_vkInstance,
                                VK_FORMAT_R8G8B8A8_UNORM,
-                               depthFormat,
+                               _vkInstance.depthFormat,
                                _imageMandelbrot.colorTex.textureImgView,
                                _imageMandelbrot.depthTex.textureImgView,
                                _swapChain.swapChainExtent.width,
@@ -121,22 +114,15 @@ VulkanRenderer::resize(uint32_t winW,
     _sync.resize(_swapChain.currentSwapChainNbImg);
 
     // Textures
-    auto depthFormat =
-      findSupportedFormat(_vkInstance.devices.physicalDevice,
-                          { VK_FORMAT_D32_SFLOAT,
-                            VK_FORMAT_D32_SFLOAT_S8_UINT,
-                            VK_FORMAT_D24_UNORM_S8_UINT },
-                          VK_IMAGE_TILING_OPTIMAL,
-                          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
     int32_t rendererW = _swapChain.swapChainExtent.width * rendererScale;
     int32_t rendererH = _swapChain.swapChainExtent.height * rendererScale;
     _imageMandelbrot.resize(
-      VK_FORMAT_R8G8B8A8_UNORM, depthFormat, rendererW, rendererH);
+      VK_FORMAT_R8G8B8A8_UNORM, _vkInstance.depthFormat, rendererW, rendererH);
     _capturedFrame.clear();
     _capturedFrame.allocate(
       _vkInstance.devices, rendererW, rendererH, 4, false);
     _imageDisplayed.resize(
-      VK_FORMAT_R8G8B8A8_UNORM, depthFormat, rendererW, rendererH);
+      VK_FORMAT_R8G8B8A8_UNORM, _vkInstance.depthFormat, rendererW, rendererH);
 
     // Render passes + pipelines
     _toScreenRenderPass.resize(_swapChain);
@@ -144,7 +130,7 @@ VulkanRenderer::resize(uint32_t winW,
       _swapChain, _toScreenRenderPass, _imageDisplayed.descriptorImage);
 
     _mandelbrotRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
-                                 depthFormat,
+                                 _vkInstance.depthFormat,
                                  _imageMandelbrot.colorTex.textureImgView,
                                  _imageMandelbrot.depthTex.textureImgView,
                                  rendererW,
