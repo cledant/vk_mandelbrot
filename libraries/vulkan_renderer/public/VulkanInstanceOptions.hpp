@@ -10,6 +10,7 @@ struct VulkanInstanceOptions final
     VkBool32 fillModeNonSolid{};
     VkBool32 vsync{};
     VkBool32 shaderFloat64{};
+    float rendererScale = 1.0f;
 
     [[nodiscard]] bool hasRequiredOptions(
       VulkanInstanceOptions const &physicalDeviceSupportedOpt) const;

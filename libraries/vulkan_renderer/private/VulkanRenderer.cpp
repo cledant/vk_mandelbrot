@@ -47,9 +47,12 @@ VulkanRenderer::init(VkSurfaceKHR surface,
 {
     assert(surface);
 
+    // Vulkan related
     _vkInstance.init(surface, options);
     _swapChain.init(_vkInstance, winW, winH, options.vsync);
     _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
+
+    // Textures
     auto depthFormat =
       findSupportedFormat(_vkInstance.devices.physicalDevice,
                           { VK_FORMAT_D32_SFLOAT,
@@ -72,11 +75,14 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                          depthFormat,
                          _swapChain.swapChainExtent.width,
                          _swapChain.swapChainExtent.height);
+
+    // Render Passes + pipelines
     _toScreenRenderPass.init(_vkInstance, _swapChain);
     _toScreen.init(_vkInstance,
                    _swapChain,
                    _toScreenRenderPass,
                    _imageDisplayed.descriptorImage);
+
     _mandelbrotRenderPass.init(_vkInstance,
                                VK_FORMAT_R8G8B8A8_UNORM,
                                depthFormat,
@@ -88,14 +94,11 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                      _mandelbrotRenderPass,
                      _swapChain.swapChainExtent.width,
                      _swapChain.swapChainExtent.height);
-    _uiRenderPass.init(_vkInstance,
-                       VK_FORMAT_R8G8B8A8_UNORM,
-                       depthFormat,
-                       _imageDisplayed.colorTex.textureImgView,
-                       _imageDisplayed.depthTex.textureImgView,
-                       _swapChain.swapChainExtent.width,
-                       _swapChain.swapChainExtent.height);
-    _ui.init(_vkInstance, _uiRenderPass, _swapChain.currentSwapChainNbImg);
+
+    _uiRenderPass.init(_vkInstance, _swapChain);
+    _ui.init(
+      _vkInstance, _uiRenderPass.renderPass, _swapChain.currentSwapChainNbImg);
+
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -103,15 +106,21 @@ VulkanRenderer::init(VkSurfaceKHR surface,
 }
 
 void
-VulkanRenderer::resize(uint32_t winW, uint32_t winH, bool vsync)
+VulkanRenderer::resize(uint32_t winW,
+                       uint32_t winH,
+                       float rendererScale,
+                       bool vsync)
 {
     vkDeviceWaitIdle(_vkInstance.devices.device);
-    if (winW <= 0 || winH <= 0) {
+    if (winW <= 0 || winH <= 0 || rendererScale <= 0.0f) {
         return;
     }
 
+    // Vulkan
     _swapChain.resize(winW, winH, vsync);
     _sync.resize(_swapChain.currentSwapChainNbImg);
+
+    // Textures
     auto depthFormat =
       findSupportedFormat(_vkInstance.devices.physicalDevice,
                           { VK_FORMAT_D32_SFLOAT,
@@ -119,39 +128,32 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH, bool vsync)
                             VK_FORMAT_D24_UNORM_S8_UINT },
                           VK_IMAGE_TILING_OPTIMAL,
                           VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-    _imageMandelbrot.resize(VK_FORMAT_R8G8B8A8_UNORM,
-                            depthFormat,
-                            _swapChain.swapChainExtent.width,
-                            _swapChain.swapChainExtent.height);
+    int32_t rendererW = _swapChain.swapChainExtent.width * rendererScale;
+    int32_t rendererH = _swapChain.swapChainExtent.height * rendererScale;
+    _imageMandelbrot.resize(
+      VK_FORMAT_R8G8B8A8_UNORM, depthFormat, rendererW, rendererH);
     _capturedFrame.clear();
-    _capturedFrame.allocate(_vkInstance.devices,
-                            _swapChain.swapChainExtent.width,
-                            _swapChain.swapChainExtent.height,
-                            4,
-                            false);
-    _imageDisplayed.resize(VK_FORMAT_R8G8B8A8_UNORM,
-                           depthFormat,
-                           _swapChain.swapChainExtent.width,
-                           _swapChain.swapChainExtent.height);
+    _capturedFrame.allocate(
+      _vkInstance.devices, rendererW, rendererH, 4, false);
+    _imageDisplayed.resize(
+      VK_FORMAT_R8G8B8A8_UNORM, depthFormat, rendererW, rendererH);
+
+    // Render passes + pipelines
     _toScreenRenderPass.resize(_swapChain);
     _toScreen.resize(
       _swapChain, _toScreenRenderPass, _imageDisplayed.descriptorImage);
+
     _mandelbrotRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
                                  depthFormat,
                                  _imageMandelbrot.colorTex.textureImgView,
                                  _imageMandelbrot.depthTex.textureImgView,
-                                 _swapChain.swapChainExtent.width,
-                                 _swapChain.swapChainExtent.height);
-    _mandelbrot.resize(_mandelbrotRenderPass,
-                       _swapChain.swapChainExtent.width,
-                       _swapChain.swapChainExtent.height);
-    _uiRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
-                         depthFormat,
-                         _imageDisplayed.colorTex.textureImgView,
-                         _imageDisplayed.depthTex.textureImgView,
-                         _swapChain.swapChainExtent.width,
-                         _swapChain.swapChainExtent.height);
-    _ui.resize(_uiRenderPass, _swapChain.currentSwapChainNbImg);
+                                 rendererW,
+                                 rendererH);
+    _mandelbrot.resize(_mandelbrotRenderPass, rendererW, rendererH);
+
+    _uiRenderPass.resize(_swapChain);
+    _ui.resize(_uiRenderPass.renderPass, _swapChain.currentSwapChainNbImg);
+
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
@@ -345,8 +347,8 @@ VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
       VK_IMAGE_LAYOUT_UNDEFINED,
       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    recordUiRenderCmd(imgIndex, cmdClearColor);
     recordToScreenRenderCmd(imgIndex, cmdClearColor);
+    recordUiRenderCmd(imgIndex, cmdClearColor);
 
     if (vkEndCommandBuffer(_renderCommandBuffers[imgIndex]) != VK_SUCCESS) {
         throw std::runtime_error(
@@ -395,12 +397,9 @@ VulkanRenderer::recordUiRenderCmd(uint32_t imgIndex,
     VkRenderPassBeginInfo rp_begin_info{};
     rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     rp_begin_info.renderPass = _uiRenderPass.renderPass;
-    rp_begin_info.framebuffer = _uiRenderPass.framebuffer;
+    rp_begin_info.framebuffer = _uiRenderPass.framebuffers[imgIndex];
     rp_begin_info.renderArea.offset = { 0, 0 };
-    rp_begin_info.renderArea.extent = {
-        static_cast<uint32_t>(_imageDisplayed.colorTex.width),
-        static_cast<uint32_t>(_imageDisplayed.colorTex.height),
-    };
+    rp_begin_info.renderArea.extent = _swapChain.swapChainExtent;
     rp_begin_info.clearValueCount = clear_vals.size();
     rp_begin_info.pClearValues = clear_vals.data();
 

@@ -16,6 +16,7 @@
 #include "defaultRenderPass/VulkanDefaultOffscreenRenderPass.hpp"
 #include "pipelines/toScreen/VulkanToScreenPipeline.hpp"
 #include "pipelines/mandelbrot/VulkanMandelbrotPipeline.hpp"
+#include "pipelines/ui/VulkanUiOnscreenRenderPass.hpp"
 #include "pipelines/ui/VulkanUiPipeline.hpp"
 
 class VulkanRenderer final
@@ -55,7 +56,7 @@ class VulkanRenderer final
               VulkanInstanceOptions const &options,
               uint32_t winW,
               uint32_t winH);
-    void resize(uint32_t winW, uint32_t winH, bool vsync);
+    void resize(uint32_t winW, uint32_t winH, float rendererScale, bool vsync);
     void clear();
 
     // Info related
@@ -76,20 +77,29 @@ class VulkanRenderer final
     uint32_t _appVersion{};
     uint32_t _engineVersion{};
 
+    // Vulkan related
     VulkanInstance _vkInstance;
     VulkanSwapChain _swapChain;
     VulkanSync _sync;
+
+    // Textures
     VulkanDefaultImageTexture _imageMandelbrot;
     VulkanDefaultImageTexture _imageDisplayed;
-    VulkanDefaultOnscreenRenderPass _toScreenRenderPass;
-    VulkanToScreenPipeline _toScreen;
+
+    // Render passes
     VulkanDefaultOffscreenRenderPass _mandelbrotRenderPass;
+    VulkanDefaultOnscreenRenderPass _toScreenRenderPass;
+    VulkanUiOnscreenRenderPass _uiRenderPass;
+
+    // Pipelines
     VulkanMandelbrotPipeline _mandelbrot;
-    VulkanUiOffscreenRenderPass _uiRenderPass;
+    VulkanToScreenPipeline _toScreen;
     VulkanUiPipeline _ui;
 
+    // Cmd Buffers
     std::vector<VkCommandBuffer> _renderCommandBuffers;
 
+    // Screenshot
     VulkanTextureStaging _capturedFrame{};
 
     // Cmd buffer related

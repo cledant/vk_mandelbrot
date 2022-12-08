@@ -28,7 +28,8 @@ class AVulkanOnscreenRenderPass
     void clear();
 
     std::vector<VkFramebuffer> framebuffers;
-    VulkanTexture depthTex{};
+    VkFormat depthFormat{};
+    std::vector<VulkanTexture> depthTexs;
     VkRenderPass renderPass{};
 
   protected:
@@ -38,8 +39,8 @@ class AVulkanOnscreenRenderPass
 
     inline void defaultCreateRenderPass(VulkanSwapChain const &swapChain,
                                         VkAttachmentLoadOp loadOp,
-                                        VkImageLayout initialLayout,
-                                        VkImageLayout finalLayout);
+                                        VkImageLayout colorInitialLayout,
+                                        VkImageLayout colorFinalLayout);
     inline void defaultCreateDepthResources(VulkanSwapChain const &swapChain);
     inline void defaultCreateFramebuffers(VulkanSwapChain const &swapChain);
 };
@@ -68,7 +69,7 @@ AVulkanOnscreenRenderPass<Child>::clear()
 {
     static_cast<Child &>(*this).implClear();
     framebuffers.clear();
-    depthTex = VulkanTexture{};
+    depthTexs.clear();
     renderPass = nullptr;
     _devices = VulkanDevices{};
     _queues = VulkanQueues{};
@@ -80,7 +81,9 @@ void
 AVulkanOnscreenRenderPass<Child>::clean()
 {
     static_cast<Child &>(*this).implClean();
-    depthTex.clear();
+    for (auto &it : depthTexs) {
+        it.clear();
+    }
     for (auto &it : framebuffers) {
         vkDestroyFramebuffer(_devices.device, it, nullptr);
     }

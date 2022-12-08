@@ -16,10 +16,9 @@ class VulkanUiPipeline final
     VulkanUiPipeline &operator=(VulkanUiPipeline &&rhs) = delete;
 
     void init(VulkanInstance const &vkInstance,
-              VulkanUiOffscreenRenderPass const &renderPass,
+              VkRenderPass renderPass,
               uint32_t nbImgSwapchain);
-    void resize(VulkanUiOffscreenRenderPass const &renderPass,
-                uint32_t nbImgSwapchain);
+    void resize(VkRenderPass renderPass, uint32_t nbImgSwapchain);
     void clear();
 
     void generateCommands(VkCommandBuffer cmdBuffer);
@@ -34,8 +33,7 @@ class VulkanUiPipeline final
     // Global
     VkDescriptorPool _descriptorPool{};
 
-    inline void initImgui(VulkanUiOffscreenRenderPass const &renderPass,
-                          uint32_t nbImgSwapchain);
+    inline void initImgui(VkRenderPass renderPass, uint32_t nbImgSwapchain);
     inline void loadFonts() const;
 };
 

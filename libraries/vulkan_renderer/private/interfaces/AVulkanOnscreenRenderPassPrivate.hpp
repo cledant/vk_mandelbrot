@@ -18,8 +18,8 @@ void
 AVulkanOnscreenRenderPass<Child>::defaultCreateRenderPass(
   VulkanSwapChain const &swapChain,
   VkAttachmentLoadOp loadOp,
-  VkImageLayout initialLayout,
-  VkImageLayout finalLayout)
+  VkImageLayout colorInitialLayout,
+  VkImageLayout colorFinalLayout)
 {
     // Color
     VkAttachmentDescription color_attachment{};
@@ -29,8 +29,8 @@ AVulkanOnscreenRenderPass<Child>::defaultCreateRenderPass(
     color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    color_attachment.initialLayout = initialLayout;
-    color_attachment.finalLayout = finalLayout;
+    color_attachment.initialLayout = colorInitialLayout;
+    color_attachment.finalLayout = colorFinalLayout;
 
     VkAttachmentReference color_attachment_ref{};
     color_attachment_ref.attachment = 0;
@@ -38,20 +38,21 @@ AVulkanOnscreenRenderPass<Child>::defaultCreateRenderPass(
 
     // Depth
     VkAttachmentDescription depth_attachment{};
-    depthTex.textureFormat =
+    depthFormat =
       findSupportedFormat(_devices.physicalDevice,
                           { VK_FORMAT_D32_SFLOAT,
                             VK_FORMAT_D32_SFLOAT_S8_UINT,
                             VK_FORMAT_D24_UNORM_S8_UINT },
                           VK_IMAGE_TILING_OPTIMAL,
                           VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-    depth_attachment.format = depthTex.textureFormat;
+    depth_attachment.format = depthFormat;
     depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
     depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    depth_attachment.initialLayout = initialLayout;
+    depth_attachment.initialLayout =
+      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
     depth_attachment.finalLayout =
       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
@@ -101,12 +102,16 @@ void
 AVulkanOnscreenRenderPass<Child>::defaultCreateDepthResources(
   VulkanSwapChain const &swapChain)
 {
-    depthTex.createDepthTexture(_devices,
-                                _cmdPools,
-                                _queues,
-                                swapChain.swapChainExtent.width,
-                                swapChain.swapChainExtent.height,
-                                depthTex.textureFormat);
+    depthTexs.resize(swapChain.swapChainImageViews.size());
+
+    for (uint32_t i = 0; i < swapChain.swapChainImageViews.size(); ++i) {
+        depthTexs[i].createDepthTexture(_devices,
+                                        _cmdPools,
+                                        _queues,
+                                        swapChain.swapChainExtent.width,
+                                        swapChain.swapChainExtent.height,
+                                        depthFormat);
+    }
 }
 
 template<class Child>
@@ -119,7 +124,7 @@ AVulkanOnscreenRenderPass<Child>::defaultCreateFramebuffers(
     size_t i = 0;
     for (auto const &it : swapChain.swapChainImageViews) {
         std::array<VkImageView, 2> sciv{ it.textureImgView,
-                                         depthTex.textureImgView };
+                                         depthTexs[i].textureImgView };
 
         framebuffers[i] = createFrameBuffer(
           _devices.device, renderPass, sciv, swapChain.swapChainExtent);

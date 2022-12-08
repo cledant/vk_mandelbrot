@@ -267,7 +267,7 @@ EventHandler::uiSaveFractalToFile()
 void
 EventHandler::uiRendererScale()
 {
-    fmt::print("TODO RENDERER SCALE UPDATE\n");
+    _recreateSwapchain = true;
 }
 
 void
@@ -352,7 +352,12 @@ EventHandler::recreateSwapchain()
     if (_recreateSwapchain || _ioManager->wasResized()) {
         auto fbSize = _ioManager->getFramebufferSize();
 
-        _renderer->resize(fbSize.x, fbSize.y, _ui->vsync);
+        _renderer->resize(
+          fbSize.x,
+          fbSize.y,
+          _ui->rendererScaleSelection
+            .INDEX_VALUES[_ui->rendererScaleSelection.activeIndex],
+          _ui->vsync);
         _screenRatio =
           static_cast<double>(fbSize.x) / static_cast<double>(fbSize.y);
         _renderer->mandelbrotComputeDone = false;
@@ -416,6 +421,8 @@ EventHandler::setUiInfoValues()
     _ui->infoOverview.zoom = _renderer->mandelbrotConstants.zoom;
     _ui->infoOverview.cameraPos = { _renderer->mandelbrotConstants.offsetX,
                                     _renderer->mandelbrotConstants.offsetY };
+    _ui->infoOverview.rendererW = _renderer->mandelbrotConstants.fbW;
+    _ui->infoOverview.rendererH = _renderer->mandelbrotConstants.fbH;
 }
 
 void

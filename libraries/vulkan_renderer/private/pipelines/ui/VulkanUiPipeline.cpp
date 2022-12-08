@@ -8,7 +8,7 @@
 
 void
 VulkanUiPipeline::init(VulkanInstance const &vkInstance,
-                       VulkanUiOffscreenRenderPass const &renderPass,
+                       VkRenderPass renderPass,
                        uint32_t nbImgSwapchain)
 {
     _instance = vkInstance.instance;
@@ -21,8 +21,7 @@ VulkanUiPipeline::init(VulkanInstance const &vkInstance,
 }
 
 void
-VulkanUiPipeline::resize(VulkanUiOffscreenRenderPass const &renderPass,
-                         uint32_t nbImgSwapchain)
+VulkanUiPipeline::resize(VkRenderPass renderPass, uint32_t nbImgSwapchain)
 {
     vkDeviceWaitIdle(_devices.device);
     ImGui_ImplVulkan_Shutdown();
@@ -49,8 +48,7 @@ VulkanUiPipeline::generateCommands(VkCommandBuffer cmdBuffer)
 }
 
 void
-VulkanUiPipeline::initImgui(VulkanUiOffscreenRenderPass const &renderPass,
-                            uint32_t nbImgSwapchain)
+VulkanUiPipeline::initImgui(VkRenderPass renderPass, uint32_t nbImgSwapchain)
 {
     ImGui_ImplVulkan_InitInfo init_info = {};
     VkDescriptorPoolSize pool_sizes[] = {
@@ -93,7 +91,7 @@ VulkanUiPipeline::initImgui(VulkanUiOffscreenRenderPass const &renderPass,
             throw std::runtime_error("Imgui: Vulkan operation failed");
         }
     };
-    ImGui_ImplVulkan_Init(&init_info, renderPass.renderPass);
+    ImGui_ImplVulkan_Init(&init_info, renderPass);
 }
 
 void

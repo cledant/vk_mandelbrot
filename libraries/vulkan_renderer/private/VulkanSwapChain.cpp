@@ -71,7 +71,8 @@ VulkanSwapChain::createSwapChain(uint32_t framebufferW,
     create_info.imageColorSpace = scs.surface_format.value().colorSpace;
     create_info.imageExtent = scs.extent;
     create_info.imageArrayLayers = 1;
-    create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    create_info.imageUsage =
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 
     DeviceRequirement dr{};
     getDeviceQueues(_devices.physicalDevice, _surface, dr);
