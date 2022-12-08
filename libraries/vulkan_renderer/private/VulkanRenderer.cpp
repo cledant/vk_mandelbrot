@@ -53,21 +53,22 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
 
     // Textures
+    int32_t rendererW =
+      _swapChain.swapChainExtent.width * options.rendererScale;
+    int32_t rendererH =
+      _swapChain.swapChainExtent.height * options.rendererScale;
     _imageMandelbrot.init(_vkInstance,
                           VK_FORMAT_R8G8B8A8_UNORM,
                           _vkInstance.depthFormat,
-                          _swapChain.swapChainExtent.width,
-                          _swapChain.swapChainExtent.height);
-    _capturedFrame.allocate(_vkInstance.devices,
-                            _swapChain.swapChainExtent.width,
-                            _swapChain.swapChainExtent.height,
-                            4,
-                            false);
+                          rendererW,
+                          rendererH);
+    _capturedFrame.allocate(
+      _vkInstance.devices, rendererW, rendererH, 4, false);
     _imageDisplayed.init(_vkInstance,
                          VK_FORMAT_R8G8B8A8_UNORM,
                          _vkInstance.depthFormat,
-                         _swapChain.swapChainExtent.width,
-                         _swapChain.swapChainExtent.height);
+                         rendererW,
+                         rendererH);
 
     // Render Passes + pipelines
     _toScreenRenderPass.init(_vkInstance, _swapChain);
@@ -81,12 +82,9 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                                _vkInstance.depthFormat,
                                _imageMandelbrot.colorTex.textureImgView,
                                _imageMandelbrot.depthTex.textureImgView,
-                               _swapChain.swapChainExtent.width,
-                               _swapChain.swapChainExtent.height);
-    _mandelbrot.init(_vkInstance,
-                     _mandelbrotRenderPass,
-                     _swapChain.swapChainExtent.width,
-                     _swapChain.swapChainExtent.height);
+                               rendererW,
+                               rendererH);
+    _mandelbrot.init(_vkInstance, _mandelbrotRenderPass, rendererW, rendererH);
 
     _uiRenderPass.init(_vkInstance, _swapChain);
     _ui.init(
