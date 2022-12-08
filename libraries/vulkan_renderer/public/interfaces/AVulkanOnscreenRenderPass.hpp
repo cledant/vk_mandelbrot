@@ -53,6 +53,7 @@ AVulkanOnscreenRenderPass<Child>::init(VulkanInstance const &vkInstance,
     _devices = vkInstance.devices;
     _queues = vkInstance.queues;
     _cmdPools = vkInstance.cmdPools;
+    depthFormat = vkInstance.depthFormat;
     static_cast<Child &>(*this).implInit(vkInstance, swapChain);
 }
 
@@ -74,6 +75,7 @@ AVulkanOnscreenRenderPass<Child>::clear()
     _devices = VulkanDevices{};
     _queues = VulkanQueues{};
     _cmdPools = VulkanCommandPools{};
+    depthFormat = {};
 }
 
 template<class Child>

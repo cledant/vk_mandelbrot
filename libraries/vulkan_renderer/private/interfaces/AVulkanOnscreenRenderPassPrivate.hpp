@@ -38,13 +38,6 @@ AVulkanOnscreenRenderPass<Child>::defaultCreateRenderPass(
 
     // Depth
     VkAttachmentDescription depth_attachment{};
-    depthFormat =
-      findSupportedFormat(_devices.physicalDevice,
-                          { VK_FORMAT_D32_SFLOAT,
-                            VK_FORMAT_D32_SFLOAT_S8_UINT,
-                            VK_FORMAT_D24_UNORM_S8_UINT },
-                          VK_IMAGE_TILING_OPTIMAL,
-                          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
     depth_attachment.format = depthFormat;
     depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
     depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
