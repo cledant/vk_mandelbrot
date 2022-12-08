@@ -12,7 +12,7 @@
 #include "VulkanSwapChain.hpp"
 #include "VulkanToScreenPipelineData.hpp"
 #include "VulkanToScreenPipelineDescription.hpp"
-#include "defaultRenderPass/VulkanDefaultOnscreenRenderPass.hpp"
+#include "renderPasses/VulkanDefaultOnscreenRenderPass.hpp"
 #include "constants/VulkanConstants.hpp"
 
 class VulkanToScreenPipeline final

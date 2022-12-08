@@ -1,4 +1,4 @@
-#include "pipelines/ui/VulkanUiOnscreenRenderPass.hpp"
+#include "renderPasses/VulkanUiOnscreenRenderPass.hpp"
 
 #include "interfaces/AVulkanOnscreenRenderPassPrivate.hpp"
 

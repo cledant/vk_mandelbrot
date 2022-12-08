@@ -1,4 +1,4 @@
-#include "pipelines/ui/VulkanUiOffscreenRenderPass.hpp"
+#include "renderPasses/VulkanUiOffscreenRenderPass.hpp"
 
 #include <array>
 #include <stdexcept>

@@ -3,7 +3,7 @@
 
 #include "VulkanInstance.hpp"
 #include "VulkanSwapChain.hpp"
-#include "VulkanUiOffscreenRenderPass.hpp"
+#include "renderPasses/VulkanUiOffscreenRenderPass.hpp"
 
 class VulkanUiPipeline final
 {

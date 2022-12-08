@@ -1,4 +1,4 @@
-#include "defaultRenderPass/VulkanDefaultOffscreenRenderPass.hpp"
+#include "renderPasses/VulkanDefaultOffscreenRenderPass.hpp"
 
 #include "interfaces/AVulkanOffscreenRenderPassPrivate.hpp"
 

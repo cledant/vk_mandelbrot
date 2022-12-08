@@ -8,8 +8,10 @@ add_library(vulkan_renderer STATIC
         private/VulkanSwapChain.cpp
         private/VulkanSync.cpp
         private/VulkanInstanceOptions.cpp
-        private/defaultRenderPass/VulkanDefaultOnscreenRenderPass.cpp
-        private/defaultRenderPass/VulkanDefaultOffscreenRenderPass.cpp
+        private/renderPasses/VulkanDefaultOnscreenRenderPass.cpp
+        private/renderPasses/VulkanDefaultOffscreenRenderPass.cpp
+        private/renderPasses/VulkanUiOffscreenRenderPass.cpp
+        private/renderPasses/VulkanUiOnscreenRenderPass.cpp
         private/utils/VulkanPhysicalDevice.cpp
         private/utils/VulkanSwapChainUtils.cpp
         private/utils/VulkanShader.cpp
@@ -21,8 +23,6 @@ add_library(vulkan_renderer STATIC
         private/utils/VulkanPipelineUtils.cpp
         private/utils/VulkanTransitionLayout.cpp
         private/pipelines/ui/VulkanUiPipeline.cpp
-        private/pipelines/ui/VulkanUiOffscreenRenderPass.cpp
-        private/pipelines/ui/VulkanUiOnscreenRenderPass.cpp
         private/pipelines/toScreen/VulkanToScreenPipeline.cpp
         private/pipelines/toScreen/VulkanToScreenPipelineData.cpp
         private/pipelines/toScreen/VulkanToScreenPipelineDescription.cpp
@@ -32,7 +32,8 @@ add_library(vulkan_renderer STATIC
         private/common/VulkanBuffer.cpp
         private/common/VulkanTexture.cpp
         private/common/VulkanTextureStaging.cpp
-        private/common/VulkanDefaultImageTexture.cpp private/common/VulkanScreenshot.cpp)
+        private/common/VulkanDefaultImageTexture.cpp
+        private/common/VulkanScreenshot.cpp)
 target_include_directories(vulkan_renderer
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/public
