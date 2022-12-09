@@ -5,8 +5,6 @@
 layout(location = 0) out vec4 outColor;
 
 layout(push_constant) uniform mandelbrotConstants {
-    vec4 color;
-    vec4 maxIterColor;
     double fbW;
     double fbH;
     uint maxIter;
@@ -16,8 +14,17 @@ layout(push_constant) uniform mandelbrotConstants {
     double offsetY;
 } pushConsts;
 
-void main() {
+#define NB_COLOR 4
+#define ITER_PER_COLOR 32
 
+const vec4 colorArray[NB_COLOR] = {
+vec4(0.1, 0.1, 0.5, 1.0),
+vec4(0.4, 0.1, 0.7, 1.0),
+vec4(0.5, 0.7, 0.5, 1.0),
+vec4(0.8, 0.5, 0.3, 1.0),
+};
+
+void main() {
     double x0 = pushConsts.zoomMultScreenRatio * ((gl_FragCoord.x / pushConsts.fbW) - 0.5) + pushConsts.offsetX;
     double y0 = pushConsts.zoom * ((gl_FragCoord.y / pushConsts.fbH) - 0.5) + pushConsts.offsetY;
     double x = 0.0;
@@ -35,9 +42,13 @@ void main() {
     }
 
     if (i >= pushConsts.maxIter) {
-        outColor = vec4(pushConsts.maxIterColor.xyz, 1.0);
+        outColor = vec4(0.0, 0.0, 0.0, 1.0);
         return;
     }
-    vec3 mixColor = mix(pushConsts.color.xyz, pushConsts.maxIterColor.xyz, (float(i) / float(pushConsts.maxIter)));
+
+    uint colorIndex = (i / ITER_PER_COLOR) % NB_COLOR;
+    uint nextColorIndex = (colorIndex + 1) % NB_COLOR;
+    float mixFactor = float(i % ITER_PER_COLOR) / float(ITER_PER_COLOR);
+    vec3 mixColor = mix(colorArray[colorIndex].xyz, colorArray[nextColorIndex].xyz, mixFactor);
     outColor = vec4(mixColor, 1.0);
 }
