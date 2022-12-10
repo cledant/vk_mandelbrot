@@ -14,6 +14,11 @@ constexpr char const *INPUT_HELP_WIN_TEXT =
   "\tP: reset iteration\n"
   "\tLeft Shift: movement multiplier for WASD and iteration";
 
+constexpr char const *INPUT_ERROR_TEXT = "Error";
+
+constexpr char const *INPUT_ITERATION_WIN_NAME = "Set number of iteration";
+constexpr char const *INPUT_ITERATION_WIN_TEXT = "Iterations";
+
 }
 
 #endif // VK_MANDELBROT_UITEXTS_HPP

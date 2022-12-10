@@ -7,11 +7,12 @@
 #include "VulkanSwapChain.hpp"
 #include "UiEvents.hpp"
 #include "UiInfoOverview.hpp"
-#include "UiSimpleInputWindow.hpp"
+#include "UiSimpleNumberInputWindow.hpp"
 #include "UiAboutBox.hpp"
 #include "UiTextBox.hpp"
 #include "UiNotifications.hpp"
 #include "UiMenuBarRendererScaleSelection.hpp"
+#include "UiSimpleNumberInputWindow.hpp"
 
 class Ui final
 {
@@ -43,6 +44,7 @@ class Ui final
     // Info for outside
     bool vsync = true;
     UiMenuBarRendererScaleSelection rendererScaleSelection{};
+    UiSimpleNumberInputWindow<uint32_t> iterationInput{};
 
     // Draw related
     void draw();

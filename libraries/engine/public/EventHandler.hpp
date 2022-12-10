@@ -96,6 +96,7 @@ class EventHandler final
     inline void uiToggleVsync();
     inline void uiSaveFractalToFile();
     inline void uiRendererScale();
+    inline void uiNbIteration();
 
     // processEvents subFunctions
     inline void initMultipliers(IOEvents const &ioEvents);

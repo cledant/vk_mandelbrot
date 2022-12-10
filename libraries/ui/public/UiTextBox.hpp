@@ -2,6 +2,7 @@
 #define VK_MANDELBROT_UITEXTBOX_HPP
 
 #include <string>
+#include <cstdint>
 
 struct UiTextBox final
 {
@@ -9,10 +10,7 @@ struct UiTextBox final
     std::string windowName = "No Name";
     std::string windowText = "No Text";
 
-  private:
     void draw();
-
-    friend class Ui;
 };
 
 #endif // VK_MANDELBROT_UITEXTBOX_HPP

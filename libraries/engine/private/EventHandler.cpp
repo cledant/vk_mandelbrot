@@ -271,6 +271,13 @@ EventHandler::uiRendererScale()
 }
 
 void
+EventHandler::uiNbIteration()
+{
+    _renderer->mandelbrotConstants.maxIter = _ui->iterationInput.parsedInput;
+    _renderer->mandelbrotComputeDone = false;
+}
+
+void
 EventHandler::initMultipliers(IOEvents const &ioEvents)
 {
     _iterStepValue =
@@ -401,11 +408,11 @@ void
 EventHandler::processUiEvents(UiEvents const &uiEvents)
 {
     static const std::array<void (EventHandler::*)(), UET_TOTAL_NB>
-      keyboardEvents = { &EventHandler::uiCloseWinEvent,
-                         &EventHandler::uiToggleFullscreen,
-                         &EventHandler::uiToggleVsync,
-                         &EventHandler::uiSaveFractalToFile,
-                         &EventHandler::uiRendererScale };
+      keyboardEvents = {
+          &EventHandler::uiCloseWinEvent, &EventHandler::uiToggleFullscreen,
+          &EventHandler::uiToggleVsync,   &EventHandler::uiSaveFractalToFile,
+          &EventHandler::uiRendererScale, &EventHandler::uiNbIteration
+      };
 
     for (uint32_t i = 0; i < UET_TOTAL_NB; ++i) {
         if (uiEvents.events[i]) {

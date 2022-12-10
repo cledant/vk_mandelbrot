@@ -7,6 +7,7 @@
 #include "backends/imgui_impl_vulkan.h"
 
 #include "UiTexts.hpp"
+#include "UiSimpleNumberInputWindowPrivate.hpp"
 
 void
 Ui::init(void *win)
@@ -20,6 +21,11 @@ Ui::init(void *win)
     // Init help
     helpBox.windowName = UiTexts::INPUT_HELP_WIN_NAME;
     helpBox.windowText = UiTexts::INPUT_HELP_WIN_TEXT;
+    // Init nb iteration input
+    iterationInput.windowName = UiTexts::INPUT_ITERATION_WIN_NAME;
+    iterationInput.windowText = UiTexts::INPUT_ITERATION_WIN_TEXT;
+    iterationInput._errorWin.windowName = UiTexts::INPUT_ERROR_TEXT;
+    iterationInput.winW = 300;
 }
 
 void
@@ -55,9 +61,11 @@ Ui::draw()
         return;
     }
 
+    _uiEvents = {};
     drawMenuBar();
     infoOverview.draw(showInfoFps, showInfoPosition);
     notifications.draw();
+    _uiEvents.events[UET_NB_ITERATION] = iterationInput.drawInput();
     _aboutBox.draw();
     helpBox.draw();
     ImGui::Render();
@@ -66,7 +74,6 @@ Ui::draw()
 void
 Ui::drawMenuBar()
 {
-    _uiEvents = {};
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             _uiEvents.events[UET_SAVE_TO_FILE] =
@@ -90,6 +97,10 @@ Ui::drawMenuBar()
             ImGui::Separator();
             if ((_uiEvents.events[UET_FULLSCREEN] =
                    ImGui::MenuItem("Fullscreen", "F11", &fullscreen))) {
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Set number of iteration")) {
+                iterationInput.isInputOpen = !iterationInput.isInputOpen;
             }
             ImGui::Separator();
             _uiEvents.events[UET_RENDERER_SCALE] =

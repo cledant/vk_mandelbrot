@@ -8,6 +8,7 @@ enum UiEventTypes
     UET_VSYNC,
     UET_SAVE_TO_FILE,
     UET_RENDERER_SCALE,
+    UET_NB_ITERATION,
     UET_TOTAL_NB,
 };
 
