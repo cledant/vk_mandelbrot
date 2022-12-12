@@ -3,13 +3,12 @@
 #include <stdexcept>
 
 void
-VulkanSync::init(VulkanInstance const &vkInstance, uint32_t nbFramebufferImgs)
+VulkanSync::init(VulkanInstance const &vkInstance)
 {
     _devices = vkInstance.devices;
     imageAvailableSem.resize(MAX_FRAME_INFLIGHT);
     allRenderFinishedSem.resize(MAX_FRAME_INFLIGHT);
     inflightFence.resize(MAX_FRAME_INFLIGHT);
-    imgsInflightFence.resize(nbFramebufferImgs, VK_NULL_HANDLE);
 
     VkSemaphoreCreateInfo sem_info{};
     sem_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -31,12 +30,6 @@ VulkanSync::init(VulkanInstance const &vkInstance, uint32_t nbFramebufferImgs)
             throw std::runtime_error("VulkanSync: failed to create semaphores");
         }
     }
-}
-
-void
-VulkanSync::resize(uint32_t nbFramebufferImgs)
-{
-    imgsInflightFence.resize(nbFramebufferImgs, VK_NULL_HANDLE);
 }
 
 void

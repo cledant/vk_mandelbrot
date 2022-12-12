@@ -103,21 +103,24 @@ class VulkanRenderer final
     VulkanTextureStaging _capturedFrame{};
 
     // Cmd buffer related
-    inline void emitDrawCmds(uint32_t imgIndex);
-    inline void recordRenderCmd(uint32_t imgIndex,
+    inline void recordRenderCmd(VkCommandBuffer cmdBuffer,
+                                uint32_t imgIndex,
                                 VkClearColorValue const &clearColor);
+    inline void emitDrawCmds(VkCommandBuffer cmdBuffer);
 
     // Sub-functions for recordRenderCmd
     inline void recordMandelbrotRenderCmd(
-      uint32_t imgIndex,
+      VkCommandBuffer cmdBuffer,
       VkClearColorValue const &cmdClearColor);
-    inline void recordUiRenderCmd(uint32_t imgIndex,
+    inline void recordUiRenderCmd(VkCommandBuffer cmdBuffer,
+                                  uint32_t imgIndex,
                                   VkClearColorValue const &cmdClearColor);
-    inline void recordToScreenRenderCmd(uint32_t imgIndex,
+    inline void recordToScreenRenderCmd(VkCommandBuffer cmdBuffer,
+                                        uint32_t imgIndex,
                                         VkClearColorValue const &cmdClearColor);
 
     // Screenshot related fct
-    void copyFrameToHostMemory(size_t imgIndex);
+    inline void copyFrameToHostMemory();
 };
 
 #endif // VK_MANDELBROT_VULKANRENDERER_HPP

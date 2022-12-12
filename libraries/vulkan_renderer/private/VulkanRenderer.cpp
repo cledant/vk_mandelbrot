@@ -50,7 +50,7 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     // Vulkan related
     _vkInstance.init(surface, options);
     _swapChain.init(_vkInstance, winW, winH, options.vsync);
-    _sync.init(_vkInstance, _swapChain.swapChainImageViews.size());
+    _sync.init(_vkInstance);
 
     // Textures
     int32_t rendererW =
@@ -108,8 +108,10 @@ VulkanRenderer::resize(uint32_t winW,
     }
 
     // Vulkan
+    for (uint32_t i = 0; i < _swapChain.currentSwapChainNbImg; ++i) {
+        vkResetCommandBuffer(_renderCommandBuffers[i], 0);
+    }
     _swapChain.resize(winW, winH, vsync);
-    _sync.resize(_swapChain.currentSwapChainNbImg);
 
     // Textures
     int32_t rendererW = _swapChain.swapChainExtent.width * rendererScale;
@@ -209,17 +211,11 @@ VulkanRenderer::draw()
         return;
     }
 
-    if (_sync.imgsInflightFence[imgIndex] != VK_NULL_HANDLE) {
-        vkWaitForFences(_vkInstance.devices.device,
-                        1,
-                        &_sync.imgsInflightFence[imgIndex],
-                        VK_TRUE,
-                        UINT64_MAX);
-    }
-    _sync.imgsInflightFence[imgIndex] = _sync.inflightFence[_sync.currentFrame];
-
-    recordRenderCmd(imgIndex, clearColor);
-    emitDrawCmds(imgIndex);
+    vkResetFences(
+      _vkInstance.devices.device, 1, &_sync.inflightFence[_sync.currentFrame]);
+    recordRenderCmd(
+      _renderCommandBuffers[_sync.currentFrame], imgIndex, clearColor);
+    emitDrawCmds(_renderCommandBuffers[_sync.currentFrame]);
 
     VkSwapchainKHR swapChains[] = { _swapChain.swapChain };
     VkSemaphore presentWaitSems[] = {
@@ -229,13 +225,15 @@ VulkanRenderer::draw()
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     presentInfo.waitSemaphoreCount = 1;
     presentInfo.pWaitSemaphores = presentWaitSems;
+
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
+
     presentInfo.pImageIndices = &imgIndex;
     presentInfo.pResults = nullptr;
     vkQueuePresentKHR(_vkInstance.queues.presentQueue, &presentInfo);
     if (saveNextFrame) {
-        copyFrameToHostMemory(_sync.currentFrame);
+        copyFrameToHostMemory();
         saveNextFrame = false;
     }
     _sync.currentFrame =
@@ -270,7 +268,46 @@ VulkanRenderer::generateScreenshot() const
 
 // Cmd buffer related
 void
-VulkanRenderer::emitDrawCmds(uint32_t imgIndex)
+VulkanRenderer::recordRenderCmd(VkCommandBuffer cmdBuffer,
+                                uint32_t imgIndex,
+                                VkClearColorValue const &cmdClearColor)
+{
+    vkResetCommandBuffer(cmdBuffer, 0);
+
+    VkCommandBufferBeginInfo cb_begin_info{};
+    cb_begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    cb_begin_info.flags = 0;
+    cb_begin_info.pInheritanceInfo = nullptr;
+    if (vkBeginCommandBuffer(cmdBuffer, &cb_begin_info) != VK_SUCCESS) {
+        throw std::runtime_error("VulkanRenderer: Failed to begin "
+                                 "recording render command buffer");
+    }
+
+    if (!mandelbrotComputeDone) {
+        // Update push constant values
+        mandelbrotConstants.fbW = _imageDisplayed.colorTex.width;
+        mandelbrotConstants.fbH = _imageDisplayed.colorTex.height;
+        recordMandelbrotRenderCmd(cmdBuffer, cmdClearColor);
+        mandelbrotComputeDone = true;
+    }
+    _imageDisplayed.copyColorDepthTexturesContent(
+      _imageMandelbrot,
+      cmdBuffer,
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      VK_IMAGE_LAYOUT_UNDEFINED,
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    recordToScreenRenderCmd(cmdBuffer, imgIndex, cmdClearColor);
+    recordUiRenderCmd(cmdBuffer, imgIndex, cmdClearColor);
+
+    if (vkEndCommandBuffer(cmdBuffer) != VK_SUCCESS) {
+        throw std::runtime_error(
+          "VulkanRenderer: Failed to record render command Buffer");
+    }
+}
+
+void
+VulkanRenderer::emitDrawCmds(VkCommandBuffer cmdBuffer)
 {
     // Send scene rendering
     VkSemaphore waitSceneSigSems[] = {
@@ -288,62 +325,26 @@ VulkanRenderer::emitDrawCmds(uint32_t imgIndex)
     submitInfo.pWaitSemaphores = waitSceneSigSems;
     submitInfo.pWaitDstStageMask = waitStages;
     submitInfo.waitSemaphoreCount = 1;
+
     submitInfo.pSignalSemaphores = finishSceneSigSems;
     submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pCommandBuffers = &_renderCommandBuffers[imgIndex];
+
+    submitInfo.pCommandBuffers = &cmdBuffer;
     submitInfo.commandBufferCount = 1;
-    vkResetFences(
-      _vkInstance.devices.device, 1, &_sync.inflightFence[_sync.currentFrame]);
-    if (vkQueueSubmit(_vkInstance.queues.graphicQueue,
-                      1,
-                      &submitInfo,
-                      _sync.inflightFence[_sync.currentFrame]) != VK_SUCCESS) {
+    auto result = vkQueueSubmit(_vkInstance.queues.graphicQueue,
+                                1,
+                                &submitInfo,
+                                _sync.inflightFence[_sync.currentFrame]);
+    if (result != VK_SUCCESS) {
         throw std::runtime_error(
           "VulkanRenderer: Failed to submit render draw command buffer");
-    }
-}
-
-void
-VulkanRenderer::recordRenderCmd(uint32_t imgIndex,
-                                VkClearColorValue const &cmdClearColor)
-{
-    VkCommandBufferBeginInfo cb_begin_info{};
-    cb_begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    cb_begin_info.flags = 0;
-    cb_begin_info.pInheritanceInfo = nullptr;
-    if (vkBeginCommandBuffer(_renderCommandBuffers[imgIndex], &cb_begin_info) !=
-        VK_SUCCESS) {
-        throw std::runtime_error("VulkanRenderer: Failed to begin "
-                                 "recording render command buffer");
-    }
-
-    if (!mandelbrotComputeDone) {
-        // Update push constant values
-        mandelbrotConstants.fbW = _imageDisplayed.colorTex.width;
-        mandelbrotConstants.fbH = _imageDisplayed.colorTex.height;
-        recordMandelbrotRenderCmd(imgIndex, cmdClearColor);
-        mandelbrotComputeDone = true;
-    }
-    _imageDisplayed.copyColorDepthTexturesContent(
-      _imageMandelbrot,
-      _renderCommandBuffers[imgIndex],
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      VK_IMAGE_LAYOUT_UNDEFINED,
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    recordToScreenRenderCmd(imgIndex, cmdClearColor);
-    recordUiRenderCmd(imgIndex, cmdClearColor);
-
-    if (vkEndCommandBuffer(_renderCommandBuffers[imgIndex]) != VK_SUCCESS) {
-        throw std::runtime_error(
-          "VulkanRenderer: Failed to record render command Buffer");
     }
 }
 
 // Sub-functions for recordRenderCmd
 void
 VulkanRenderer::recordMandelbrotRenderCmd(
-  uint32_t imgIndex,
+  VkCommandBuffer cmdBuffer,
   VkClearColorValue const &cmdClearColor)
 {
     // Begin Mandelbrot renderpass
@@ -362,16 +363,14 @@ VulkanRenderer::recordMandelbrotRenderCmd(
     rp_begin_info.clearValueCount = clear_vals.size();
     rp_begin_info.pClearValues = clear_vals.data();
 
-    vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
-                         &rp_begin_info,
-                         VK_SUBPASS_CONTENTS_INLINE);
-    _mandelbrot.generateCommands(_renderCommandBuffers[imgIndex],
-                                 mandelbrotConstants);
-    vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
+    vkCmdBeginRenderPass(cmdBuffer, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
+    _mandelbrot.generateCommands(cmdBuffer, mandelbrotConstants);
+    vkCmdEndRenderPass(cmdBuffer);
 }
 
 void
-VulkanRenderer::recordUiRenderCmd(uint32_t imgIndex,
+VulkanRenderer::recordUiRenderCmd(VkCommandBuffer cmdBuffer,
+                                  uint32_t imgIndex,
                                   VkClearColorValue const &cmdClearColor)
 {
     // Begin Ui renderpass
@@ -387,15 +386,14 @@ VulkanRenderer::recordUiRenderCmd(uint32_t imgIndex,
     rp_begin_info.clearValueCount = clear_vals.size();
     rp_begin_info.pClearValues = clear_vals.data();
 
-    vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
-                         &rp_begin_info,
-                         VK_SUBPASS_CONTENTS_INLINE);
-    _ui.generateCommands(_renderCommandBuffers[imgIndex]);
-    vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
+    vkCmdBeginRenderPass(cmdBuffer, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
+    _ui.generateCommands(cmdBuffer);
+    vkCmdEndRenderPass(cmdBuffer);
 }
 
 void
-VulkanRenderer::recordToScreenRenderCmd(uint32_t imgIndex,
+VulkanRenderer::recordToScreenRenderCmd(VkCommandBuffer cmdBuffer,
+                                        uint32_t imgIndex,
                                         VkClearColorValue const &cmdClearColor)
 {
     // Begin onscreen renderpass
@@ -411,19 +409,17 @@ VulkanRenderer::recordToScreenRenderCmd(uint32_t imgIndex,
     rp_begin_info.clearValueCount = clear_vals.size();
     rp_begin_info.pClearValues = clear_vals.data();
 
-    vkCmdBeginRenderPass(_renderCommandBuffers[imgIndex],
-                         &rp_begin_info,
-                         VK_SUBPASS_CONTENTS_INLINE);
-    _toScreen.generateCommands(_renderCommandBuffers[imgIndex], imgIndex);
-    vkCmdEndRenderPass(_renderCommandBuffers[imgIndex]);
+    vkCmdBeginRenderPass(cmdBuffer, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
+    _toScreen.generateCommands(cmdBuffer, imgIndex);
+    vkCmdEndRenderPass(cmdBuffer);
 }
 
 void
-VulkanRenderer::copyFrameToHostMemory(size_t imgIndex)
+VulkanRenderer::copyFrameToHostMemory()
 {
     vkWaitForFences(_vkInstance.devices.device,
                     1,
-                    &_sync.inflightFence[imgIndex],
+                    &_sync.inflightFence[_sync.currentFrame],
                     VK_TRUE,
                     UINT64_MAX);
     _imageMandelbrot.colorTex.loadTextureOnCPU(

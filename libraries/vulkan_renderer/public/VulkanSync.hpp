@@ -18,8 +18,7 @@ class VulkanSync final
     VulkanSync(VulkanSync &&src) = delete;
     VulkanSync &operator=(VulkanSync &&rhs) = delete;
 
-    void init(VulkanInstance const &vkInstance, uint32_t nbFramebufferImgs);
-    void resize(uint32_t nbFramebufferImgs);
+    void init(VulkanInstance const &vkInstance);
     void clear();
 
     static constexpr size_t const MAX_FRAME_INFLIGHT = 2;
@@ -28,7 +27,6 @@ class VulkanSync final
     std::vector<VkSemaphore> imageAvailableSem;
     std::vector<VkSemaphore> allRenderFinishedSem;
     std::vector<VkFence> inflightFence;
-    std::vector<VkFence> imgsInflightFence;
 
   private:
     VulkanDevices _devices;
