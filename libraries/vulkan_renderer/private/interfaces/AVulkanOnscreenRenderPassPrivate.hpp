@@ -96,16 +96,12 @@ void
 AVulkanOnscreenRenderPass<Child>::defaultCreateDepthResources(
   VulkanSwapChain const &swapChain)
 {
-    depthTexs.resize(swapChain.swapChainImageViews.size());
-
-    for (uint32_t i = 0; i < swapChain.swapChainImageViews.size(); ++i) {
-        depthTexs[i].createDepthTexture(_devices,
-                                        _cmdPools,
-                                        _queues,
-                                        swapChain.swapChainExtent.width,
-                                        swapChain.swapChainExtent.height,
-                                        depthFormat);
-    }
+    depthTex.createDepthTexture(_devices,
+                                _cmdPools,
+                                _queues,
+                                swapChain.swapChainExtent.width,
+                                swapChain.swapChainExtent.height,
+                                depthFormat);
 }
 
 template<class Child>
@@ -118,7 +114,7 @@ AVulkanOnscreenRenderPass<Child>::defaultCreateFramebuffers(
     size_t i = 0;
     for (auto const &it : swapChain.swapChainImageViews) {
         std::array<VkImageView, 2> sciv{ it.textureImgView,
-                                         depthTexs[i].textureImgView };
+                                         depthTex.textureImgView };
 
         framebuffers[i] = createFrameBuffer(
           _devices.device, renderPass, sciv, swapChain.swapChainExtent);
