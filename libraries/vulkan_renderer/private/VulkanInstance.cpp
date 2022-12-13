@@ -70,10 +70,6 @@ VulkanInstance::init(VkSurfaceKHR windowSurface,
       createCommandPool(devices.device,
                         queues.graphicFamilyIndex,
                         VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-    cmdPools.computeCommandPool =
-      (queues.computeFamilyIndex == queues.graphicFamilyIndex)
-        ? cmdPools.renderCommandPool
-        : createCommandPool(devices.device, queues.computeFamilyIndex, 0);
     depthFormat =
       findSupportedFormat(devices.physicalDevice,
                           { VK_FORMAT_D32_SFLOAT,
@@ -86,10 +82,6 @@ VulkanInstance::init(VkSurfaceKHR windowSurface,
 void
 VulkanInstance::clear()
 {
-    if (cmdPools.computeCommandPool != cmdPools.renderCommandPool) {
-        vkDestroyCommandPool(
-          devices.device, cmdPools.computeCommandPool, nullptr);
-    }
     vkDestroyCommandPool(devices.device, cmdPools.renderCommandPool, nullptr);
     vkDestroyDevice(devices.device, nullptr);
     if constexpr (ENABLE_VALIDATION_LAYER) {
@@ -194,11 +186,8 @@ VulkanInstance::createQueues()
       devices.device, dfr.graphicFamilyIndex.value(), 0, &queues.graphicQueue);
     vkGetDeviceQueue(
       devices.device, dfr.presentFamilyIndex.value(), 0, &queues.presentQueue);
-    vkGetDeviceQueue(
-      devices.device, dfr.computeFamilyIndex.value(), 0, &queues.computeQueue);
     queues.graphicFamilyIndex = dfr.graphicFamilyIndex.value();
     queues.presentFamilyIndex = dfr.presentFamilyIndex.value();
-    queues.computeFamilyIndex = dfr.computeFamilyIndex.value();
 }
 
 // Dbg related

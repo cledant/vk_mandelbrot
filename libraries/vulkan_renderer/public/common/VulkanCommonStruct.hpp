@@ -17,17 +17,14 @@ struct VulkanDevices final
 struct VulkanCommandPools final
 {
     VkCommandPool renderCommandPool{};
-    VkCommandPool computeCommandPool{};
 };
 
 struct VulkanQueues final
 {
     VkQueue graphicQueue{};
     VkQueue presentQueue{};
-    VkQueue computeQueue{};
     uint32_t graphicFamilyIndex{};
     uint32_t presentFamilyIndex{};
-    uint32_t computeFamilyIndex{};
 };
 
 struct VulkanBuffer final
