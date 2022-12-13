@@ -11,6 +11,8 @@ VulkanDefaultOffscreenRenderPass::implInit(VkFormat colorImageFormat,
                                            int32_t imgH)
 {
     defaultCreateRenderPass(colorImageFormat,
+                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                            VK_IMAGE_LAYOUT_UNDEFINED,
                             depthImageFormat,
                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                             VK_IMAGE_LAYOUT_UNDEFINED);
@@ -28,6 +30,8 @@ VulkanDefaultOffscreenRenderPass::implResize(VkFormat colorImageFormat,
     clean();
 
     defaultCreateRenderPass(colorImageFormat,
+                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                            VK_IMAGE_LAYOUT_UNDEFINED,
                             depthImageFormat,
                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                             VK_IMAGE_LAYOUT_UNDEFINED);

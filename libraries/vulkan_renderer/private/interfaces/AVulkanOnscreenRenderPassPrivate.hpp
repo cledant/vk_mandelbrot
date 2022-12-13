@@ -17,15 +17,18 @@ template<class Child>
 void
 AVulkanOnscreenRenderPass<Child>::defaultCreateRenderPass(
   VulkanSwapChain const &swapChain,
-  VkAttachmentLoadOp loadOp,
+  VkAttachmentLoadOp colorLoadOp,
   VkImageLayout colorInitialLayout,
-  VkImageLayout colorFinalLayout)
+  VkImageLayout colorFinalLayout,
+  VkAttachmentLoadOp depthLoadOp,
+  VkImageLayout depthInitialLayout,
+  VkImageLayout depthFinalLayout)
 {
     // Color
     VkAttachmentDescription color_attachment{};
     color_attachment.format = swapChain.swapChainImageFormat;
     color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    color_attachment.loadOp = loadOp;
+    color_attachment.loadOp = colorLoadOp;
     color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -40,14 +43,12 @@ AVulkanOnscreenRenderPass<Child>::defaultCreateRenderPass(
     VkAttachmentDescription depth_attachment{};
     depth_attachment.format = depthFormat;
     depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    depth_attachment.loadOp = depthLoadOp;
     depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    depth_attachment.initialLayout =
-      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-    depth_attachment.finalLayout =
-      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    depth_attachment.initialLayout = depthInitialLayout;
+    depth_attachment.finalLayout = depthFinalLayout;
 
     VkAttachmentReference depth_attachment_ref{};
     depth_attachment_ref.attachment = 1;

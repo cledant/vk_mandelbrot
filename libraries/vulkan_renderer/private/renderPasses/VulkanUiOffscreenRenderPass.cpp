@@ -19,6 +19,8 @@ VulkanUiOffscreenRenderPass::implInit(VkFormat colorImageFormat,
     static_cast<void>(imgH);
 
     defaultCreateRenderPass(colorImageFormat,
+                            VK_ATTACHMENT_LOAD_OP_LOAD,
+                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                             depthImageFormat,
                             VK_ATTACHMENT_LOAD_OP_LOAD,
                             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -41,6 +43,8 @@ VulkanUiOffscreenRenderPass::implResize(VkFormat colorImageFormat,
     clean();
 
     defaultCreateRenderPass(colorImageFormat,
+                            VK_ATTACHMENT_LOAD_OP_LOAD,
+                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                             depthImageFormat,
                             VK_ATTACHMENT_LOAD_OP_LOAD,
                             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

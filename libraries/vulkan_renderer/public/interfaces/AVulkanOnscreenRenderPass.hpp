@@ -38,9 +38,12 @@ class AVulkanOnscreenRenderPass
     VulkanCommandPools _cmdPools;
 
     inline void defaultCreateRenderPass(VulkanSwapChain const &swapChain,
-                                        VkAttachmentLoadOp loadOp,
+                                        VkAttachmentLoadOp colorLoadOp,
                                         VkImageLayout colorInitialLayout,
-                                        VkImageLayout colorFinalLayout);
+                                        VkImageLayout colorFinalLayout,
+                                        VkAttachmentLoadOp depthLoadOp,
+                                        VkImageLayout depthInitialLayout,
+                                        VkImageLayout depthFinalLayout);
     inline void defaultCreateDepthResources(VulkanSwapChain const &swapChain);
     inline void defaultCreateFramebuffers(VulkanSwapChain const &swapChain);
 };

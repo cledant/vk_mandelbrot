@@ -44,9 +44,11 @@ class AVulkanOffscreenRenderPass
     VulkanDevices _devices;
 
     inline void defaultCreateRenderPass(VkFormat colorImageFormat,
+                                        VkAttachmentLoadOp colorLoadOp,
+                                        VkImageLayout colorInitialLayout,
                                         VkFormat depthImageFormat,
-                                        VkAttachmentLoadOp loadOp,
-                                        VkImageLayout initialLayout);
+                                        VkAttachmentLoadOp depthLoadOp,
+                                        VkImageLayout depthInitialLayout);
     inline void defaultCreateFramebuffer(VkImageView colorTexImgView,
                                          VkImageView depthTexImgView,
                                          int32_t imgW,

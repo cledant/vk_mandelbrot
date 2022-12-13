@@ -10,7 +10,10 @@ VulkanUiOnscreenRenderPass::implInit(VulkanInstance const &vkInstance,
     defaultCreateRenderPass(swapChain,
                             VK_ATTACHMENT_LOAD_OP_LOAD,
                             VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+                            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                            VK_ATTACHMENT_LOAD_OP_LOAD,
+                            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
     defaultCreateDepthResources(swapChain);
     defaultCreateFramebuffers(swapChain);
 }
@@ -22,7 +25,10 @@ VulkanUiOnscreenRenderPass::implResize(VulkanSwapChain const &swapChain)
     defaultCreateRenderPass(swapChain,
                             VK_ATTACHMENT_LOAD_OP_LOAD,
                             VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+                            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                            VK_ATTACHMENT_LOAD_OP_LOAD,
+                            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
     defaultCreateDepthResources(swapChain);
     defaultCreateFramebuffers(swapChain);
 }

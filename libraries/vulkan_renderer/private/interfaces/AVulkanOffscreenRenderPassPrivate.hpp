@@ -18,19 +18,21 @@ template<class Child>
 void
 AVulkanOffscreenRenderPass<Child>::defaultCreateRenderPass(
   VkFormat colorImageFormat,
+  VkAttachmentLoadOp colorLoadOp,
+  VkImageLayout colorInitialLayout,
   VkFormat depthImageFormat,
-  VkAttachmentLoadOp loadOp,
-  VkImageLayout initialLayout)
+  VkAttachmentLoadOp depthLoadOp,
+  VkImageLayout depthInitialLayout)
 {
     // Color
     VkAttachmentDescription color_attachment{};
     color_attachment.format = colorImageFormat;
     color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    color_attachment.loadOp = loadOp;
+    color_attachment.loadOp = colorLoadOp;
     color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    color_attachment.initialLayout = initialLayout;
+    color_attachment.initialLayout = colorInitialLayout;
     color_attachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
     VkAttachmentReference color_attachment_ref{};
@@ -41,11 +43,11 @@ AVulkanOffscreenRenderPass<Child>::defaultCreateRenderPass(
     VkAttachmentDescription depth_attachment{};
     depth_attachment.format = depthImageFormat;
     depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    depth_attachment.loadOp = loadOp;
+    depth_attachment.loadOp = depthLoadOp;
     depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    depth_attachment.initialLayout = initialLayout;
+    depth_attachment.initialLayout = depthInitialLayout;
     depth_attachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
     VkAttachmentReference depth_attachment_ref{};
