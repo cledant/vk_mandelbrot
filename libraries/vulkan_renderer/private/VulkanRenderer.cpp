@@ -93,7 +93,7 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
                            _renderCommandBuffers,
-                           _swapChain.swapChainImageViews.size());
+                           VulkanSync::MAX_FRAME_INFLIGHT);
 }
 
 void
@@ -108,8 +108,8 @@ VulkanRenderer::resize(uint32_t winW,
     }
 
     // Vulkan
-    for (uint32_t i = 0; i < _swapChain.currentSwapChainNbImg; ++i) {
-        vkResetCommandBuffer(_renderCommandBuffers[i], 0);
+    for (auto &it : _renderCommandBuffers) {
+        vkResetCommandBuffer(it, 0);
     }
     _swapChain.resize(winW, winH, vsync);
 
@@ -139,11 +139,6 @@ VulkanRenderer::resize(uint32_t winW,
 
     _uiRenderPass.resize(_swapChain);
     _ui.resize(_uiRenderPass.renderPass, _swapChain.currentSwapChainNbImg);
-
-    allocateCommandBuffers(_vkInstance.devices.device,
-                           _vkInstance.cmdPools.renderCommandPool,
-                           _renderCommandBuffers,
-                           _swapChain.swapChainImageViews.size());
 }
 
 void
