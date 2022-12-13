@@ -7,7 +7,7 @@ struct mandelbrotPushConstants final
 {
     static constexpr double DEFAULT_OFFSET_X = 0.0;
     static constexpr double DEFAULT_OFFSET_Y = 0.0;
-    static constexpr uint32_t DEFAULT_MAX_ITER = 200;
+    static constexpr uint32_t DEFAULT_MAX_ITER = 350;
     static constexpr double DEFAULT_ZOOM = 4.0;
 
     alignas(8) double fbW{};
