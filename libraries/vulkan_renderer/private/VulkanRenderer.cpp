@@ -64,18 +64,13 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                           rendererH);
     _capturedFrame.allocate(
       _vkInstance.devices, rendererW, rendererH, 4, false);
-    _imageDisplayed.init(_vkInstance,
-                         VK_FORMAT_R8G8B8A8_UNORM,
-                         _vkInstance.depthFormat,
-                         rendererW,
-                         rendererH);
 
     // Render Passes + pipelines
     _toScreenRenderPass.init(_vkInstance, _swapChain);
     _toScreen.init(_vkInstance,
                    _swapChain,
                    _toScreenRenderPass,
-                   _imageDisplayed.descriptorImage);
+                   _imageMandelbrot.descriptorImage);
 
     _mandelbrotRenderPass.init(_vkInstance,
                                VK_FORMAT_R8G8B8A8_UNORM,
@@ -121,13 +116,11 @@ VulkanRenderer::resize(uint32_t winW,
     _capturedFrame.clear();
     _capturedFrame.allocate(
       _vkInstance.devices, rendererW, rendererH, 4, false);
-    _imageDisplayed.resize(
-      VK_FORMAT_R8G8B8A8_UNORM, _vkInstance.depthFormat, rendererW, rendererH);
 
     // Render passes + pipelines
     _toScreenRenderPass.resize(_swapChain);
     _toScreen.resize(
-      _swapChain, _toScreenRenderPass, _imageDisplayed.descriptorImage);
+      _swapChain, _toScreenRenderPass, _imageMandelbrot.descriptorImage);
 
     _mandelbrotRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
                                  _vkInstance.depthFormat,
@@ -151,7 +144,6 @@ VulkanRenderer::clear()
     _mandelbrotRenderPass.clear();
     _toScreen.clear();
     _toScreenRenderPass.clear();
-    _imageDisplayed.clear();
     _capturedFrame.clear();
     _imageMandelbrot.clear();
     _sync.clear();
@@ -280,18 +272,11 @@ VulkanRenderer::recordRenderCmd(VkCommandBuffer cmdBuffer,
 
     if (!mandelbrotComputeDone) {
         // Update push constant values
-        mandelbrotConstants.fbW = _imageDisplayed.colorTex.width;
-        mandelbrotConstants.fbH = _imageDisplayed.colorTex.height;
+        mandelbrotConstants.fbW = _imageMandelbrot.colorTex.width;
+        mandelbrotConstants.fbH = _imageMandelbrot.colorTex.height;
         recordMandelbrotRenderCmd(cmdBuffer, cmdClearColor);
         mandelbrotComputeDone = true;
     }
-    _imageDisplayed.copyColorDepthTexturesContent(
-      _imageMandelbrot,
-      cmdBuffer,
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      VK_IMAGE_LAYOUT_UNDEFINED,
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     recordToScreenRenderCmd(cmdBuffer, imgIndex, cmdClearColor);
     recordUiRenderCmd(cmdBuffer, imgIndex, cmdClearColor);
 

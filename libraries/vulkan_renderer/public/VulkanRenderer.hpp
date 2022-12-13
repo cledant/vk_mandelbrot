@@ -84,7 +84,6 @@ class VulkanRenderer final
 
     // Textures
     VulkanDefaultImageTexture _imageMandelbrot;
-    VulkanDefaultImageTexture _imageDisplayed;
 
     // Render passes
     VulkanDefaultOffscreenRenderPass _mandelbrotRenderPass;
