@@ -180,22 +180,30 @@ VulkanRenderer::getEngineVersion() const
 void
 VulkanRenderer::draw()
 {
-    vkWaitForFences(_vkInstance.devices.device,
-                    1,
-                    &_sync.inflightFence[_sync.currentFrame],
-                    VK_TRUE,
-                    UINT64_MAX);
+    {
+        auto waitResult =
+          vkWaitForFences(_vkInstance.devices.device,
+                          1,
+                          &_sync.inflightFence[_sync.currentFrame],
+                          VK_TRUE,
+                          UINT64_MAX);
+        if (waitResult == VK_ERROR_DEVICE_LOST) {
+            throw std::runtime_error("VulkanRenderer: Device Lost");
+        }
+    }
 
     uint32_t imgIndex;
-    auto result =
-      vkAcquireNextImageKHR(_vkInstance.devices.device,
-                            _swapChain.swapChain,
-                            UINT64_MAX,
-                            _sync.imageAvailableSem[_sync.currentFrame],
-                            VK_NULL_HANDLE,
-                            &imgIndex);
-    if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-        return;
+    {
+        auto acquireResult =
+          vkAcquireNextImageKHR(_vkInstance.devices.device,
+                                _swapChain.swapChain,
+                                UINT64_MAX,
+                                _sync.imageAvailableSem[_sync.currentFrame],
+                                VK_NULL_HANDLE,
+                                &imgIndex);
+        if (acquireResult != VK_SUCCESS && acquireResult != VK_SUBOPTIMAL_KHR) {
+            return;
+        }
     }
 
     vkResetFences(
