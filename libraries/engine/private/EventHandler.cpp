@@ -253,7 +253,6 @@ EventHandler::uiToggleFullscreen()
 void
 EventHandler::uiToggleVsync()
 {
-    _ui->vsync = !_ui->vsync;
     _recreateSwapchain = true;
 }
 
