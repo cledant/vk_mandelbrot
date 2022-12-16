@@ -14,6 +14,7 @@
 #include "common/VulkanDefaultImageTexture.hpp"
 #include "renderPasses/VulkanDefaultOnscreenRenderPass.hpp"
 #include "renderPasses/VulkanDefaultOffscreenRenderPass.hpp"
+#include "renderPasses/VulkanMultipleOffscreenRenderPass.hpp"
 #include "renderPasses/VulkanUiOnscreenRenderPass.hpp"
 #include "pipelines/toScreen/VulkanToScreenPipeline.hpp"
 #include "pipelines/mandelbrot/VulkanMandelbrotPipeline.hpp"
@@ -72,6 +73,9 @@ class VulkanRenderer final
     [[nodiscard]] VulkanScreenshot generateScreenshot() const;
 
   private:
+    static constexpr int32_t const CHUNK_WIDTH = 320;
+    static constexpr int32_t const CHUNK_HEIGHT = 180;
+
     std::string _appName;
     std::string _engineName;
     uint32_t _appVersion{};
@@ -86,12 +90,14 @@ class VulkanRenderer final
     VulkanDefaultImageTexture _imageMandelbrot;
 
     // Render passes
-    VulkanDefaultOffscreenRenderPass _mandelbrotRenderPass;
+    VulkanDefaultOffscreenRenderPass _mandelbrotFirstRenderPass;
+    VulkanMultipleOffscreenRenderPass _mandelbrotMultipleRenderPass;
     VulkanDefaultOnscreenRenderPass _toScreenRenderPass;
     VulkanUiOnscreenRenderPass _uiRenderPass;
 
     // Pipelines
-    VulkanMandelbrotPipeline _mandelbrot;
+    VulkanMandelbrotPipeline _mandelbrotFirst;
+    VulkanMandelbrotPipeline _mandelbrotMultiple;
     VulkanToScreenPipeline _toScreen;
     VulkanUiPipeline _ui;
 
@@ -108,7 +114,10 @@ class VulkanRenderer final
     inline void emitDrawCmds(VkCommandBuffer cmdBuffer);
 
     // Sub-functions for recordRenderCmd
-    inline void recordMandelbrotRenderCmd(
+    inline void recordMandelbrotFirstRenderCmd(
+      VkCommandBuffer cmdBuffer,
+      VkClearColorValue const &cmdClearColor);
+    inline void recordMandelbrotMultipleRenderCmd(
       VkCommandBuffer cmdBuffer,
       VkClearColorValue const &cmdClearColor);
     inline void recordUiRenderCmd(VkCommandBuffer cmdBuffer,

@@ -81,15 +81,17 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                                     rendererH);
     _mandelbrotFirst.init(
       _vkInstance, _mandelbrotFirstRenderPass.renderPass, rendererW, rendererH);
-    /*    _mandelbrotMultipleRenderPass.init(_vkInstance,
-                                           VK_FORMAT_R8G8B8A8_UNORM,
-                                           _vkInstance.depthFormat,
-                                           _imageMandelbrot.colorTex.textureImgView,
-                                           _imageMandelbrot.depthTex.textureImgView,
-                                           rendererW,
-                                           rendererH);
-        _mandelbrotMultiple.init(
-          _vkInstance, _mandelbrotMultipleRenderPass, rendererW, rendererH);*/
+    _mandelbrotMultipleRenderPass.init(_vkInstance,
+                                       VK_FORMAT_R8G8B8A8_UNORM,
+                                       _vkInstance.depthFormat,
+                                       _imageMandelbrot.colorTex.textureImgView,
+                                       _imageMandelbrot.depthTex.textureImgView,
+                                       rendererW,
+                                       rendererH);
+    _mandelbrotMultiple.init(_vkInstance,
+                             _mandelbrotMultipleRenderPass.renderPass,
+                             rendererW,
+                             rendererH);
 
     _uiRenderPass.init(_vkInstance, _swapChain);
     _ui.init(
@@ -141,6 +143,15 @@ VulkanRenderer::resize(uint32_t winW,
                                       rendererH);
     _mandelbrotFirst.resize(
       _mandelbrotFirstRenderPass.renderPass, rendererW, rendererH);
+    _mandelbrotMultipleRenderPass.resize(
+      VK_FORMAT_R8G8B8A8_UNORM,
+      _vkInstance.depthFormat,
+      _imageMandelbrot.colorTex.textureImgView,
+      _imageMandelbrot.depthTex.textureImgView,
+      rendererW,
+      rendererH);
+    _mandelbrotMultiple.resize(
+      _mandelbrotMultipleRenderPass.renderPass, rendererW, rendererH);
 
     _uiRenderPass.resize(_swapChain);
     _ui.resize(_uiRenderPass.renderPass, _swapChain.currentSwapChainNbImg);
@@ -154,6 +165,8 @@ VulkanRenderer::clear()
     _uiRenderPass.clear();
     _mandelbrotFirst.clear();
     _mandelbrotFirstRenderPass.clear();
+    _mandelbrotMultiple.clear();
+    _mandelbrotMultipleRenderPass.clear();
     _toScreen.clear();
     _toScreenRenderPass.clear();
     _capturedFrame.clear();
@@ -294,7 +307,8 @@ VulkanRenderer::recordRenderCmd(VkCommandBuffer cmdBuffer,
         // Update push constant values
         mandelbrotConstants.fbW = _imageMandelbrot.colorTex.width;
         mandelbrotConstants.fbH = _imageMandelbrot.colorTex.height;
-        recordMandelbrotRenderCmd(cmdBuffer, cmdClearColor);
+        recordMandelbrotFirstRenderCmd(cmdBuffer, cmdClearColor);
+        recordMandelbrotMultipleRenderCmd(cmdBuffer, cmdClearColor);
         mandelbrotComputeDone = true;
     }
     recordToScreenRenderCmd(cmdBuffer, imgIndex, cmdClearColor);
@@ -343,11 +357,20 @@ VulkanRenderer::emitDrawCmds(VkCommandBuffer cmdBuffer)
 
 // Sub-functions for recordRenderCmd
 void
-VulkanRenderer::recordMandelbrotRenderCmd(
+VulkanRenderer::recordMandelbrotFirstRenderCmd(
   VkCommandBuffer cmdBuffer,
   VkClearColorValue const &cmdClearColor)
 {
-    // Begin Mandelbrot renderpass
+    int32_t realChunkWidth = CHUNK_WIDTH;
+    if (_imageMandelbrot.colorTex.height < CHUNK_WIDTH) {
+        realChunkWidth = _imageMandelbrot.colorTex.width;
+    }
+    int32_t realChunkHeight = CHUNK_HEIGHT;
+    if (_imageMandelbrot.colorTex.height < CHUNK_HEIGHT) {
+        realChunkHeight = _imageMandelbrot.colorTex.height;
+    }
+
+    // Begin Mandelbrot first renderpass
     std::array<VkClearValue, 2> clear_vals{};
     clear_vals[0].color = cmdClearColor;
     clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
@@ -357,8 +380,8 @@ VulkanRenderer::recordMandelbrotRenderCmd(
     rp_begin_info.framebuffer = _mandelbrotFirstRenderPass.framebuffer;
     rp_begin_info.renderArea.offset = { 0, 0 };
     rp_begin_info.renderArea.extent = {
-        static_cast<uint32_t>(_imageMandelbrot.colorTex.width),
-        static_cast<uint32_t>(_imageMandelbrot.colorTex.height),
+        static_cast<uint32_t>(realChunkWidth),
+        static_cast<uint32_t>(realChunkHeight),
     };
     rp_begin_info.clearValueCount = clear_vals.size();
     rp_begin_info.pClearValues = clear_vals.data();
@@ -366,6 +389,58 @@ VulkanRenderer::recordMandelbrotRenderCmd(
     vkCmdBeginRenderPass(cmdBuffer, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
     _mandelbrotFirst.generateCommands(cmdBuffer, mandelbrotConstants);
     vkCmdEndRenderPass(cmdBuffer);
+}
+
+void
+VulkanRenderer::recordMandelbrotMultipleRenderCmd(
+  VkCommandBuffer cmdBuffer,
+  VkClearColorValue const &cmdClearColor)
+{
+    // Begin Mandelbrot renderpass
+    std::array<VkClearValue, 2> clear_vals{};
+    clear_vals[0].color = cmdClearColor;
+    clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
+    VkRenderPassBeginInfo rp_begin_info{};
+    rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    rp_begin_info.renderPass = _mandelbrotMultipleRenderPass.renderPass;
+    rp_begin_info.framebuffer = _mandelbrotMultipleRenderPass.framebuffer;
+    rp_begin_info.clearValueCount = clear_vals.size();
+    rp_begin_info.pClearValues = clear_vals.data();
+
+    int32_t i = 1;
+    int32_t j = 0;
+    while (j * CHUNK_HEIGHT < _imageMandelbrot.colorTex.height) {
+        int32_t realChunkHeight = CHUNK_HEIGHT;
+        if ((_imageMandelbrot.colorTex.height - (j * CHUNK_HEIGHT)) <
+            CHUNK_HEIGHT) {
+            realChunkHeight =
+              _imageMandelbrot.colorTex.height - (j * CHUNK_HEIGHT);
+        }
+
+        while (i * CHUNK_WIDTH < _imageMandelbrot.colorTex.width) {
+            int32_t realChunkWidth = CHUNK_WIDTH;
+            if ((_imageMandelbrot.colorTex.width - (i * CHUNK_WIDTH)) <
+                CHUNK_WIDTH) {
+                realChunkWidth =
+                  _imageMandelbrot.colorTex.width - (i * CHUNK_WIDTH);
+            }
+
+            rp_begin_info.renderArea.extent = {
+                static_cast<uint32_t>(realChunkWidth),
+                static_cast<uint32_t>(realChunkHeight),
+            };
+            rp_begin_info.renderArea.offset = { i * CHUNK_WIDTH,
+                                                j * CHUNK_HEIGHT };
+            vkCmdBeginRenderPass(
+              cmdBuffer, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
+            _mandelbrotMultiple.generateCommands(cmdBuffer,
+                                                 mandelbrotConstants);
+            vkCmdEndRenderPass(cmdBuffer);
+            ++i;
+        }
+        i = 0;
+        ++j;
+    }
 }
 
 void

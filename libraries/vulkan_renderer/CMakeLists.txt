@@ -10,6 +10,7 @@ add_library(vulkan_renderer STATIC
         private/VulkanInstanceOptions.cpp
         private/renderPasses/VulkanDefaultOnscreenRenderPass.cpp
         private/renderPasses/VulkanDefaultOffscreenRenderPass.cpp
+        private/renderPasses/VulkanMultipleOffscreenRenderPass.cpp
         private/renderPasses/VulkanUiOnscreenRenderPass.cpp
         private/utils/VulkanPhysicalDevice.cpp
         private/utils/VulkanSwapChainUtils.cpp
