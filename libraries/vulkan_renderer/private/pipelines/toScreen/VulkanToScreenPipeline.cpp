@@ -10,7 +10,7 @@
 void
 VulkanToScreenPipeline::init(VulkanInstance const &vkInstance,
                              VulkanSwapChain const &swapChain,
-                             VulkanDefaultOnscreenRenderPass const &renderPass,
+                             VkRenderPass renderPass,
                              VkDescriptorImageInfo const &toDisplayImageInfo)
 {
     _devices = vkInstance.devices;
@@ -26,10 +26,9 @@ VulkanToScreenPipeline::init(VulkanInstance const &vkInstance,
 }
 
 void
-VulkanToScreenPipeline::resize(
-  VulkanSwapChain const &swapChain,
-  VulkanDefaultOnscreenRenderPass const &renderPass,
-  VkDescriptorImageInfo const &toDisplayImageInfo)
+VulkanToScreenPipeline::resize(VulkanSwapChain const &swapChain,
+                               VkRenderPass renderPass,
+                               VkDescriptorImageInfo const &toDisplayImageInfo)
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
@@ -87,9 +86,8 @@ VulkanToScreenPipeline::generateCommands(VkCommandBuffer cmdBuffer,
 }
 
 void
-VulkanToScreenPipeline::createGfxPipeline(
-  VulkanSwapChain const &swapChain,
-  VulkanDefaultOnscreenRenderPass const &renderPass)
+VulkanToScreenPipeline::createGfxPipeline(VulkanSwapChain const &swapChain,
+                                          VkRenderPass renderPass)
 {
     // Shaders
     auto vert_shader = loadShader(
@@ -237,7 +235,7 @@ VulkanToScreenPipeline::createGfxPipeline(
     gfx_pipeline_info.pColorBlendState = &color_blending_info;
     gfx_pipeline_info.pDynamicState = nullptr;
     gfx_pipeline_info.layout = _pipelineDescription.pipelineLayout;
-    gfx_pipeline_info.renderPass = renderPass.renderPass;
+    gfx_pipeline_info.renderPass = renderPass;
     gfx_pipeline_info.subpass = 0;
     gfx_pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
     gfx_pipeline_info.basePipelineIndex = -1;

@@ -69,17 +69,27 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     _toScreenRenderPass.init(_vkInstance, _swapChain);
     _toScreen.init(_vkInstance,
                    _swapChain,
-                   _toScreenRenderPass,
+                   _toScreenRenderPass.renderPass,
                    _imageMandelbrot.descriptorImage);
 
-    _mandelbrotRenderPass.init(_vkInstance,
-                               VK_FORMAT_R8G8B8A8_UNORM,
-                               _vkInstance.depthFormat,
-                               _imageMandelbrot.colorTex.textureImgView,
-                               _imageMandelbrot.depthTex.textureImgView,
-                               rendererW,
-                               rendererH);
-    _mandelbrot.init(_vkInstance, _mandelbrotRenderPass, rendererW, rendererH);
+    _mandelbrotFirstRenderPass.init(_vkInstance,
+                                    VK_FORMAT_R8G8B8A8_UNORM,
+                                    _vkInstance.depthFormat,
+                                    _imageMandelbrot.colorTex.textureImgView,
+                                    _imageMandelbrot.depthTex.textureImgView,
+                                    rendererW,
+                                    rendererH);
+    _mandelbrotFirst.init(
+      _vkInstance, _mandelbrotFirstRenderPass.renderPass, rendererW, rendererH);
+    /*    _mandelbrotMultipleRenderPass.init(_vkInstance,
+                                           VK_FORMAT_R8G8B8A8_UNORM,
+                                           _vkInstance.depthFormat,
+                                           _imageMandelbrot.colorTex.textureImgView,
+                                           _imageMandelbrot.depthTex.textureImgView,
+                                           rendererW,
+                                           rendererH);
+        _mandelbrotMultiple.init(
+          _vkInstance, _mandelbrotMultipleRenderPass, rendererW, rendererH);*/
 
     _uiRenderPass.init(_vkInstance, _swapChain);
     _ui.init(
@@ -119,16 +129,18 @@ VulkanRenderer::resize(uint32_t winW,
 
     // Render passes + pipelines
     _toScreenRenderPass.resize(_swapChain);
-    _toScreen.resize(
-      _swapChain, _toScreenRenderPass, _imageMandelbrot.descriptorImage);
+    _toScreen.resize(_swapChain,
+                     _toScreenRenderPass.renderPass,
+                     _imageMandelbrot.descriptorImage);
 
-    _mandelbrotRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
-                                 _vkInstance.depthFormat,
-                                 _imageMandelbrot.colorTex.textureImgView,
-                                 _imageMandelbrot.depthTex.textureImgView,
-                                 rendererW,
-                                 rendererH);
-    _mandelbrot.resize(_mandelbrotRenderPass, rendererW, rendererH);
+    _mandelbrotFirstRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
+                                      _vkInstance.depthFormat,
+                                      _imageMandelbrot.colorTex.textureImgView,
+                                      _imageMandelbrot.depthTex.textureImgView,
+                                      rendererW,
+                                      rendererH);
+    _mandelbrotFirst.resize(
+      _mandelbrotFirstRenderPass.renderPass, rendererW, rendererH);
 
     _uiRenderPass.resize(_swapChain);
     _ui.resize(_uiRenderPass.renderPass, _swapChain.currentSwapChainNbImg);
@@ -140,8 +152,8 @@ VulkanRenderer::clear()
     vkDeviceWaitIdle(_vkInstance.devices.device);
     _ui.clear();
     _uiRenderPass.clear();
-    _mandelbrot.clear();
-    _mandelbrotRenderPass.clear();
+    _mandelbrotFirst.clear();
+    _mandelbrotFirstRenderPass.clear();
     _toScreen.clear();
     _toScreenRenderPass.clear();
     _capturedFrame.clear();
@@ -341,8 +353,8 @@ VulkanRenderer::recordMandelbrotRenderCmd(
     clear_vals[1].depthStencil = DEFAULT_CLEAR_DEPTH_STENCIL;
     VkRenderPassBeginInfo rp_begin_info{};
     rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rp_begin_info.renderPass = _mandelbrotRenderPass.renderPass;
-    rp_begin_info.framebuffer = _mandelbrotRenderPass.framebuffer;
+    rp_begin_info.renderPass = _mandelbrotFirstRenderPass.renderPass;
+    rp_begin_info.framebuffer = _mandelbrotFirstRenderPass.framebuffer;
     rp_begin_info.renderArea.offset = { 0, 0 };
     rp_begin_info.renderArea.extent = {
         static_cast<uint32_t>(_imageMandelbrot.colorTex.width),
@@ -352,7 +364,7 @@ VulkanRenderer::recordMandelbrotRenderCmd(
     rp_begin_info.pClearValues = clear_vals.data();
 
     vkCmdBeginRenderPass(cmdBuffer, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
-    _mandelbrot.generateCommands(cmdBuffer, mandelbrotConstants);
+    _mandelbrotFirst.generateCommands(cmdBuffer, mandelbrotConstants);
     vkCmdEndRenderPass(cmdBuffer);
 }
 

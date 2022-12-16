@@ -29,12 +29,10 @@ class VulkanMandelbrotPipeline final
       delete;
 
     void init(VulkanInstance const &vkInstance,
-              VulkanDefaultOffscreenRenderPass const &renderPass,
+              VkRenderPass renderPass,
               int32_t imgW,
               int32_t imgH);
-    void resize(VulkanDefaultOffscreenRenderPass const &renderPass,
-                int32_t imgW,
-                int32_t imgH);
+    void resize(VkRenderPass renderPass, int32_t imgW, int32_t imgH);
     void clear();
 
     void generateCommands(VkCommandBuffer cmdBuffer,
@@ -56,7 +54,7 @@ class VulkanMandelbrotPipeline final
     VkDescriptorPool _descriptorPool{};
 
     inline void createGfxPipeline(
-      VulkanDefaultOffscreenRenderPass const &renderPass,
+      VkRenderPass renderPass,
       int32_t imgW,
       int32_t imgH);
     inline void createDescriptorSets(

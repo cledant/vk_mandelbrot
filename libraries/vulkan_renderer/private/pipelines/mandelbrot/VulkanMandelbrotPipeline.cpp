@@ -8,11 +8,10 @@
 #include "utils/VulkanDescriptorUtils.hpp"
 
 void
-VulkanMandelbrotPipeline::init(
-  VulkanInstance const &vkInstance,
-  VulkanDefaultOffscreenRenderPass const &renderPass,
-  int32_t imgW,
-  int32_t imgH)
+VulkanMandelbrotPipeline::init(VulkanInstance const &vkInstance,
+                               VkRenderPass renderPass,
+                               int32_t imgW,
+                               int32_t imgH)
 {
     _devices = vkInstance.devices;
     _cmdPools = vkInstance.cmdPools;
@@ -26,10 +25,9 @@ VulkanMandelbrotPipeline::init(
 }
 
 void
-VulkanMandelbrotPipeline::resize(
-  VulkanDefaultOffscreenRenderPass const &renderPass,
-  int32_t imgW,
-  int32_t imgH)
+VulkanMandelbrotPipeline::resize(VkRenderPass renderPass,
+                                 int32_t imgW,
+                                 int32_t imgH)
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
@@ -93,10 +91,9 @@ VulkanMandelbrotPipeline::generateCommands(
 }
 
 void
-VulkanMandelbrotPipeline::createGfxPipeline(
-  VulkanDefaultOffscreenRenderPass const &renderPass,
-  int32_t imgW,
-  int32_t imgH)
+VulkanMandelbrotPipeline::createGfxPipeline(VkRenderPass renderPass,
+                                            int32_t imgW,
+                                            int32_t imgH)
 {
     // Shaders
     auto vert_shader = loadShader(
@@ -245,7 +242,7 @@ VulkanMandelbrotPipeline::createGfxPipeline(
     gfx_pipeline_info.pColorBlendState = &color_blending_info;
     gfx_pipeline_info.pDynamicState = nullptr;
     gfx_pipeline_info.layout = _pipelineDescription.pipelineLayout;
-    gfx_pipeline_info.renderPass = renderPass.renderPass;
+    gfx_pipeline_info.renderPass = renderPass;
     gfx_pipeline_info.subpass = 0;
     gfx_pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
     gfx_pipeline_info.basePipelineIndex = -1;

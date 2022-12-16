@@ -28,10 +28,10 @@ class VulkanToScreenPipeline final
 
     void init(VulkanInstance const &vkInstance,
               VulkanSwapChain const &swapChain,
-              VulkanDefaultOnscreenRenderPass const &renderPass,
+              VkRenderPass renderPass,
               VkDescriptorImageInfo const &toDisplayImageInfo);
     void resize(VulkanSwapChain const &swapChain,
-                VulkanDefaultOnscreenRenderPass const &renderPass,
+                VkRenderPass renderPass,
                 VkDescriptorImageInfo const &toDisplayImageInfo);
     void clear();
 
@@ -53,9 +53,8 @@ class VulkanToScreenPipeline final
     std::vector<VkDescriptorSet> _descriptorSets;
     VkDescriptorPool _descriptorPool{};
 
-    inline void createGfxPipeline(
-      VulkanSwapChain const &swapChain,
-      VulkanDefaultOnscreenRenderPass const &renderPass);
+    inline void createGfxPipeline(VulkanSwapChain const &swapChain,
+                                  VkRenderPass renderPass);
     inline void createDescriptorSets(VulkanToScreenPipelineData &pipelineData,
                                      uint32_t descriptorCount);
     void createDescriptorPool(uint32_t descriptorCount);
