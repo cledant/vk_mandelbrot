@@ -1,4 +1,4 @@
-#include "common/VulkanCommonStruct.hpp"
+#include "structs/VulkanCommonStruct.hpp"
 
 #include "utils/VulkanMemory.hpp"
 

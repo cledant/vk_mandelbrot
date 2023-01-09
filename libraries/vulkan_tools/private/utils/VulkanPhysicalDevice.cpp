@@ -1,4 +1,4 @@
-#include "VulkanPhysicalDevice.hpp"
+#include "utils/VulkanPhysicalDevice.hpp"
 
 #include <map>
 #include <cstring>
@@ -6,7 +6,7 @@
 #include <set>
 #include <string>
 
-#include "VulkanSwapChainUtils.hpp"
+#include "utils/VulkanSwapChainUtils.hpp"
 
 bool
 DeviceRequirement::isValid(VulkanInstanceOptions const &requiredOptions) const

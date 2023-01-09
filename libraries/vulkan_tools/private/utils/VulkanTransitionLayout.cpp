@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "VulkanCommandBuffer.hpp"
+#include "utils/VulkanCommandBuffer.hpp"
 #include "utils/VulkanImageUtils.hpp"
 
 static void

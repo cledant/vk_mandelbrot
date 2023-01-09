@@ -1,6 +1,4 @@
-#include "common/VulkanCommonStruct.hpp"
-
-#include <stdexcept>
+#include "structs/VulkanCommonStruct.hpp"
 
 #include "utils/VulkanImageUtils.hpp"
 #include "utils/VulkanTextureUtils.hpp"

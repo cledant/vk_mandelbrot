@@ -1,7 +1,7 @@
 #ifndef VK_MANDELBROT_VULKANPIPELINEUTILS_HPP
 #define VK_MANDELBROT_VULKANPIPELINEUTILS_HPP
 
-#include "common/VulkanCommonStruct.hpp"
+#include "structs/VulkanCommonStruct.hpp"
 
 VkPipelineLayout createPipelineLayout(
   VulkanDevices const &devices,

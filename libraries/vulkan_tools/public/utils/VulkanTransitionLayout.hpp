@@ -3,7 +3,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "common/VulkanCommonStruct.hpp"
+#include "structs/VulkanCommonStruct.hpp"
 
 void transitionImageLayoutSingleCmd(VulkanDevices const &devices,
                                     VulkanCommandPools const &cmdPools,

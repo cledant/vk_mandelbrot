@@ -1,4 +1,4 @@
-#include "VulkanDescriptorUtils.hpp"
+#include "utils/VulkanDescriptorUtils.hpp"
 
 void
 allocateDescriptorSets(VulkanDevices const &devices,

@@ -1,4 +1,4 @@
-#include "common/VulkanDefaultImageTexture.hpp"
+#include "structs/VulkanDefaultImageTexture.hpp"
 
 #include "interfaces/AVulkanImageBufferPrivate.hpp"
 

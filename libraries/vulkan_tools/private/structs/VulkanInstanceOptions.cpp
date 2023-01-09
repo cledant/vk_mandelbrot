@@ -1,4 +1,4 @@
-#include "common/VulkanInstanceOptions.hpp"
+#include "structs/VulkanInstanceOptions.hpp"
 
 bool
 VulkanInstanceOptions::hasRequiredOptions(

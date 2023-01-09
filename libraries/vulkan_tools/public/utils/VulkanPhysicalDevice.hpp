@@ -8,7 +8,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "common/VulkanInstanceOptions.hpp"
+#include "structs/VulkanInstanceOptions.hpp"
 
 struct DeviceRequirement final
 {

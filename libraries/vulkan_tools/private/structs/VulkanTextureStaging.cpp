@@ -1,4 +1,4 @@
-#include "common/VulkanCommonStruct.hpp"
+#include "structs/VulkanCommonStruct.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"

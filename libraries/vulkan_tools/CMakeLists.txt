@@ -16,7 +16,6 @@ add_library(vulkan_tools STATIC
         private/structs/VulkanBuffer.cpp
         private/structs/VulkanTexture.cpp
         private/structs/VulkanTextureStaging.cpp
-        private/structs/VulkanDefaultImageTexture.cpp
         private/structs/VulkanScreenshot.cpp)
 target_include_directories(vulkan_tools
         PUBLIC

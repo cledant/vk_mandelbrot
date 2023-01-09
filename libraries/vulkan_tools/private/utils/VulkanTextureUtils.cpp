@@ -1,9 +1,9 @@
-#include "VulkanTextureUtils.hpp"
+#include "utils/VulkanTextureUtils.hpp"
 
 #include <stdexcept>
 
-#include "VulkanCommandBuffer.hpp"
-#include "VulkanPhysicalDevice.hpp"
+#include "utils/VulkanCommandBuffer.hpp"
+#include "utils/VulkanPhysicalDevice.hpp"
 
 void
 generateMipmapsSingleCmd(VulkanDevices const &devices,

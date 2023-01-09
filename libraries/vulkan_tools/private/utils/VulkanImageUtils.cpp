@@ -1,9 +1,9 @@
-#include "VulkanImageUtils.hpp"
+#include "utils/VulkanImageUtils.hpp"
 
 #include <stdexcept>
 
-#include "VulkanMemory.hpp"
-#include "VulkanCommandBuffer.hpp"
+#include "utils/VulkanMemory.hpp"
+#include "utils/VulkanCommandBuffer.hpp"
 
 void
 createImage(VkDevice device,

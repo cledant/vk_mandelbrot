@@ -6,7 +6,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "common/VulkanCommonStruct.hpp"
+#include "structs/VulkanCommonStruct.hpp"
 
 uint32_t constexpr computeMipmapLevel(int32_t texW, int32_t texH)
 {
