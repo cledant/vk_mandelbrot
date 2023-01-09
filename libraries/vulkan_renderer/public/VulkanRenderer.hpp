@@ -31,9 +31,6 @@ class VulkanRenderer final
     VulkanRenderer &operator=(VulkanRenderer &&rhs) = delete;
 
     // Default Values
-    static constexpr VulkanInstanceOptions const DEFAULT_RENDERER_OPTIONS = {
-        VK_FALSE, VK_TRUE, VK_FALSE, VK_TRUE, VK_TRUE,
-    };
     static constexpr VkClearColorValue const DEFAULT_CLEAR_COLOR = {
         { 0.0f, 0.0f, 0.0f, 1.0f }
     };
@@ -52,19 +49,12 @@ class VulkanRenderer final
                         uint32_t appVersion,
                         uint32_t engineVersion,
                         std::vector<char const *> &&requiredExtensions);
-    [[nodiscard]] VkInstance getVkInstance() const;
     void init(VkSurfaceKHR surface,
               VulkanInstanceOptions const &options,
               uint32_t winW,
               uint32_t winH);
     void resize(uint32_t winW, uint32_t winH, float rendererScale, bool vsync);
     void clear();
-
-    // Info related
-    [[nodiscard]] std::string const &getAppName() const;
-    [[nodiscard]] uint32_t getAppVersion() const;
-    [[nodiscard]] std::string const &getEngineName() const;
-    [[nodiscard]] uint32_t getEngineVersion() const;
 
     // Render related
     void draw();
@@ -76,13 +66,7 @@ class VulkanRenderer final
     static constexpr int32_t const CHUNK_WIDTH = 320;
     static constexpr int32_t const CHUNK_HEIGHT = 180;
 
-    std::string _appName;
-    std::string _engineName;
-    uint32_t _appVersion{};
-    uint32_t _engineVersion{};
-
     // Vulkan related
-    VulkanInstance _vkInstance;
     VulkanSwapChain _swapChain;
     VulkanSync _sync;
 

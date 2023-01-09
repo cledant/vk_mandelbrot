@@ -6,8 +6,8 @@
 
 #include <vulkan/vulkan.h>
 
-#include "common/VulkanCommonStruct.hpp"
-#include "VulkanInstanceOptions.hpp"
+#include "structs/VulkanCommonStruct.hpp"
+#include "structs/VulkanInstanceOptions.hpp"
 
 class VulkanInstance final
 {
@@ -19,27 +19,37 @@ class VulkanInstance final
     VulkanInstance(VulkanInstance &&src) = delete;
     VulkanInstance &operator=(VulkanInstance &&rhs) = delete;
 
-    static VkInstance createInstance(
-      std::string const &app_name,
-      std::string const &engine_name,
-      uint32_t app_version,
-      uint32_t engine_version,
-      std::vector<char const *> &&required_extensions);
-    void init(VkSurfaceKHR windowSurface, VulkanInstanceOptions const &options);
-    void clear();
+    // Default Values
+    static constexpr VulkanInstanceOptions const DEFAULT_INSTANCE_OPTIONS = {
+        VK_FALSE, VK_TRUE, VK_FALSE, VK_TRUE, VK_TRUE,
+    };
 
+    // Public values
     VkInstance instance{};
     VkSurfaceKHR surface{};
-    VkDebugUtilsMessengerEXT debugMessenger{};
-    VkFormat depthFormat{};
-
-    VulkanDevices devices;
     char deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE]{};
-
+    VulkanDevices devices;
     VulkanQueues queues;
     VulkanCommandPools cmdPools;
+    VkFormat depthFormat{};
+
+    void createInstance(std::string &&appName,
+                        std::string &&engineName,
+                        uint32_t appVersion,
+                        uint32_t engineVersion,
+                        std::vector<char const *> &&requiredExtensions);
+    void createResources(VkSurfaceKHR windowSurface,
+                         VulkanInstanceOptions const &options);
+    void clearAll();
 
   private:
+    std::string _appName;
+    std::string _engineName;
+    uint32_t _appVersion{};
+    uint32_t _engineVersion{};
+
+    VkDebugUtilsMessengerEXT _debugMessenger{};
+
     inline void setupVkDebugMsg();
     inline void selectPhysicalDevice(
       VulkanInstanceOptions const &instanceOptions);

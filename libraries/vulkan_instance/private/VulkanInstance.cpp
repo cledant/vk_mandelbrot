@@ -11,24 +11,29 @@
 #include "utils/VulkanCommandBuffer.hpp"
 #include "utils/VulkanImageUtils.hpp"
 
-VkInstance
-VulkanInstance::createInstance(std::string const &app_name,
-                               std::string const &engine_name,
-                               uint32_t app_version,
-                               uint32_t engine_version,
-                               std::vector<char const *> &&required_extensions)
+void
+VulkanInstance::createInstance(std::string &&appName,
+                               std::string &&engineName,
+                               uint32_t appVersion,
+                               uint32_t engineVersion,
+                               std::vector<char const *> &&requiredExtensions)
 {
     if (ENABLE_VALIDATION_LAYER && !checkValidationLayerSupport()) {
         throw std::runtime_error(
           "VulkanInstance: Validation layer not available");
     }
 
+    _appName = std::move(appName);
+    _appVersion = appVersion;
+    _engineName = std::move(engineName);
+    _engineVersion = engineVersion;
+
     VkApplicationInfo app_info{};
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    app_info.pApplicationName = app_name.c_str();
-    app_info.applicationVersion = app_version;
-    app_info.pEngineName = engine_name.c_str();
-    app_info.engineVersion = engine_version;
+    app_info.pApplicationName = _appName.c_str();
+    app_info.applicationVersion = _appVersion;
+    app_info.pEngineName = _engineName.c_str();
+    app_info.engineVersion = _engineVersion;
     app_info.apiVersion = VK_API_VERSION_1_3;
 
     VkInstanceCreateInfo create_info{};
@@ -36,8 +41,8 @@ VulkanInstance::createInstance(std::string const &app_name,
     create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     create_info.pApplicationInfo = &app_info;
     create_info.enabledExtensionCount =
-      static_cast<uint32_t>(required_extensions.size());
-    create_info.ppEnabledExtensionNames = required_extensions.data();
+      static_cast<uint32_t>(requiredExtensions.size());
+    create_info.ppEnabledExtensionNames = requiredExtensions.data();
 
     VkDebugUtilsMessengerCreateInfoEXT debug_create_info{};
     if constexpr (ENABLE_VALIDATION_LAYER) {
@@ -51,16 +56,14 @@ VulkanInstance::createInstance(std::string const &app_name,
         create_info.pNext = nullptr;
     }
 
-    VkInstance instance;
     if (vkCreateInstance(&create_info, nullptr, &instance) != VK_SUCCESS) {
         throw std::runtime_error("VulkanInstance: Failed to create instance");
     }
-    return (instance);
 }
 
 void
-VulkanInstance::init(VkSurfaceKHR windowSurface,
-                     VulkanInstanceOptions const &options)
+VulkanInstance::createResources(VkSurfaceKHR windowSurface,
+                                VulkanInstanceOptions const &options)
 {
     surface = windowSurface;
     setupVkDebugMsg();
@@ -80,18 +83,18 @@ VulkanInstance::init(VkSurfaceKHR windowSurface,
 }
 
 void
-VulkanInstance::clear()
+VulkanInstance::clearAll()
 {
     vkDestroyCommandPool(devices.device, cmdPools.renderCommandPool, nullptr);
     vkDestroyDevice(devices.device, nullptr);
     if constexpr (ENABLE_VALIDATION_LAYER) {
-        destroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+        destroyDebugUtilsMessengerEXT(instance, _debugMessenger, nullptr);
     }
     vkDestroySurfaceKHR(instance, surface, nullptr);
     vkDestroyInstance(instance, nullptr);
     instance = nullptr;
     surface = nullptr;
-    debugMessenger = nullptr;
+    _debugMessenger = nullptr;
     devices = VulkanDevices{};
     queues = VulkanQueues{};
     cmdPools = VulkanCommandPools{};
@@ -107,7 +110,8 @@ VulkanInstance::setupVkDebugMsg()
     VkDebugUtilsMessengerCreateInfoEXT dbg_info{};
     setupVkDebugInfo(dbg_info);
 
-    createDebugUtilsMessengerEXT(instance, &dbg_info, nullptr, &debugMessenger);
+    createDebugUtilsMessengerEXT(
+      instance, &dbg_info, nullptr, &_debugMessenger);
 }
 
 void

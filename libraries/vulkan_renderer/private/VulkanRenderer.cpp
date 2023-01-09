@@ -21,10 +21,7 @@ VulkanRenderer::createInstance(std::string &&appName,
     if constexpr (ENABLE_VALIDATION_LAYER) {
         requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
-    _appName = std::move(appName);
-    _appVersion = appVersion;
-    _engineName = std::move(engineName);
-    _engineVersion = engineVersion;
+
     _vkInstance.instance =
       VulkanInstance::createInstance(_appName,
                                      _engineName,
@@ -48,7 +45,7 @@ VulkanRenderer::init(VkSurfaceKHR surface,
     assert(surface);
 
     // Vulkan related
-    _vkInstance.init(surface, options);
+    _vkInstance.createResources(surface, options);
     _swapChain.init(_vkInstance, winW, winH, options.vsync);
     _sync.init(_vkInstance);
 

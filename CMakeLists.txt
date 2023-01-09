@@ -132,6 +132,8 @@ target_link_libraries(imgui_glfw_vulkan
 #Project libs
 add_subdirectory(libraries/io_manager)
 add_subdirectory(libraries/engine)
+add_subdirectory(libraries/vulkan_tools)
+add_subdirectory(libraries/vulkan_instance)
 add_subdirectory(libraries/vulkan_renderer)
 add_subdirectory(libraries/app_info)
 add_subdirectory(libraries/ui)
