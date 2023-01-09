@@ -2,7 +2,6 @@
 #define VK_MANDELBROT_VULKANUI_HPP
 
 #include "VulkanInstance.hpp"
-#include "VulkanSwapChain.hpp"
 
 class VulkanUiPipeline final
 {

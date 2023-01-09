@@ -1,36 +1,44 @@
 #include "renderPasses/VulkanDefaultOnscreenRenderPass.hpp"
 
-#include "interfaces/AVulkanOnscreenRenderPassPrivate.hpp"
-
 void
-VulkanDefaultOnscreenRenderPass::implInit(VulkanInstance const &vkInstance,
-                                          VulkanSwapChain const &swapChain)
+VulkanDefaultOnscreenRenderPass::implInit(
+  VulkanInstance const &vkInstance,
+  std::vector<VulkanTexture> const &swapChainImageViews,
+  VkFormat swapChainImageFormat,
+  int32_t swapChainImgW,
+  int32_t swapChainImgH)
 {
     static_cast<void>(vkInstance);
-    defaultCreateRenderPass(swapChain,
+    defaultCreateRenderPass(swapChainImageFormat,
                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                             VK_IMAGE_LAYOUT_UNDEFINED,
                             VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                             VK_IMAGE_LAYOUT_UNDEFINED,
                             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-    defaultCreateDepthResources(swapChain);
-    defaultCreateFramebuffers(swapChain);
+    defaultCreateDepthResources(swapChainImgW, swapChainImgH);
+    defaultCreateFramebuffers(
+      swapChainImageViews, swapChainImgW, swapChainImgH);
 }
 
 void
-VulkanDefaultOnscreenRenderPass::implResize(VulkanSwapChain const &swapChain)
+VulkanDefaultOnscreenRenderPass::implResize(
+  std::vector<VulkanTexture> const &swapChainImageViews,
+  VkFormat swapChainImageFormat,
+  int32_t swapChainImgW,
+  int32_t swapChainImgH)
 {
     clean();
-    defaultCreateRenderPass(swapChain,
+    defaultCreateRenderPass(swapChainImageFormat,
                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                             VK_IMAGE_LAYOUT_UNDEFINED,
                             VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                             VK_IMAGE_LAYOUT_UNDEFINED,
                             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-    defaultCreateDepthResources(swapChain);
-    defaultCreateFramebuffers(swapChain);
+    defaultCreateDepthResources(swapChainImgW, swapChainImgH);
+    defaultCreateFramebuffers(
+      swapChainImageViews, swapChainImgW, swapChainImgH);
 }
 
 void

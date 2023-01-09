@@ -1,12 +1,10 @@
-#include "structs/VulkanDefaultImageTexture.hpp"
-
-#include "interfaces/AVulkanImageBufferPrivate.hpp"
+#include "imageTextures/VulkanDefaultImageTexture.hpp"
 
 void
 VulkanDefaultImageTexture::implInit(VkFormat colorImageFormat,
-                                   VkFormat depthImageFormat,
-                                   int32_t imgW,
-                                   int32_t imgH)
+                                    VkFormat depthImageFormat,
+                                    int32_t imgW,
+                                    int32_t imgH)
 {
     defaultCreateColorResources(colorImageFormat, imgW, imgH);
     defaultCreateDepthResources(depthImageFormat, imgW, imgH);
@@ -17,9 +15,9 @@ VulkanDefaultImageTexture::implInit(VkFormat colorImageFormat,
 
 void
 VulkanDefaultImageTexture::implResize(VkFormat colorImageFormat,
-                                     VkFormat depthImageFormat,
-                                     int32_t imgW,
-                                     int32_t imgH)
+                                      VkFormat depthImageFormat,
+                                      int32_t imgW,
+                                      int32_t imgH)
 {
     clean();
 

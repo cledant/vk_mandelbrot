@@ -9,12 +9,11 @@
 #include "glm/glm.hpp"
 
 #include "VulkanInstance.hpp"
-#include "VulkanSwapChain.hpp"
 #include "VulkanMandelbrotPipelineData.hpp"
 #include "VulkanMandelbrotPipelineDescription.hpp"
 #include "renderPasses/VulkanDefaultOffscreenRenderPass.hpp"
 #include "pipelines/mandelbrot/MandelbrotPushConstants.hpp"
-#include "common/VulkanDefaultImageTexture.hpp"
+#include "imageTextures/VulkanDefaultImageTexture.hpp"
 
 class VulkanMandelbrotPipeline final
 {
@@ -53,10 +52,9 @@ class VulkanMandelbrotPipeline final
     std::vector<VkDescriptorSet> _descriptorSets;
     VkDescriptorPool _descriptorPool{};
 
-    inline void createGfxPipeline(
-      VkRenderPass renderPass,
-      int32_t imgW,
-      int32_t imgH);
+    inline void createGfxPipeline(VkRenderPass renderPass,
+                                  int32_t imgW,
+                                  int32_t imgH);
     inline void createDescriptorSets(
       VulkanMandelbrotPipelineData &pipelineData);
     inline void createDescriptorPool();

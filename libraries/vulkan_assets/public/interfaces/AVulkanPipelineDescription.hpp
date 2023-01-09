@@ -1,7 +1,7 @@
 #ifndef VK_MANDELBROT_AVULKANPIPELINEDESCRIPTION_HPP
 #define VK_MANDELBROT_AVULKANPIPELINEDESCRIPTION_HPP
 
-#include "common/VulkanCommonStruct.hpp"
+#include "structs/VulkanCommonStruct.hpp"
 
 template<class Child>
 class AVulkanPipelineDescription

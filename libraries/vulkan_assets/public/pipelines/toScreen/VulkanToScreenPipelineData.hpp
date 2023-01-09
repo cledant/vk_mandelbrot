@@ -8,7 +8,7 @@
 
 #include "glm/glm.hpp"
 
-#include "common/VulkanCommonStruct.hpp"
+#include "structs/VulkanCommonStruct.hpp"
 
 struct VulkanToScreenPipelineData
 {

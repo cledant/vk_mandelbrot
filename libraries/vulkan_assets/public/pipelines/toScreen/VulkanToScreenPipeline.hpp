@@ -9,7 +9,6 @@
 #include "glm/glm.hpp"
 
 #include "VulkanInstance.hpp"
-#include "VulkanSwapChain.hpp"
 #include "VulkanToScreenPipelineData.hpp"
 #include "VulkanToScreenPipelineDescription.hpp"
 #include "renderPasses/VulkanDefaultOnscreenRenderPass.hpp"
@@ -27,10 +26,14 @@ class VulkanToScreenPipeline final
     VulkanToScreenPipeline &operator=(VulkanToScreenPipeline &&rhs) = delete;
 
     void init(VulkanInstance const &vkInstance,
-              VulkanSwapChain const &swapChain,
+              uint32_t currentSwapChainNbImg,
+              uint32_t swapChainImgW,
+              uint32_t swapChainImgH,
               VkRenderPass renderPass,
               VkDescriptorImageInfo const &toDisplayImageInfo);
-    void resize(VulkanSwapChain const &swapChain,
+    void resize(uint32_t currentSwapChainNbImg,
+                uint32_t swapChainImgW,
+                uint32_t swapChainImgH,
                 VkRenderPass renderPass,
                 VkDescriptorImageInfo const &toDisplayImageInfo);
     void clear();
@@ -53,11 +56,12 @@ class VulkanToScreenPipeline final
     std::vector<VkDescriptorSet> _descriptorSets;
     VkDescriptorPool _descriptorPool{};
 
-    inline void createGfxPipeline(VulkanSwapChain const &swapChain,
+    inline void createGfxPipeline(uint32_t swapChainImgW,
+                                  uint32_t swapChainImgH,
                                   VkRenderPass renderPass);
     inline void createDescriptorSets(VulkanToScreenPipelineData &pipelineData,
                                      uint32_t descriptorCount);
-    void createDescriptorPool(uint32_t descriptorCount);
+    inline void createDescriptorPool(uint32_t descriptorCount);
 };
 
 #endif // VK_MANDELBROT_VULKANTOSCREENPIPELINE_HPP

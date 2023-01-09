@@ -14,16 +14,21 @@ class VulkanDefaultOnscreenRenderPass final
     VulkanDefaultOnscreenRenderPass(
       VulkanDefaultOnscreenRenderPass const &src) = default;
     VulkanDefaultOnscreenRenderPass &operator=(
-      VulkanDefaultOnscreenRenderPass const &rhs) =
-      default;
+      VulkanDefaultOnscreenRenderPass const &rhs) = default;
     VulkanDefaultOnscreenRenderPass(
       VulkanDefaultOnscreenRenderPass &&src) noexcept = default;
     VulkanDefaultOnscreenRenderPass &operator=(
       VulkanDefaultOnscreenRenderPass &&rhs) noexcept = default;
 
     void implInit(VulkanInstance const &vkInstance,
-                  VulkanSwapChain const &swapChain);
-    void implResize(VulkanSwapChain const &swapChain);
+                  std::vector<VulkanTexture> const &swapChainImageViews,
+                  VkFormat swapChainImageFormat,
+                  int32_t swapChainImgW,
+                  int32_t swapChainImgH);
+    void implResize(std::vector<VulkanTexture> const &swapChainImageViews,
+                    VkFormat swapChainImageFormat,
+                    int32_t swapChainImgW,
+                    int32_t swapChainImgH);
     void implClean();
     void implClear();
 };

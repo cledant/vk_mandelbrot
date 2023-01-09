@@ -1,7 +1,5 @@
 #include "renderPasses/VulkanMultipleOffscreenRenderPass.hpp"
 
-#include "interfaces/AVulkanOffscreenRenderPassPrivate.hpp"
-
 void
 VulkanMultipleOffscreenRenderPass::implInit(VkFormat colorImageFormat,
                                             VkFormat depthImageFormat,

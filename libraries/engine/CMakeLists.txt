@@ -9,8 +9,20 @@ target_include_directories(engine
         ${CMAKE_CURRENT_SOURCE_DIR}/public
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/private)
-add_dependencies(engine iomanager vulkan_instance vulkan_renderer app_info ui)
-target_link_libraries(engine PUBLIC iomanager vulkan_instance vulkan_renderer app_info ui)
+add_dependencies(engine
+        iomanager
+        vulkan_instance
+        vulkan_assets
+        vulkan_renderer
+        app_info
+        ui)
+target_link_libraries(engine PUBLIC
+        iomanager
+        vulkan_instance
+        vulkan_assets
+        vulkan_renderer
+        app_info
+        ui)
 set_target_properties(engine PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES

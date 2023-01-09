@@ -8,7 +8,9 @@
 
 void
 VulkanToScreenPipeline::init(VulkanInstance const &vkInstance,
-                             VulkanSwapChain const &swapChain,
+                             uint32_t currentSwapChainNbImg,
+                             uint32_t swapChainImgW,
+                             uint32_t swapChainImgH,
                              VkRenderPass renderPass,
                              VkDescriptorImageInfo const &toDisplayImageInfo)
 {
@@ -19,13 +21,15 @@ VulkanToScreenPipeline::init(VulkanInstance const &vkInstance,
     _toDisplayImageInfo = toDisplayImageInfo;
     _pipelineData.init(_devices, _cmdPools, _queues);
     _pipelineDescription.init(_devices);
-    createDescriptorPool(swapChain.currentSwapChainNbImg);
-    createGfxPipeline(swapChain, renderPass);
-    createDescriptorSets(_pipelineData, swapChain.currentSwapChainNbImg);
+    createDescriptorPool(currentSwapChainNbImg);
+    createGfxPipeline(swapChainImgW, swapChainImgH, renderPass);
+    createDescriptorSets(_pipelineData, currentSwapChainNbImg);
 }
 
 void
-VulkanToScreenPipeline::resize(VulkanSwapChain const &swapChain,
+VulkanToScreenPipeline::resize(uint32_t currentSwapChainNbImg,
+                               uint32_t swapChainImgW,
+                               uint32_t swapChainImgH,
                                VkRenderPass renderPass,
                                VkDescriptorImageInfo const &toDisplayImageInfo)
 {
@@ -37,9 +41,9 @@ VulkanToScreenPipeline::resize(VulkanSwapChain const &swapChain,
     _toDisplayImageInfo = toDisplayImageInfo;
     _pipelineData.init(_devices, _cmdPools, _queues);
     _pipelineDescription.init(_devices);
-    createDescriptorPool(swapChain.currentSwapChainNbImg);
-    createGfxPipeline(swapChain, renderPass);
-    createDescriptorSets(_pipelineData, swapChain.currentSwapChainNbImg);
+    createDescriptorPool(currentSwapChainNbImg);
+    createGfxPipeline(swapChainImgW, swapChainImgH, renderPass);
+    createDescriptorSets(_pipelineData, currentSwapChainNbImg);
 }
 
 void
@@ -85,7 +89,8 @@ VulkanToScreenPipeline::generateCommands(VkCommandBuffer cmdBuffer,
 }
 
 void
-VulkanToScreenPipeline::createGfxPipeline(VulkanSwapChain const &swapChain,
+VulkanToScreenPipeline::createGfxPipeline(uint32_t swapChainImgW,
+                                          uint32_t swapChainImgH,
                                           VkRenderPass renderPass)
 {
     // Shaders
@@ -137,15 +142,15 @@ VulkanToScreenPipeline::createGfxPipeline(VulkanSwapChain const &swapChain,
     // Viewport
     VkViewport viewport{};
     viewport.x = 0.0f;
-    viewport.y = static_cast<float>(swapChain.swapChainExtent.height);
-    viewport.height = -static_cast<float>(swapChain.swapChainExtent.height);
-    viewport.width = static_cast<float>(swapChain.swapChainExtent.width);
+    viewport.y = static_cast<float>(swapChainImgH);
+    viewport.height = -static_cast<float>(swapChainImgH);
+    viewport.width = static_cast<float>(swapChainImgW);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
     scissor.offset = { 0, 0 };
-    scissor.extent = swapChain.swapChainExtent;
+    scissor.extent = { swapChainImgW, swapChainImgH };
 
     VkPipelineViewportStateCreateInfo viewport_state_info{};
     viewport_state_info.sType =
