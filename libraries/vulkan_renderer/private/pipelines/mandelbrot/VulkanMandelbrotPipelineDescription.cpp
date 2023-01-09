@@ -2,7 +2,7 @@
 
 #include "utils/VulkanDescriptorUtils.hpp"
 #include "utils/VulkanPipelineUtils.hpp"
-#include "constants/VulkanConstants.hpp"
+#include "pipelines/mandelbrot/MandelbrotPushConstants.hpp"
 
 void
 VulkanMandelbrotPipelineDescription::implInit(VulkanDevices const &devices)

@@ -13,7 +13,7 @@
 #include "VulkanToScreenPipelineData.hpp"
 #include "VulkanToScreenPipelineDescription.hpp"
 #include "renderPasses/VulkanDefaultOnscreenRenderPass.hpp"
-#include "constants/VulkanConstants.hpp"
+#include "pipelines/mandelbrot/MandelbrotPushConstants.hpp"
 
 class VulkanToScreenPipeline final
 {

@@ -4,7 +4,6 @@
 
 #include "utils/VulkanShader.hpp"
 #include "utils/VulkanMemory.hpp"
-#include "utils/VulkanPhysicalDevice.hpp"
 #include "utils/VulkanDescriptorUtils.hpp"
 
 void

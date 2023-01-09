@@ -13,7 +13,7 @@
 #include "VulkanMandelbrotPipelineData.hpp"
 #include "VulkanMandelbrotPipelineDescription.hpp"
 #include "renderPasses/VulkanDefaultOffscreenRenderPass.hpp"
-#include "constants/VulkanConstants.hpp"
+#include "pipelines/mandelbrot/MandelbrotPushConstants.hpp"
 #include "common/VulkanDefaultImageTexture.hpp"
 
 class VulkanMandelbrotPipeline final
