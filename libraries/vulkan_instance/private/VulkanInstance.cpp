@@ -68,7 +68,7 @@ VulkanInstance::createResources(VkSurfaceKHR windowSurface,
     surface = windowSurface;
     setupVkDebugMsg();
     selectPhysicalDevice(options);
-    createQueues();
+    createQueues(options);
     cmdPools.renderCommandPool =
       createCommandPool(devices.device,
                         queues.graphicFamilyIndex,
@@ -138,7 +138,7 @@ VulkanInstance::selectPhysicalDevice(
 }
 
 void
-VulkanInstance::createQueues()
+VulkanInstance::createQueues(VulkanInstanceOptions const &instanceOptions)
 {
     auto dfr = getDeviceRequirement(devices.physicalDevice, surface);
     std::set<uint32_t> queue_families = { dfr.graphicFamilyIndex.value(),
@@ -159,10 +159,11 @@ VulkanInstance::createQueues()
 
     // Device info
     VkPhysicalDeviceFeatures physical_device_features{};
-    physical_device_features.geometryShader = VK_FALSE;
-    physical_device_features.samplerAnisotropy = VK_TRUE;
-    physical_device_features.fillModeNonSolid = VK_FALSE;
-    physical_device_features.shaderFloat64 = VK_TRUE;
+    physical_device_features.geometryShader = instanceOptions.geometryShader;
+    physical_device_features.samplerAnisotropy = instanceOptions.samplerAniso;
+    physical_device_features.fillModeNonSolid =
+      instanceOptions.fillModeNonSolid;
+    physical_device_features.shaderFloat64 = instanceOptions.shaderFloat64;
     VkDeviceCreateInfo device_create_info{};
     device_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     device_create_info.pQueueCreateInfos = vec_queue_create_info.data();

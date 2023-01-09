@@ -8,8 +8,8 @@ struct VulkanInstanceOptions final
     VkBool32 geometryShader{};
     VkBool32 samplerAniso{};
     VkBool32 fillModeNonSolid{};
-    VkBool32 vsync{};
     VkBool32 shaderFloat64{};
+    VkBool32 vsync{};
     float rendererScale = 1.0f;
 
     [[nodiscard]] bool hasRequiredOptions(

@@ -50,6 +50,7 @@ Engine::run()
         _vkRenderer.draw();
     }
     _vkRenderer.clear();
+    _vkInstance.clearAll();
     _ui.clear();
     _ioManager.deleteWindow();
 }

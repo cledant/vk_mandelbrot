@@ -53,7 +53,7 @@ class VulkanInstance final
     inline void setupVkDebugMsg();
     inline void selectPhysicalDevice(
       VulkanInstanceOptions const &instanceOptions);
-    inline void createQueues();
+    inline void createQueues(VulkanInstanceOptions const &instanceOptions);
 
     // Dbg related
     static inline bool checkValidationLayerSupport();
