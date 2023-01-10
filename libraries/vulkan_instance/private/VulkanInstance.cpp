@@ -65,6 +65,8 @@ void
 VulkanInstance::createResources(VkSurfaceKHR windowSurface,
                                 VulkanInstanceOptions const &options)
 {
+    assert(surface);
+
     surface = windowSurface;
     setupVkDebugMsg();
     selectPhysicalDevice(options);

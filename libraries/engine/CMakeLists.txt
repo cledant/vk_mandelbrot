@@ -3,7 +3,8 @@ project(lib_engine)
 
 add_library(engine STATIC
         private/Engine.cpp
-        private/EventHandler.cpp)
+        private/EventHandler.cpp
+        private/GfxAssets.cpp)
 target_include_directories(engine
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/public
@@ -11,6 +12,7 @@ target_include_directories(engine
         ${CMAKE_CURRENT_SOURCE_DIR}/private)
 add_dependencies(engine
         iomanager
+        vulkan_tools
         vulkan_instance
         vulkan_assets
         vulkan_renderer
@@ -18,6 +20,7 @@ add_dependencies(engine
         ui)
 target_link_libraries(engine PUBLIC
         iomanager
+        vulkan_tools
         vulkan_instance
         vulkan_assets
         vulkan_renderer

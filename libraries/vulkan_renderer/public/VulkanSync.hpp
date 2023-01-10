@@ -5,8 +5,9 @@
 
 #include <vulkan/vulkan.h>
 
+#include "VulkanInstance.hpp"
 #include "VulkanSwapChain.hpp"
-#include "common/VulkanCommonStruct.hpp"
+#include "structs/VulkanCommonStruct.hpp"
 
 class VulkanSync final
 {

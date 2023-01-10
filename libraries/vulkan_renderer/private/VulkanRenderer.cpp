@@ -5,36 +5,9 @@
 #include <cassert>
 #include <cstring>
 
-#include "VulkanDebug.hpp"
 #include "utils/VulkanCommandBuffer.hpp"
 #include "utils/VulkanMemory.hpp"
 #include "utils/VulkanImageUtils.hpp"
-#include "interfaces/AVulkanImageBufferPrivate.hpp"
-
-void
-VulkanRenderer::createInstance(std::string &&appName,
-                               std::string &&engineName,
-                               uint32_t appVersion,
-                               uint32_t engineVersion,
-                               std::vector<char const *> &&requiredExtensions)
-{
-    if constexpr (ENABLE_VALIDATION_LAYER) {
-        requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-    }
-
-    _vkInstance.instance =
-      VulkanInstance::createInstance(_appName,
-                                     _engineName,
-                                     _appVersion,
-                                     _engineVersion,
-                                     std::move(requiredExtensions));
-}
-
-VkInstance
-VulkanRenderer::getVkInstance() const
-{
-    return (_vkInstance.instance);
-}
 
 void
 VulkanRenderer::init(VkSurfaceKHR surface,
@@ -42,57 +15,8 @@ VulkanRenderer::init(VkSurfaceKHR surface,
                      uint32_t winW,
                      uint32_t winH)
 {
-    assert(surface);
-
-    // Vulkan related
-    _vkInstance.createResources(surface, options);
     _swapChain.init(_vkInstance, winW, winH, options.vsync);
     _sync.init(_vkInstance);
-
-    // Textures
-    int32_t rendererW =
-      _swapChain.swapChainExtent.width * options.rendererScale;
-    int32_t rendererH =
-      _swapChain.swapChainExtent.height * options.rendererScale;
-    _imageMandelbrot.init(_vkInstance,
-                          VK_FORMAT_R8G8B8A8_UNORM,
-                          _vkInstance.depthFormat,
-                          rendererW,
-                          rendererH);
-    _capturedFrame.allocate(
-      _vkInstance.devices, rendererW, rendererH, 4, false);
-
-    // Render Passes + pipelines
-    _toScreenRenderPass.init(_vkInstance, _swapChain);
-    _toScreen.init(_vkInstance,
-                   _swapChain,
-                   _toScreenRenderPass.renderPass,
-                   _imageMandelbrot.descriptorImage);
-
-    _mandelbrotFirstRenderPass.init(_vkInstance,
-                                    VK_FORMAT_R8G8B8A8_UNORM,
-                                    _vkInstance.depthFormat,
-                                    _imageMandelbrot.colorTex.textureImgView,
-                                    _imageMandelbrot.depthTex.textureImgView,
-                                    rendererW,
-                                    rendererH);
-    _mandelbrotFirst.init(
-      _vkInstance, _mandelbrotFirstRenderPass.renderPass, rendererW, rendererH);
-    _mandelbrotMultipleRenderPass.init(_vkInstance,
-                                       VK_FORMAT_R8G8B8A8_UNORM,
-                                       _vkInstance.depthFormat,
-                                       _imageMandelbrot.colorTex.textureImgView,
-                                       _imageMandelbrot.depthTex.textureImgView,
-                                       rendererW,
-                                       rendererH);
-    _mandelbrotMultiple.init(_vkInstance,
-                             _mandelbrotMultipleRenderPass.renderPass,
-                             rendererW,
-                             rendererH);
-
-    _uiRenderPass.init(_vkInstance, _swapChain);
-    _ui.init(
-      _vkInstance, _uiRenderPass.renderPass, _swapChain.currentSwapChainNbImg);
 
     allocateCommandBuffers(_vkInstance.devices.device,
                            _vkInstance.cmdPools.renderCommandPool,
@@ -116,86 +40,14 @@ VulkanRenderer::resize(uint32_t winW,
         vkResetCommandBuffer(it, 0);
     }
     _swapChain.resize(winW, winH, vsync);
-
-    // Textures
-    int32_t rendererW = _swapChain.swapChainExtent.width * rendererScale;
-    int32_t rendererH = _swapChain.swapChainExtent.height * rendererScale;
-    _imageMandelbrot.resize(
-      VK_FORMAT_R8G8B8A8_UNORM, _vkInstance.depthFormat, rendererW, rendererH);
-    _capturedFrame.clear();
-    _capturedFrame.allocate(
-      _vkInstance.devices, rendererW, rendererH, 4, false);
-
-    // Render passes + pipelines
-    _toScreenRenderPass.resize(_swapChain);
-    _toScreen.resize(_swapChain,
-                     _toScreenRenderPass.renderPass,
-                     _imageMandelbrot.descriptorImage);
-
-    _mandelbrotFirstRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
-                                      _vkInstance.depthFormat,
-                                      _imageMandelbrot.colorTex.textureImgView,
-                                      _imageMandelbrot.depthTex.textureImgView,
-                                      rendererW,
-                                      rendererH);
-    _mandelbrotFirst.resize(
-      _mandelbrotFirstRenderPass.renderPass, rendererW, rendererH);
-    _mandelbrotMultipleRenderPass.resize(
-      VK_FORMAT_R8G8B8A8_UNORM,
-      _vkInstance.depthFormat,
-      _imageMandelbrot.colorTex.textureImgView,
-      _imageMandelbrot.depthTex.textureImgView,
-      rendererW,
-      rendererH);
-    _mandelbrotMultiple.resize(
-      _mandelbrotMultipleRenderPass.renderPass, rendererW, rendererH);
-
-    _uiRenderPass.resize(_swapChain);
-    _ui.resize(_uiRenderPass.renderPass, _swapChain.currentSwapChainNbImg);
 }
 
 void
 VulkanRenderer::clear()
 {
     vkDeviceWaitIdle(_vkInstance.devices.device);
-    _ui.clear();
-    _uiRenderPass.clear();
-    _mandelbrotFirst.clear();
-    _mandelbrotFirstRenderPass.clear();
-    _mandelbrotMultiple.clear();
-    _mandelbrotMultipleRenderPass.clear();
-    _toScreen.clear();
-    _toScreenRenderPass.clear();
-    _capturedFrame.clear();
-    _imageMandelbrot.clear();
     _sync.clear();
     _swapChain.clear();
-    _vkInstance.clear();
-}
-
-// Info related
-std::string const &
-VulkanRenderer::getAppName() const
-{
-    return (_appName);
-}
-
-uint32_t
-VulkanRenderer::getAppVersion() const
-{
-    return (_appVersion);
-}
-
-std::string const &
-VulkanRenderer::getEngineName() const
-{
-    return (_engineName);
-}
-
-uint32_t
-VulkanRenderer::getEngineVersion() const
-{
-    return (_engineVersion);
 }
 
 // Render Related

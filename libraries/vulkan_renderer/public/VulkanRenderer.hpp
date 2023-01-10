@@ -1,24 +1,10 @@
 #ifndef VK_MANDELBROT_VULKANRENDERER_HPP
 #define VK_MANDELBROT_VULKANRENDERER_HPP
 
-#include "glm/glm.hpp"
-
-#include <vector>
-#include <array>
-#include <string>
 #include <vulkan/vulkan.h>
 
-#include "VulkanInstance.hpp"
 #include "VulkanSwapChain.hpp"
 #include "VulkanSync.hpp"
-#include "common/VulkanDefaultImageTexture.hpp"
-#include "renderPasses/VulkanDefaultOnscreenRenderPass.hpp"
-#include "renderPasses/VulkanDefaultOffscreenRenderPass.hpp"
-#include "renderPasses/VulkanMultipleOffscreenRenderPass.hpp"
-#include "renderPasses/VulkanUiOnscreenRenderPass.hpp"
-#include "pipelines/toScreen/VulkanToScreenPipeline.hpp"
-#include "pipelines/mandelbrot/VulkanMandelbrotPipeline.hpp"
-#include "pipelines/ui/VulkanUiPipeline.hpp"
 
 class VulkanRenderer final
 {
@@ -39,16 +25,9 @@ class VulkanRenderer final
 
     // Public values
     VkClearColorValue clearColor = DEFAULT_CLEAR_COLOR;
-    mandelbrotPushConstants mandelbrotConstants{};
     bool mandelbrotComputeDone{};
     bool saveNextFrame{};
 
-    // Instance related
-    void createInstance(std::string &&appName,
-                        std::string &&engineName,
-                        uint32_t appVersion,
-                        uint32_t engineVersion,
-                        std::vector<char const *> &&requiredExtensions);
     void init(VkSurfaceKHR surface,
               VulkanInstanceOptions const &options,
               uint32_t winW,
@@ -70,26 +49,8 @@ class VulkanRenderer final
     VulkanSwapChain _swapChain;
     VulkanSync _sync;
 
-    // Textures
-    VulkanDefaultImageTexture _imageMandelbrot;
-
-    // Render passes
-    VulkanDefaultOffscreenRenderPass _mandelbrotFirstRenderPass;
-    VulkanMultipleOffscreenRenderPass _mandelbrotMultipleRenderPass;
-    VulkanDefaultOnscreenRenderPass _toScreenRenderPass;
-    VulkanUiOnscreenRenderPass _uiRenderPass;
-
-    // Pipelines
-    VulkanMandelbrotPipeline _mandelbrotFirst;
-    VulkanMandelbrotPipeline _mandelbrotMultiple;
-    VulkanToScreenPipeline _toScreen;
-    VulkanUiPipeline _ui;
-
     // Cmd Buffers
     std::vector<VkCommandBuffer> _renderCommandBuffers;
-
-    // Screenshot
-    VulkanTextureStaging _capturedFrame{};
 
     // Cmd buffer related
     inline void recordRenderCmd(VkCommandBuffer cmdBuffer,

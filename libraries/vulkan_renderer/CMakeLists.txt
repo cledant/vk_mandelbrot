@@ -16,9 +16,11 @@ set_target_properties(vulkan_renderer PROPERTIES
         CXX_EXTENSIONS NO)
 add_dependencies(vulkan_renderer
         vulkan_tools
+        vulkan_instance
         fmt)
 target_link_libraries(vulkan_renderer
         vulkan_tools
+        vulkan_instance
         glm
         fmt)
 target_compile_options(vulkan_renderer PRIVATE -Wall -Wextra -Werror)

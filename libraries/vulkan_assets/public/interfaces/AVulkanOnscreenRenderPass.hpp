@@ -30,11 +30,13 @@ class AVulkanOnscreenRenderPass
       AVulkanOnscreenRenderPass &&rhs) noexcept = default;
     void init(VulkanInstance const &vkInstance,
               std::vector<VulkanTexture> const &swapChainImageViews,
-              int32_t imgW,
-              int32_t imgH);
+              VkFormat swapChainImageFormat,
+              int32_t swapChainImgW,
+              int32_t swapChainImgH);
     void resize(std::vector<VulkanTexture> const &swapChainImageViews,
-                int32_t imgW,
-                int32_t imgH);
+                VkFormat swapChainImageFormat,
+                int32_t swapChainImgW,
+                int32_t swapChainImgH);
     void clean();
     void clear();
 
@@ -68,25 +70,31 @@ void
 AVulkanOnscreenRenderPass<Child>::init(
   VulkanInstance const &vkInstance,
   std::vector<VulkanTexture> const &swapChainImageViews,
-  int32_t imgW,
-  int32_t imgH)
+  VkFormat swapChainImageFormat,
+  int32_t swapChainImgW,
+  int32_t swapChainImgH)
 {
     _devices = vkInstance.devices;
     _queues = vkInstance.queues;
     _cmdPools = vkInstance.cmdPools;
     depthFormat = vkInstance.depthFormat;
-    static_cast<Child &>(*this).implInit(
-      vkInstance, swapChainImageViews, imgW, imgH);
+    static_cast<Child &>(*this).implInit(vkInstance,
+                                         swapChainImageViews,
+                                         swapChainImageFormat,
+                                         swapChainImgW,
+                                         swapChainImgH);
 }
 
 template<class Child>
 void
 AVulkanOnscreenRenderPass<Child>::resize(
   std::vector<VulkanTexture> const &swapChainImageViews,
-  int32_t imgW,
-  int32_t imgH)
+  VkFormat swapChainImageFormat,
+  int32_t swapChainImgW,
+  int32_t swapChainImgH)
 {
-    static_cast<Child &>(*this).implResize(swapChainImageViews, imgW, imgH);
+    static_cast<Child &>(*this).implResize(
+      swapChainImageViews, swapChainImageFormat, swapChainImgW, swapChainImgH);
 }
 
 template<class Child>
