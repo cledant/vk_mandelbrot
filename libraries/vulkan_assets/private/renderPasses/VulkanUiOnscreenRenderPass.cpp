@@ -4,9 +4,7 @@ void
 VulkanUiOnscreenRenderPass::implInit(
   VulkanInstance const &vkInstance,
   std::vector<VulkanTexture> const &swapChainImageViews,
-  VkFormat swapChainImageFormat,
-  int32_t swapChainImgW,
-  int32_t swapChainImgH)
+  VkFormat swapChainImageFormat)
 {
     static_cast<void>(vkInstance);
     defaultCreateRenderPass(swapChainImageFormat,
@@ -16,17 +14,14 @@ VulkanUiOnscreenRenderPass::implInit(
                             VK_ATTACHMENT_LOAD_OP_LOAD,
                             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-    defaultCreateDepthResources(swapChainImgW, swapChainImgH);
-    defaultCreateFramebuffers(
-      swapChainImageViews, swapChainImgW, swapChainImgH);
+    defaultCreateDepthResources();
+    defaultCreateFramebuffers(swapChainImageViews);
 }
 
 void
 VulkanUiOnscreenRenderPass::implResize(
   std::vector<VulkanTexture> const &swapChainImageViews,
-  VkFormat swapChainImageFormat,
-  int32_t swapChainImgW,
-  int32_t swapChainImgH)
+  VkFormat swapChainImageFormat)
 {
     clean();
     defaultCreateRenderPass(swapChainImageFormat,
@@ -36,9 +31,8 @@ VulkanUiOnscreenRenderPass::implResize(
                             VK_ATTACHMENT_LOAD_OP_LOAD,
                             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-    defaultCreateDepthResources(swapChainImgW, swapChainImgH);
-    defaultCreateFramebuffers(
-      swapChainImageViews, swapChainImgW, swapChainImgH);
+    defaultCreateDepthResources();
+    defaultCreateFramebuffers(swapChainImageViews);
 }
 
 void

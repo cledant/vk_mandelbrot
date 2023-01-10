@@ -44,6 +44,7 @@ class AVulkanOnscreenRenderPass
     VkFormat depthFormat{};
     VulkanTexture depthTex;
     VkRenderPass renderPass{};
+    VkExtent2D renderPassExtent{};
 
   protected:
     VulkanDevices _devices;
@@ -57,12 +58,9 @@ class AVulkanOnscreenRenderPass
                                         VkAttachmentLoadOp depthLoadOp,
                                         VkImageLayout depthInitialLayout,
                                         VkImageLayout depthFinalLayout);
-    inline void defaultCreateDepthResources(int32_t swapChainImgW,
-                                            int32_t swapChainImgH);
+    inline void defaultCreateDepthResources();
     inline void defaultCreateFramebuffers(
-      std::vector<VulkanTexture> const &swapChainImageViews,
-      int32_t swapChainImgW,
-      int32_t swapChainImgH);
+      std::vector<VulkanTexture> const &swapChainImageViews);
 };
 
 template<class Child>
@@ -78,11 +76,10 @@ AVulkanOnscreenRenderPass<Child>::init(
     _queues = vkInstance.queues;
     _cmdPools = vkInstance.cmdPools;
     depthFormat = vkInstance.depthFormat;
-    static_cast<Child &>(*this).implInit(vkInstance,
-                                         swapChainImageViews,
-                                         swapChainImageFormat,
-                                         swapChainImgW,
-                                         swapChainImgH);
+    renderPassExtent = { static_cast<uint32_t>(swapChainImgW),
+                         static_cast<uint32_t>(swapChainImgH) };
+    static_cast<Child &>(*this).implInit(
+      vkInstance, swapChainImageViews, swapChainImageFormat);
 }
 
 template<class Child>
@@ -93,8 +90,10 @@ AVulkanOnscreenRenderPass<Child>::resize(
   int32_t swapChainImgW,
   int32_t swapChainImgH)
 {
-    static_cast<Child &>(*this).implResize(
-      swapChainImageViews, swapChainImageFormat, swapChainImgW, swapChainImgH);
+    renderPassExtent = { static_cast<uint32_t>(swapChainImgW),
+                         static_cast<uint32_t>(swapChainImgH) };
+    static_cast<Child &>(*this).implResize(swapChainImageViews,
+                                           swapChainImageFormat);
 }
 
 template<class Child>
@@ -109,6 +108,7 @@ AVulkanOnscreenRenderPass<Child>::clear()
     _queues = VulkanQueues{};
     _cmdPools = VulkanCommandPools{};
     depthFormat = {};
+    renderPassExtent = {};
 }
 
 template<class Child>
@@ -203,32 +203,30 @@ AVulkanOnscreenRenderPass<Child>::defaultCreateRenderPass(
 
 template<class Child>
 void
-AVulkanOnscreenRenderPass<Child>::defaultCreateDepthResources(
-  int32_t swapChainImgW,
-  int32_t swapChainImgH)
+AVulkanOnscreenRenderPass<Child>::defaultCreateDepthResources()
 {
-    depthTex.createDepthTexture(
-      _devices, _cmdPools, _queues, swapChainImgW, swapChainImgH, depthFormat);
+    depthTex.createDepthTexture(_devices,
+                                _cmdPools,
+                                _queues,
+                                renderPassExtent.width,
+                                renderPassExtent.height,
+                                depthFormat);
 }
 
 template<class Child>
 void
 AVulkanOnscreenRenderPass<Child>::defaultCreateFramebuffers(
-  std::vector<VulkanTexture> const &swapChainImageViews,
-  int32_t swapChainImgW,
-  int32_t swapChainImgH)
+  std::vector<VulkanTexture> const &swapChainImageViews)
 {
     framebuffers.resize(swapChainImageViews.size());
-    VkExtent2D swapChainExtent{ static_cast<uint32_t>(swapChainImgW),
-                                static_cast<uint32_t>(swapChainImgH) };
 
     size_t i = 0;
     for (auto const &it : swapChainImageViews) {
         std::array<VkImageView, 2> sciv{ it.textureImgView,
                                          depthTex.textureImgView };
 
-        framebuffers[i] =
-          createFrameBuffer(_devices.device, renderPass, sciv, swapChainExtent);
+        framebuffers[i] = createFrameBuffer(
+          _devices.device, renderPass, sciv, renderPassExtent);
         ++i;
     }
 }

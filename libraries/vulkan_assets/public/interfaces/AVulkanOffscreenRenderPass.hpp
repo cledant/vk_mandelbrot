@@ -47,6 +47,7 @@ class AVulkanOffscreenRenderPass
 
     VkRenderPass renderPass{};
     VkFramebuffer framebuffer{};
+    VkExtent2D renderPassExtent{};
 
   protected:
     VulkanDevices _devices;
@@ -58,9 +59,7 @@ class AVulkanOffscreenRenderPass
                                         VkAttachmentLoadOp depthLoadOp,
                                         VkImageLayout depthInitialLayout);
     inline void defaultCreateFramebuffer(VkImageView colorTexImgView,
-                                         VkImageView depthTexImgView,
-                                         int32_t imgW,
-                                         int32_t imgH);
+                                         VkImageView depthTexImgView);
 };
 
 template<class Child>
@@ -74,12 +73,10 @@ AVulkanOffscreenRenderPass<Child>::init(VulkanInstance const &vkInstance,
                                         int32_t imgH)
 {
     _devices = vkInstance.devices;
-    static_cast<Child &>(*this).implInit(colorImageFormat,
-                                         depthImageFormat,
-                                         colorTexImgView,
-                                         depthTexImgView,
-                                         imgW,
-                                         imgH);
+    renderPassExtent = { static_cast<uint32_t>(imgW),
+                         static_cast<uint32_t>(imgH) };
+    static_cast<Child &>(*this).implInit(
+      colorImageFormat, depthImageFormat, colorTexImgView, depthTexImgView);
 }
 
 template<class Child>
@@ -91,12 +88,10 @@ AVulkanOffscreenRenderPass<Child>::resize(VkFormat colorImageFormat,
                                           int32_t imgW,
                                           int32_t imgH)
 {
-    static_cast<Child &>(*this).implResize(colorImageFormat,
-                                           depthImageFormat,
-                                           colorTexImgView,
-                                           depthTexImgView,
-                                           imgW,
-                                           imgH);
+    renderPassExtent = { static_cast<uint32_t>(imgW),
+                         static_cast<uint32_t>(imgH) };
+    static_cast<Child &>(*this).implResize(
+      colorImageFormat, depthImageFormat, colorTexImgView, depthTexImgView);
 }
 
 template<class Child>
@@ -204,17 +199,12 @@ template<class Child>
 void
 AVulkanOffscreenRenderPass<Child>::defaultCreateFramebuffer(
   VkImageView colorTexImgView,
-  VkImageView depthTexImgView,
-  int32_t imgW,
-  int32_t imgH)
+  VkImageView depthTexImgView)
 {
     std::array<VkImageView, 2> imgViews{ colorTexImgView, depthTexImgView };
 
     framebuffer = createFrameBuffer(
-      _devices.device,
-      renderPass,
-      imgViews,
-      VkExtent2D{ static_cast<uint32_t>(imgW), static_cast<uint32_t>(imgH) });
+      _devices.device, renderPass, imgViews, renderPassExtent);
 }
 
 #endif // VK_MANDELBROT_AVULKANOFFSCREENRENDERPASS_HPP

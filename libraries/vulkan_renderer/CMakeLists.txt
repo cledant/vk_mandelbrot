@@ -16,10 +16,12 @@ set_target_properties(vulkan_renderer PROPERTIES
         CXX_EXTENSIONS NO)
 add_dependencies(vulkan_renderer
         vulkan_tools
+        vulkan_assets
         vulkan_instance
         fmt)
 target_link_libraries(vulkan_renderer
         vulkan_tools
+        vulkan_assets
         vulkan_instance
         glm
         fmt)

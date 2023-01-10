@@ -6,11 +6,11 @@
 #include "utils/VulkanCommandBuffer.hpp"
 
 void
-VulkanTexture::loadTextureOnGPU(VulkanDevices const &devices,
-                                VulkanCommandPools const &cmdPools,
-                                VulkanQueues const &queues,
-                                VulkanTextureStaging const &stagingTexture,
-                                VkFormat format)
+VulkanTexture::loadTextureOnDevice(VulkanDevices const &devices,
+                                   VulkanCommandPools const &cmdPools,
+                                   VulkanQueues const &queues,
+                                   VulkanTextureStaging const &stagingTexture,
+                                   VkFormat format)
 {
     _devices = devices;
     textureFormat = format;
@@ -39,7 +39,7 @@ VulkanTexture::loadTextureOnGPU(VulkanDevices const &devices,
 }
 
 void
-VulkanTexture::loadTextureOnCPU(
+VulkanTexture::loadTextureOnHost(
   VulkanCommandPools const &cmdPools,
   VulkanQueues const &queues,
   VulkanTextureStaging const &stagingTexture) const

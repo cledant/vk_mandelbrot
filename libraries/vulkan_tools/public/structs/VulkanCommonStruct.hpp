@@ -85,12 +85,12 @@ struct VulkanTexture final
     VkFormat textureFormat{};
     bool isCubemap{};
 
-    void loadTextureOnGPU(VulkanDevices const &devices,
+    void loadTextureOnDevice(VulkanDevices const &devices,
                           VulkanCommandPools const &cmdPools,
                           VulkanQueues const &queues,
                           VulkanTextureStaging const &stagingTexture,
                           VkFormat format);
-    void loadTextureOnCPU(VulkanCommandPools const &cmdPools,
+    void loadTextureOnHost(VulkanCommandPools const &cmdPools,
                           VulkanQueues const &queues,
                           VulkanTextureStaging const &stagingTexture) const;
     void createColorTexture(VulkanDevices const &devices,

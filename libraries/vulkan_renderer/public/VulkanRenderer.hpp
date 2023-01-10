@@ -3,8 +3,10 @@
 
 #include <vulkan/vulkan.h>
 
+#include "VulkanInstance.hpp"
 #include "VulkanSwapChain.hpp"
 #include "VulkanSync.hpp"
+#include "imageTextures/VulkanDefaultImageTexture.hpp"
 
 class VulkanRenderer final
 {
@@ -24,56 +26,35 @@ class VulkanRenderer final
       DEFAULT_CLEAR_DEPTH_STENCIL = { 1.0f, 0 };
 
     // Public values
-    VkClearColorValue clearColor = DEFAULT_CLEAR_COLOR;
-    bool mandelbrotComputeDone{};
     bool saveNextFrame{};
 
-    void init(VkSurfaceKHR surface,
-              VulkanInstanceOptions const &options,
+    void init(VulkanInstance vkInstance,
               uint32_t winW,
-              uint32_t winH);
-    void resize(uint32_t winW, uint32_t winH, float rendererScale, bool vsync);
+              uint32_t winH,
+              bool vsync);
+    void resize(uint32_t winW, uint32_t winH, bool vsync);
     void clear();
 
     // Render related
-    void draw();
-
-    // Screenshot related
-    [[nodiscard]] VulkanScreenshot generateScreenshot() const;
+    void acquireImage(VkCommandBuffer &cmdBuffer, uint32_t &imgIndex);
+    void presentImage(uint32_t imgIndex,
+                      VulkanDefaultImageTexture &framebuffer,
+                      VulkanTextureStaging &capturedFrame);
 
   private:
-    static constexpr int32_t const CHUNK_WIDTH = 320;
-    static constexpr int32_t const CHUNK_HEIGHT = 180;
-
     // Vulkan related
+    VulkanDevices _devices;
+    VulkanQueues _queues;
+    VulkanCommandPools _cmdPools;
+
     VulkanSwapChain _swapChain;
     VulkanSync _sync;
-
-    // Cmd Buffers
     std::vector<VkCommandBuffer> _renderCommandBuffers;
 
-    // Cmd buffer related
-    inline void recordRenderCmd(VkCommandBuffer cmdBuffer,
-                                uint32_t imgIndex,
-                                VkClearColorValue const &clearColor);
     inline void emitDrawCmds(VkCommandBuffer cmdBuffer);
-
-    // Sub-functions for recordRenderCmd
-    inline void recordMandelbrotFirstRenderCmd(
-      VkCommandBuffer cmdBuffer,
-      VkClearColorValue const &cmdClearColor);
-    inline void recordMandelbrotMultipleRenderCmd(
-      VkCommandBuffer cmdBuffer,
-      VkClearColorValue const &cmdClearColor);
-    inline void recordUiRenderCmd(VkCommandBuffer cmdBuffer,
-                                  uint32_t imgIndex,
-                                  VkClearColorValue const &cmdClearColor);
-    inline void recordToScreenRenderCmd(VkCommandBuffer cmdBuffer,
-                                        uint32_t imgIndex,
-                                        VkClearColorValue const &cmdClearColor);
-
-    // Screenshot related fct
-    inline void copyFrameToHostMemory();
+    inline void copyFrameToHostMemory(
+      VulkanDefaultImageTexture const &framebuffer,
+      VulkanTextureStaging &capturedFrame);
 };
 
 #endif // VK_MANDELBROT_VULKANRENDERER_HPP

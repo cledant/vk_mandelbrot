@@ -21,13 +21,9 @@ class VulkanUiOnscreenRenderPass final
 
     void implInit(VulkanInstance const &vkInstance,
                   std::vector<VulkanTexture> const &swapChainImageViews,
-                  VkFormat swapChainImageFormat,
-                  int32_t swapChainImgW,
-                  int32_t swapChainImgH);
+                  VkFormat swapChainImageFormat);
     void implResize(std::vector<VulkanTexture> const &swapChainImageViews,
-                    VkFormat swapChainImageFormat,
-                    int32_t swapChainImgW,
-                    int32_t swapChainImgH);
+                    VkFormat swapChainImageFormat);
     void implClean();
     void implClear();
 };

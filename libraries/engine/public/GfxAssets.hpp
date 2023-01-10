@@ -28,6 +28,11 @@ struct GfxAssets final
                 float scale);
     void clear();
 
+    void recordDrawCmds(VkCommandBuffer cmdBuffer,
+                        uint32_t imgIndex,
+                        VkClearColorValue const &cmdClearColor,
+                        VkClearDepthStencilValue const &cmdClearDepth);
+
     // Textures
     VulkanDefaultImageTexture _imageMandelbrot;
     VulkanTextureStaging _capturedFrame{};
@@ -47,9 +52,36 @@ struct GfxAssets final
     // Push Constants
     mandelbrotPushConstants mandelbrotConstants{};
 
+    // Others
+    bool mandelbrotComputeDone{};
+
   private:
     VulkanDevices _devices;
     VkFormat _depthFormat{};
+
+    // Mandelbrot renderpasses chunk size
+    static constexpr int32_t const CHUNK_WIDTH = 320;
+    static constexpr int32_t const CHUNK_HEIGHT = 180;
+
+    // Sub-functions for recordDrawCmds
+    inline void recordMandelbrotFirstRenderCmd(
+      VkCommandBuffer cmdBuffer,
+      VkClearColorValue const &cmdClearColor,
+      VkClearDepthStencilValue const &cmdClearDepth);
+    inline void recordMandelbrotMultipleRenderCmd(
+      VkCommandBuffer cmdBuffer,
+      VkClearColorValue const &cmdClearColor,
+      VkClearDepthStencilValue const &cmdClearDepth);
+    inline void recordUiRenderCmd(
+      VkCommandBuffer cmdBuffer,
+      uint32_t imgIndex,
+      VkClearColorValue const &cmdClearColor,
+      VkClearDepthStencilValue const &cmdClearDepth);
+    inline void recordToScreenRenderCmd(
+      VkCommandBuffer cmdBuffer,
+      uint32_t imgIndex,
+      VkClearColorValue const &cmdClearColor,
+      VkClearDepthStencilValue const &cmdClearDepth);
 };
 
 #endif // VK_MANDELBROT_GFXASSETS_HPP

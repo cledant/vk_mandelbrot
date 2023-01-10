@@ -23,15 +23,11 @@ class VulkanMultipleOffscreenRenderPass final
     void implInit(VkFormat colorImageFormat,
                   VkFormat depthImageFormat,
                   VkImageView colorTexImgView,
-                  VkImageView depthTexImgView,
-                  int32_t imgW,
-                  int32_t imgH);
+                  VkImageView depthTexImgView);
     void implResize(VkFormat colorImageFormat,
                     VkFormat depthImageFormat,
                     VkImageView colorTexImgView,
-                    VkImageView depthTexImgView,
-                    int32_t imgW,
-                    int32_t imgH);
+                    VkImageView depthTexImgView);
     void implClean();
     void implClear();
 };

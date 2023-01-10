@@ -1,5 +1,6 @@
 #include "utils/VulkanTextureUtils.hpp"
 
+#include <cstring>
 #include <stdexcept>
 
 #include "utils/VulkanCommandBuffer.hpp"
@@ -164,7 +165,32 @@ loadTextureFromFile(VulkanDevices const &devices,
     VulkanTextureStaging stagingTex{};
     stagingTex.stageTexture(devices, filePath);
 
-    toLoad.loadTextureOnGPU(
+    toLoad.loadTextureOnDevice(
       devices, cmdPools, queues, stagingTex, VK_FORMAT_R8G8B8A8_UNORM);
     stagingTex.clear();
+}
+
+VulkanScreenshot
+generateScreenshot(VulkanDevices const &devices,
+                   VulkanTextureStaging const &capturedFrame)
+{
+    VulkanScreenshot screenshot{};
+
+    screenshot.width = capturedFrame.width;
+    screenshot.height = capturedFrame.height;
+    screenshot.nbChannel = capturedFrame.nbChannel;
+    screenshot.data.reset(
+      new uint8_t[capturedFrame.width * capturedFrame.height *
+                  capturedFrame.nbChannel]);
+
+    void *data;
+    vkMapMemory(devices.device,
+                capturedFrame.stagingBuffer.memory,
+                0,
+                capturedFrame.stagingBuffer.size,
+                0,
+                &data);
+    memcpy(screenshot.data.get(), data, capturedFrame.stagingBuffer.size);
+    vkUnmapMemory(devices.device, capturedFrame.stagingBuffer.memory);
+    return (screenshot);
 }

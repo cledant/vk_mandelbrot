@@ -4,9 +4,7 @@ void
 VulkanMultipleOffscreenRenderPass::implInit(VkFormat colorImageFormat,
                                             VkFormat depthImageFormat,
                                             VkImageView colorTexImgView,
-                                            VkImageView depthTexImgView,
-                                            int32_t imgW,
-                                            int32_t imgH)
+                                            VkImageView depthTexImgView)
 {
     defaultCreateRenderPass(colorImageFormat,
                             VK_ATTACHMENT_LOAD_OP_LOAD,
@@ -14,16 +12,14 @@ VulkanMultipleOffscreenRenderPass::implInit(VkFormat colorImageFormat,
                             depthImageFormat,
                             VK_ATTACHMENT_LOAD_OP_LOAD,
                             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    defaultCreateFramebuffer(colorTexImgView, depthTexImgView, imgW, imgH);
+    defaultCreateFramebuffer(colorTexImgView, depthTexImgView);
 }
 
 void
 VulkanMultipleOffscreenRenderPass::implResize(VkFormat colorImageFormat,
                                               VkFormat depthImageFormat,
                                               VkImageView colorTexImgView,
-                                              VkImageView depthTexImgView,
-                                              int32_t imgW,
-                                              int32_t imgH)
+                                              VkImageView depthTexImgView)
 {
     clean();
 
@@ -33,7 +29,7 @@ VulkanMultipleOffscreenRenderPass::implResize(VkFormat colorImageFormat,
                             depthImageFormat,
                             VK_ATTACHMENT_LOAD_OP_LOAD,
                             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    defaultCreateFramebuffer(colorTexImgView, depthTexImgView, imgW, imgH);
+    defaultCreateFramebuffer(colorTexImgView, depthTexImgView);
 }
 
 void
