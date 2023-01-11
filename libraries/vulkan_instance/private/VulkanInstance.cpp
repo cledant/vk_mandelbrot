@@ -65,7 +65,7 @@ void
 VulkanInstance::createResources(VkSurfaceKHR windowSurface,
                                 VulkanInstanceOptions const &options)
 {
-    assert(surface);
+    assert(windowSurface);
 
     surface = windowSurface;
     setupVkDebugMsg();
@@ -85,8 +85,9 @@ VulkanInstance::createResources(VkSurfaceKHR windowSurface,
 }
 
 void
-VulkanInstance::clearAll()
+VulkanInstance::clear()
 {
+    vkDeviceWaitIdle(devices.device);
     vkDestroyCommandPool(devices.device, cmdPools.renderCommandPool, nullptr);
     vkDestroyDevice(devices.device, nullptr);
     if constexpr (ENABLE_VALIDATION_LAYER) {

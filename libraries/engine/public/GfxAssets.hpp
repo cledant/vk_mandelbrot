@@ -15,7 +15,7 @@
 
 struct GfxAssets final
 {
-    void init(VulkanInstance vkInstance,
+    void init(VulkanInstance const &vkInstance,
               uint32_t winW,
               uint32_t winH,
               std::vector<VulkanTexture> const &swapChainImageViews,
@@ -34,20 +34,20 @@ struct GfxAssets final
                         VkClearDepthStencilValue const &cmdClearDepth);
 
     // Textures
-    VulkanDefaultImageTexture _imageMandelbrot;
-    VulkanTextureStaging _capturedFrame{};
+    VulkanDefaultImageTexture imageMandelbrot;
+    VulkanTextureStaging capturedFrame{};
 
     // Render passes
-    VulkanDefaultOffscreenRenderPass _mandelbrotFirstRenderPass;
-    VulkanMultipleOffscreenRenderPass _mandelbrotMultipleRenderPass;
-    VulkanDefaultOnscreenRenderPass _toScreenRenderPass;
-    VulkanUiOnscreenRenderPass _uiRenderPass;
+    VulkanDefaultOffscreenRenderPass mandelbrotFirstRenderPass;
+    VulkanMultipleOffscreenRenderPass mandelbrotMultipleRenderPass;
+    VulkanDefaultOnscreenRenderPass toScreenRenderPass;
+    VulkanUiOnscreenRenderPass uiRenderPass;
 
     // Pipelines
-    VulkanMandelbrotPipeline _mandelbrotFirst;
-    VulkanMandelbrotPipeline _mandelbrotMultiple;
-    VulkanToScreenPipeline _toScreen;
-    VulkanUiPipeline _ui;
+    VulkanMandelbrotPipeline mandelbrotFirst;
+    VulkanMandelbrotPipeline mandelbrotMultiple;
+    VulkanToScreenPipeline toScreen;
+    VulkanUiPipeline vkUi;
 
     // Push Constants
     mandelbrotPushConstants mandelbrotConstants{};

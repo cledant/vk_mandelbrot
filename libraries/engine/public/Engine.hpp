@@ -6,6 +6,7 @@
 #include "VulkanInstance.hpp"
 #include "VulkanRenderer.hpp"
 #include "Ui.hpp"
+#include "GfxAssets.hpp"
 
 class Engine final
 {
@@ -24,6 +25,7 @@ class Engine final
     IOManager _ioManager;
     VulkanInstance _vkInstance;
     VulkanRenderer _vkRenderer;
+    GfxAssets _gfxAssets;
     Ui _ui;
     EventHandler _eventHandler;
 };

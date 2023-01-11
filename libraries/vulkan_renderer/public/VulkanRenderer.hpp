@@ -27,8 +27,9 @@ class VulkanRenderer final
 
     // Public values
     bool saveNextFrame{};
+    VulkanSwapChain swapChain;
 
-    void init(VulkanInstance vkInstance,
+    void init(VulkanInstance const &vkInstance,
               uint32_t winW,
               uint32_t winH,
               bool vsync);
@@ -47,7 +48,6 @@ class VulkanRenderer final
     VulkanQueues _queues;
     VulkanCommandPools _cmdPools;
 
-    VulkanSwapChain _swapChain;
     VulkanSync _sync;
     std::vector<VkCommandBuffer> _renderCommandBuffers;
 

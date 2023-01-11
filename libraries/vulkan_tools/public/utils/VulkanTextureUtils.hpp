@@ -23,7 +23,5 @@ void loadTextureFromFile(VulkanDevices const &devices,
                          VulkanQueues const &queues,
                          std::string const &filePath,
                          VulkanTexture &toLoad);
-VulkanScreenshot generateScreenshot(VulkanDevices const &devices,
-                                    VulkanTextureStaging const &capturedFrame);
 
 #endif // VK_MANDELBROT_VULKANTEXTUREUTILS_HPP

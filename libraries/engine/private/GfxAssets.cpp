@@ -3,7 +3,7 @@
 #include "VulkanRenderer.hpp"
 
 void
-GfxAssets::init(VulkanInstance vkInstance,
+GfxAssets::init(VulkanInstance const &vkInstance,
                 uint32_t winW,
                 uint32_t winH,
                 std::vector<VulkanTexture> const &swapChainImageViews,
@@ -16,45 +16,45 @@ GfxAssets::init(VulkanInstance vkInstance,
     // Textures
     int32_t rendererW = winW * scale;
     int32_t rendererH = winH * scale;
-    _imageMandelbrot.init(
+    imageMandelbrot.init(
       vkInstance, VK_FORMAT_R8G8B8A8_UNORM, _depthFormat, rendererW, rendererH);
-    _capturedFrame.allocate(_devices, rendererW, rendererH, 4, false);
+    capturedFrame.allocate(_devices, rendererW, rendererH, 4, false);
 
     // Render Passes + pipelines
-    _toScreenRenderPass.init(
+    toScreenRenderPass.init(
       vkInstance, swapChainImageViews, swapChainImageFormat, winW, winH);
-    _toScreen.init(vkInstance,
-                   swapChainImageViews.size(),
-                   winW,
-                   winH,
-                   _toScreenRenderPass.renderPass,
-                   _imageMandelbrot.descriptorImage);
+    toScreen.init(vkInstance,
+                  swapChainImageViews.size(),
+                  winW,
+                  winH,
+                  toScreenRenderPass.renderPass,
+                  imageMandelbrot.descriptorImage);
 
-    _mandelbrotFirstRenderPass.init(vkInstance,
-                                    VK_FORMAT_R8G8B8A8_UNORM,
-                                    _depthFormat,
-                                    _imageMandelbrot.colorTex.textureImgView,
-                                    _imageMandelbrot.depthTex.textureImgView,
-                                    rendererW,
-                                    rendererH);
-    _mandelbrotFirst.init(
-      vkInstance, _mandelbrotFirstRenderPass.renderPass, rendererW, rendererH);
+    mandelbrotFirstRenderPass.init(vkInstance,
+                                   VK_FORMAT_R8G8B8A8_UNORM,
+                                   _depthFormat,
+                                   imageMandelbrot.colorTex.textureImgView,
+                                   imageMandelbrot.depthTex.textureImgView,
+                                   rendererW,
+                                   rendererH);
+    mandelbrotFirst.init(
+      vkInstance, mandelbrotFirstRenderPass.renderPass, rendererW, rendererH);
 
-    _mandelbrotMultipleRenderPass.init(vkInstance,
-                                       VK_FORMAT_R8G8B8A8_UNORM,
-                                       _depthFormat,
-                                       _imageMandelbrot.colorTex.textureImgView,
-                                       _imageMandelbrot.depthTex.textureImgView,
-                                       rendererW,
-                                       rendererH);
-    _mandelbrotMultiple.init(vkInstance,
-                             _mandelbrotMultipleRenderPass.renderPass,
-                             rendererW,
-                             rendererH);
+    mandelbrotMultipleRenderPass.init(vkInstance,
+                                      VK_FORMAT_R8G8B8A8_UNORM,
+                                      _depthFormat,
+                                      imageMandelbrot.colorTex.textureImgView,
+                                      imageMandelbrot.depthTex.textureImgView,
+                                      rendererW,
+                                      rendererH);
+    mandelbrotMultiple.init(vkInstance,
+                            mandelbrotMultipleRenderPass.renderPass,
+                            rendererW,
+                            rendererH);
 
-    _uiRenderPass.init(
+    uiRenderPass.init(
       vkInstance, swapChainImageViews, swapChainImageFormat, winW, winH);
-    _ui.init(vkInstance, _uiRenderPass.renderPass, swapChainImageViews.size());
+    vkUi.init(vkInstance, uiRenderPass.renderPass, swapChainImageViews.size());
 }
 
 void
@@ -72,57 +72,57 @@ GfxAssets::resize(uint32_t winW,
     // Textures
     int32_t rendererW = winW * scale;
     int32_t rendererH = winH * scale;
-    _imageMandelbrot.resize(
+    imageMandelbrot.resize(
       VK_FORMAT_R8G8B8A8_UNORM, _depthFormat, rendererW, rendererH);
-    _capturedFrame.clear();
-    _capturedFrame.allocate(_devices, rendererW, rendererH, 4, false);
+    capturedFrame.clear();
+    capturedFrame.allocate(_devices, rendererW, rendererH, 4, false);
 
     // Render passes + pipelines
-    _toScreenRenderPass.resize(
+    toScreenRenderPass.resize(
       swapChainImageViews, swapChainImageFormat, winW, winH);
-    _toScreen.resize(swapChainImageViews.size(),
-                     winW,
-                     winH,
-                     _toScreenRenderPass.renderPass,
-                     _imageMandelbrot.descriptorImage);
+    toScreen.resize(swapChainImageViews.size(),
+                    winW,
+                    winH,
+                    toScreenRenderPass.renderPass,
+                    imageMandelbrot.descriptorImage);
 
-    _mandelbrotFirstRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
-                                      _depthFormat,
-                                      _imageMandelbrot.colorTex.textureImgView,
-                                      _imageMandelbrot.depthTex.textureImgView,
-                                      rendererW,
-                                      rendererH);
-    _mandelbrotFirst.resize(
-      _mandelbrotFirstRenderPass.renderPass, rendererW, rendererH);
+    mandelbrotFirstRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
+                                     _depthFormat,
+                                     imageMandelbrot.colorTex.textureImgView,
+                                     imageMandelbrot.depthTex.textureImgView,
+                                     rendererW,
+                                     rendererH);
+    mandelbrotFirst.resize(
+      mandelbrotFirstRenderPass.renderPass, rendererW, rendererH);
 
-    _mandelbrotMultipleRenderPass.resize(
-      VK_FORMAT_R8G8B8A8_UNORM,
-      _depthFormat,
-      _imageMandelbrot.colorTex.textureImgView,
-      _imageMandelbrot.depthTex.textureImgView,
-      rendererW,
-      rendererH);
-    _mandelbrotMultiple.resize(
-      _mandelbrotMultipleRenderPass.renderPass, rendererW, rendererH);
+    mandelbrotMultipleRenderPass.resize(VK_FORMAT_R8G8B8A8_UNORM,
+                                        _depthFormat,
+                                        imageMandelbrot.colorTex.textureImgView,
+                                        imageMandelbrot.depthTex.textureImgView,
+                                        rendererW,
+                                        rendererH);
+    mandelbrotMultiple.resize(
+      mandelbrotMultipleRenderPass.renderPass, rendererW, rendererH);
 
-    _uiRenderPass.resize(swapChainImageViews, swapChainImageFormat, winW, winH);
-    _ui.resize(_uiRenderPass.renderPass, swapChainImageViews.size());
+    uiRenderPass.resize(swapChainImageViews, swapChainImageFormat, winW, winH);
+    vkUi.resize(uiRenderPass.renderPass, swapChainImageViews.size());
 }
 
 void
 GfxAssets::clear()
 {
     vkDeviceWaitIdle(_devices.device);
-    _ui.clear();
-    _uiRenderPass.clear();
-    _mandelbrotFirst.clear();
-    _mandelbrotFirstRenderPass.clear();
-    _mandelbrotMultiple.clear();
-    _mandelbrotMultipleRenderPass.clear();
-    _toScreen.clear();
-    _toScreenRenderPass.clear();
-    _capturedFrame.clear();
-    _imageMandelbrot.clear();
+    vkUi.clear();
+    uiRenderPass.clear();
+    mandelbrotFirst.clear();
+    mandelbrotFirstRenderPass.clear();
+    mandelbrotMultiple.clear();
+    mandelbrotMultipleRenderPass.clear();
+    toScreen.clear();
+    toScreenRenderPass.clear();
+    capturedFrame.clear();
+    imageMandelbrot.clear();
+    mandelbrotComputeDone = false;
     _devices = {};
     _depthFormat = {};
 }
@@ -146,8 +146,8 @@ GfxAssets::recordDrawCmds(VkCommandBuffer cmdBuffer,
 
     if (!mandelbrotComputeDone) {
         // Update push constant values
-        mandelbrotConstants.fbW = _imageMandelbrot.colorTex.width;
-        mandelbrotConstants.fbH = _imageMandelbrot.colorTex.height;
+        mandelbrotConstants.fbW = imageMandelbrot.colorTex.width;
+        mandelbrotConstants.fbH = imageMandelbrot.colorTex.height;
         recordMandelbrotFirstRenderCmd(cmdBuffer, cmdClearColor, cmdClearDepth);
         recordMandelbrotMultipleRenderCmd(
           cmdBuffer, cmdClearColor, cmdClearDepth);
@@ -170,12 +170,12 @@ GfxAssets::recordMandelbrotFirstRenderCmd(
   VkClearDepthStencilValue const &cmdClearDepth)
 {
     int32_t realChunkWidth = CHUNK_WIDTH;
-    if (_imageMandelbrot.colorTex.height < CHUNK_WIDTH) {
-        realChunkWidth = _imageMandelbrot.colorTex.width;
+    if (imageMandelbrot.colorTex.height < CHUNK_WIDTH) {
+        realChunkWidth = imageMandelbrot.colorTex.width;
     }
     int32_t realChunkHeight = CHUNK_HEIGHT;
-    if (_imageMandelbrot.colorTex.height < CHUNK_HEIGHT) {
-        realChunkHeight = _imageMandelbrot.colorTex.height;
+    if (imageMandelbrot.colorTex.height < CHUNK_HEIGHT) {
+        realChunkHeight = imageMandelbrot.colorTex.height;
     }
 
     // Begin Mandelbrot first renderpass
@@ -184,8 +184,8 @@ GfxAssets::recordMandelbrotFirstRenderCmd(
     clear_vals[1].depthStencil = cmdClearDepth;
     VkRenderPassBeginInfo rp_begin_info{};
     rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rp_begin_info.renderPass = _mandelbrotFirstRenderPass.renderPass;
-    rp_begin_info.framebuffer = _mandelbrotFirstRenderPass.framebuffer;
+    rp_begin_info.renderPass = mandelbrotFirstRenderPass.renderPass;
+    rp_begin_info.framebuffer = mandelbrotFirstRenderPass.framebuffer;
     rp_begin_info.renderArea.offset = { 0, 0 };
     rp_begin_info.renderArea.extent = {
         static_cast<uint32_t>(realChunkWidth),
@@ -195,7 +195,7 @@ GfxAssets::recordMandelbrotFirstRenderCmd(
     rp_begin_info.pClearValues = clear_vals.data();
 
     vkCmdBeginRenderPass(cmdBuffer, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
-    _mandelbrotFirst.generateCommands(cmdBuffer, mandelbrotConstants);
+    mandelbrotFirst.generateCommands(cmdBuffer, mandelbrotConstants);
     vkCmdEndRenderPass(cmdBuffer);
 }
 
@@ -211,27 +211,27 @@ GfxAssets::recordMandelbrotMultipleRenderCmd(
     clear_vals[1].depthStencil = cmdClearDepth;
     VkRenderPassBeginInfo rp_begin_info{};
     rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rp_begin_info.renderPass = _mandelbrotMultipleRenderPass.renderPass;
-    rp_begin_info.framebuffer = _mandelbrotMultipleRenderPass.framebuffer;
+    rp_begin_info.renderPass = mandelbrotMultipleRenderPass.renderPass;
+    rp_begin_info.framebuffer = mandelbrotMultipleRenderPass.framebuffer;
     rp_begin_info.clearValueCount = clear_vals.size();
     rp_begin_info.pClearValues = clear_vals.data();
 
     int32_t i = 1;
     int32_t j = 0;
-    while (j * CHUNK_HEIGHT < _imageMandelbrot.colorTex.height) {
+    while (j * CHUNK_HEIGHT < imageMandelbrot.colorTex.height) {
         int32_t realChunkHeight = CHUNK_HEIGHT;
-        if ((_imageMandelbrot.colorTex.height - (j * CHUNK_HEIGHT)) <
+        if ((imageMandelbrot.colorTex.height - (j * CHUNK_HEIGHT)) <
             CHUNK_HEIGHT) {
             realChunkHeight =
-              _imageMandelbrot.colorTex.height - (j * CHUNK_HEIGHT);
+              imageMandelbrot.colorTex.height - (j * CHUNK_HEIGHT);
         }
 
-        while (i * CHUNK_WIDTH < _imageMandelbrot.colorTex.width) {
+        while (i * CHUNK_WIDTH < imageMandelbrot.colorTex.width) {
             int32_t realChunkWidth = CHUNK_WIDTH;
-            if ((_imageMandelbrot.colorTex.width - (i * CHUNK_WIDTH)) <
+            if ((imageMandelbrot.colorTex.width - (i * CHUNK_WIDTH)) <
                 CHUNK_WIDTH) {
                 realChunkWidth =
-                  _imageMandelbrot.colorTex.width - (i * CHUNK_WIDTH);
+                  imageMandelbrot.colorTex.width - (i * CHUNK_WIDTH);
             }
 
             rp_begin_info.renderArea.extent = {
@@ -242,8 +242,7 @@ GfxAssets::recordMandelbrotMultipleRenderCmd(
                                                 j * CHUNK_HEIGHT };
             vkCmdBeginRenderPass(
               cmdBuffer, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
-            _mandelbrotMultiple.generateCommands(cmdBuffer,
-                                                 mandelbrotConstants);
+            mandelbrotMultiple.generateCommands(cmdBuffer, mandelbrotConstants);
             vkCmdEndRenderPass(cmdBuffer);
             ++i;
         }
@@ -264,15 +263,15 @@ GfxAssets::recordUiRenderCmd(VkCommandBuffer cmdBuffer,
     clear_vals[1].depthStencil = cmdClearDepth;
     VkRenderPassBeginInfo rp_begin_info{};
     rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rp_begin_info.renderPass = _uiRenderPass.renderPass;
-    rp_begin_info.framebuffer = _uiRenderPass.framebuffers[imgIndex];
+    rp_begin_info.renderPass = uiRenderPass.renderPass;
+    rp_begin_info.framebuffer = uiRenderPass.framebuffers[imgIndex];
     rp_begin_info.renderArea.offset = { 0, 0 };
-    rp_begin_info.renderArea.extent = _uiRenderPass.renderPassExtent;
+    rp_begin_info.renderArea.extent = uiRenderPass.renderPassExtent;
     rp_begin_info.clearValueCount = clear_vals.size();
     rp_begin_info.pClearValues = clear_vals.data();
 
     vkCmdBeginRenderPass(cmdBuffer, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
-    _ui.generateCommands(cmdBuffer);
+    vkUi.generateCommands(cmdBuffer);
     vkCmdEndRenderPass(cmdBuffer);
 }
 
@@ -289,14 +288,14 @@ GfxAssets::recordToScreenRenderCmd(
     clear_vals[1].depthStencil = cmdClearDepth;
     VkRenderPassBeginInfo rp_begin_info{};
     rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rp_begin_info.renderPass = _toScreenRenderPass.renderPass;
-    rp_begin_info.framebuffer = _toScreenRenderPass.framebuffers[imgIndex];
+    rp_begin_info.renderPass = toScreenRenderPass.renderPass;
+    rp_begin_info.framebuffer = toScreenRenderPass.framebuffers[imgIndex];
     rp_begin_info.renderArea.offset = { 0, 0 };
-    rp_begin_info.renderArea.extent = _toScreenRenderPass.renderPassExtent;
+    rp_begin_info.renderArea.extent = toScreenRenderPass.renderPassExtent;
     rp_begin_info.clearValueCount = clear_vals.size();
     rp_begin_info.pClearValues = clear_vals.data();
 
     vkCmdBeginRenderPass(cmdBuffer, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
-    _toScreen.generateCommands(cmdBuffer, imgIndex);
+    toScreen.generateCommands(cmdBuffer, imgIndex);
     vkCmdEndRenderPass(cmdBuffer);
 }

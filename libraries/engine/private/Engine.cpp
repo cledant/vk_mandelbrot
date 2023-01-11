@@ -26,29 +26,46 @@ Engine::init()
                                                app_info::APP_VERSION_PATCH),
                                IOManager::getRequiredInstanceExtension());
     _vkInstance.createResources(
-      _ioManager.createVulkanSurface(_vkRenderer.getVkInstance()),
+      _ioManager.createVulkanSurface(_vkInstance.instance),
       VulkanInstance::DEFAULT_INSTANCE_OPTIONS);
     auto fb_size = _ioManager.getFramebufferSize();
-    _vkRenderer.init(
-      _ioManager.createVulkanSurface(_vkRenderer.getVkInstance()),
-      VulkanRenderer::DEFAULT_RENDERER_OPTIONS,
-      fb_size.x,
-      fb_size.y);
+    _vkRenderer.init(_vkInstance,
+                     fb_size.x,
+                     fb_size.y,
+                     VulkanInstance::DEFAULT_INSTANCE_OPTIONS.vsync);
+    _gfxAssets.init(_vkInstance,
+                    _vkRenderer.swapChain.swapChainExtent.width,
+                    _vkRenderer.swapChain.swapChainExtent.height,
+                    _vkRenderer.swapChain.swapChainImageViews,
+                    _vkRenderer.swapChain.swapChainImageFormat,
+                    VulkanInstance::DEFAULT_INSTANCE_OPTIONS.rendererScale);
+
     _eventHandler.setIOManager(&_ioManager);
     _eventHandler.setVkRenderer(&_vkRenderer);
+    _eventHandler.setGfxAssets(&_gfxAssets);
     _eventHandler.setUi(&_ui);
 }
 
 void
 Engine::run()
 {
+    VkCommandBuffer cmdBuffer{};
+    uint32_t imgIndex{};
+
     while (!_ioManager.shouldClose()) {
         _eventHandler.processEvents();
         _ui.draw();
-        _vkRenderer.draw();
+        _vkRenderer.acquireImage(cmdBuffer, imgIndex);
+        _gfxAssets.recordDrawCmds(cmdBuffer,
+                                  imgIndex,
+                                  VulkanRenderer::DEFAULT_CLEAR_COLOR,
+                                  VulkanRenderer::DEFAULT_CLEAR_DEPTH_STENCIL);
+        _vkRenderer.presentImage(
+          imgIndex, _gfxAssets.imageMandelbrot, _gfxAssets.capturedFrame);
     }
+    _gfxAssets.clear();
     _vkRenderer.clear();
-    _vkInstance.clearAll();
+    _vkInstance.clear();
     _ui.clear();
     _ioManager.deleteWindow();
 }

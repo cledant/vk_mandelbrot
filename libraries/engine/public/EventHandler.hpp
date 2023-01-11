@@ -8,6 +8,7 @@
 #include "IOManager.hpp"
 #include "VulkanRenderer.hpp"
 #include "Ui.hpp"
+#include "GfxAssets.hpp"
 
 class EventHandler final
 {
@@ -22,6 +23,7 @@ class EventHandler final
     void setIOManager(IOManager *ioManager);
     void setVkRenderer(VulkanRenderer *renderer);
     void setUi(Ui *ui);
+    void setGfxAssets(GfxAssets *gfxAssets);
 
     void processEvents();
 
@@ -121,6 +123,7 @@ class EventHandler final
     IOManager *_ioManager{};
     VulkanRenderer *_renderer{};
     Ui *_ui{};
+    GfxAssets *_gfxAssets{};
 
     // Timers
     EventTimers _timers{};

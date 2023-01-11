@@ -27,6 +27,12 @@ struct VulkanQueues final
     uint32_t presentFamilyIndex{};
 };
 
+struct VulkanSimpleVertex final
+{
+    glm::vec3 position{};
+    glm::vec2 texCoord{};
+};
+
 struct VulkanBuffer final
 {
     VkBuffer buffer{};
@@ -43,6 +49,16 @@ struct VulkanBuffer final
     VulkanDevices _devices{};
 
     friend struct VulkanTextureStaging;
+};
+
+struct VulkanScreenshot final
+{
+    std::unique_ptr<uint8_t[]> data;
+    int32_t width{};
+    int32_t height{};
+    uint32_t nbChannel{};
+
+    [[nodiscard]] bool saveScreenshotToFile(std::string const &filepath) const;
 };
 
 struct VulkanTextureStaging final
@@ -70,6 +86,7 @@ struct VulkanTextureStaging final
                       int32_t texH,
                       int32_t nbChan,
                       bool cubemap);
+    [[nodiscard]] VulkanScreenshot generateScreenshot() const;
     void clear();
 };
 
@@ -86,13 +103,13 @@ struct VulkanTexture final
     bool isCubemap{};
 
     void loadTextureOnDevice(VulkanDevices const &devices,
-                          VulkanCommandPools const &cmdPools,
-                          VulkanQueues const &queues,
-                          VulkanTextureStaging const &stagingTexture,
-                          VkFormat format);
+                             VulkanCommandPools const &cmdPools,
+                             VulkanQueues const &queues,
+                             VulkanTextureStaging const &stagingTexture,
+                             VkFormat format);
     void loadTextureOnHost(VulkanCommandPools const &cmdPools,
-                          VulkanQueues const &queues,
-                          VulkanTextureStaging const &stagingTexture) const;
+                           VulkanQueues const &queues,
+                           VulkanTextureStaging const &stagingTexture) const;
     void createColorTexture(VulkanDevices const &devices,
                             int32_t texW,
                             int32_t texH,
@@ -112,22 +129,6 @@ struct VulkanTexture final
 
   private:
     VulkanDevices _devices;
-};
-
-struct VulkanSimpleVertex final
-{
-    glm::vec3 position{};
-    glm::vec2 texCoord{};
-};
-
-struct VulkanScreenshot final
-{
-    std::unique_ptr<uint8_t[]> data;
-    int32_t width{};
-    int32_t height{};
-    uint32_t nbChannel{};
-
-    [[nodiscard]] bool saveScreenshotToFile(std::string const &filepath) const;
 };
 
 #endif // VK_MANDELBROT_VULKANCOMMONSTRUCT_HPP

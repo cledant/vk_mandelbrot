@@ -5,12 +5,16 @@
 #include "fmt/core.h"
 #include "fmt/chrono.h"
 
+#include "utils/VulkanTextureUtils.hpp"
+
 #include <chrono>
 #include <functional>
 
 void
 EventHandler::setIOManager(IOManager *ioManager)
 {
+    assert(ioManager);
+
     _ioManager = ioManager;
     auto fbSize = _ioManager->getFramebufferSize();
     _screenRatio =
@@ -30,11 +34,18 @@ EventHandler::setUi(Ui *ui)
 }
 
 void
+EventHandler::setGfxAssets(GfxAssets *gfxAssets)
+{
+    _gfxAssets = gfxAssets;
+}
+
+void
 EventHandler::processEvents()
 {
     assert(_ioManager);
     assert(_renderer);
     assert(_ui);
+    assert(_gfxAssets);
 
     screenshotHandling();
 
@@ -124,16 +135,16 @@ EventHandler::resetZoomScreenCenter()
     if (_timers.acceptEvent[ET_RIGHT_MOUSE]) {
         _skipZoomHandling = true;
         _keyboardMvt = glm::ivec2(0);
-        _renderer->mandelbrotConstants.offsetX =
+        _gfxAssets->mandelbrotConstants.offsetX =
           mandelbrotPushConstants::DEFAULT_OFFSET_X;
-        _renderer->mandelbrotConstants.offsetY =
+        _gfxAssets->mandelbrotConstants.offsetY =
           mandelbrotPushConstants::DEFAULT_OFFSET_Y;
         _zoomVal = DEFAULT_ZOOM;
-        _renderer->mandelbrotConstants.zoom =
+        _gfxAssets->mandelbrotConstants.zoom =
           mandelbrotPushConstants::DEFAULT_ZOOM / _zoomVal;
-        _renderer->mandelbrotConstants.zoomMultScreenRatio =
-          _renderer->mandelbrotConstants.zoom * _screenRatio;
-        _renderer->mandelbrotComputeDone = false;
+        _gfxAssets->mandelbrotConstants.zoomMultScreenRatio =
+          _gfxAssets->mandelbrotConstants.zoom * _screenRatio;
+        _gfxAssets->mandelbrotComputeDone = false;
 
         _timers.acceptEvent[ET_RIGHT_MOUSE] = 0;
         _timers.updated[ET_RIGHT_MOUSE] = 1;
@@ -144,8 +155,8 @@ void
 EventHandler::incIter()
 {
     if (_timers.acceptEvent[ET_CONFIG]) {
-        _renderer->mandelbrotConstants.maxIter += _iterStepValue;
-        _renderer->mandelbrotComputeDone = false;
+        _gfxAssets->mandelbrotConstants.maxIter += _iterStepValue;
+        _gfxAssets->mandelbrotComputeDone = false;
 
         _timers.acceptEvent[ET_CONFIG] = 0;
         _timers.updated[ET_CONFIG] = 1;
@@ -156,11 +167,11 @@ void
 EventHandler::decIter()
 {
     if (_timers.acceptEvent[ET_CONFIG]) {
-        _renderer->mandelbrotConstants.maxIter =
-          (_renderer->mandelbrotConstants.maxIter <= _iterStepValue)
+        _gfxAssets->mandelbrotConstants.maxIter =
+          (_gfxAssets->mandelbrotConstants.maxIter <= _iterStepValue)
             ? 1
-            : _renderer->mandelbrotConstants.maxIter - _iterStepValue;
-        _renderer->mandelbrotComputeDone = false;
+            : _gfxAssets->mandelbrotConstants.maxIter - _iterStepValue;
+        _gfxAssets->mandelbrotComputeDone = false;
 
         _timers.acceptEvent[ET_CONFIG] = 0;
         _timers.updated[ET_CONFIG] = 1;
@@ -171,9 +182,9 @@ void
 EventHandler::resetIter()
 {
     if (_timers.acceptEvent[ET_CONFIG]) {
-        _renderer->mandelbrotConstants.maxIter =
+        _gfxAssets->mandelbrotConstants.maxIter =
           mandelbrotPushConstants::DEFAULT_MAX_ITER;
-        _renderer->mandelbrotComputeDone = false;
+        _gfxAssets->mandelbrotComputeDone = false;
 
         _timers.acceptEvent[ET_CONFIG] = 0;
         _timers.updated[ET_CONFIG] = 1;
@@ -272,8 +283,8 @@ EventHandler::uiRendererScale()
 void
 EventHandler::uiNbIteration()
 {
-    _renderer->mandelbrotConstants.maxIter = _ui->iterationInput.parsedInput;
-    _renderer->mandelbrotComputeDone = false;
+    _gfxAssets->mandelbrotConstants.maxIter = _ui->iterationInput.parsedInput;
+    _gfxAssets->mandelbrotComputeDone = false;
 }
 
 void
@@ -308,32 +319,32 @@ EventHandler::zoomHandling(IOEvents const &ioEvents, glm::vec2 const &fbSize)
             addOffsetZoomOut = false;
         }
 
-        _renderer->mandelbrotComputeDone = false;
+        _gfxAssets->mandelbrotComputeDone = false;
         _ioManager->resetMouseScroll();
     }
     if (addOffsetZoomOut) {
-        _renderer->mandelbrotConstants.offsetX -= computeMouseOffset(
+        _gfxAssets->mandelbrotConstants.offsetX -= computeMouseOffset(
           ioEvents.mousePosition.x,
           fbSize.x,
-          _renderer->mandelbrotConstants.zoomMultScreenRatio);
-        _renderer->mandelbrotConstants.offsetY -=
+          _gfxAssets->mandelbrotConstants.zoomMultScreenRatio);
+        _gfxAssets->mandelbrotConstants.offsetY -=
           computeMouseOffset(ioEvents.mousePosition.y,
                              fbSize.y,
-                             _renderer->mandelbrotConstants.zoom);
+                             _gfxAssets->mandelbrotConstants.zoom);
     }
-    _renderer->mandelbrotConstants.zoom =
+    _gfxAssets->mandelbrotConstants.zoom =
       mandelbrotPushConstants::DEFAULT_ZOOM / _zoomVal;
-    _renderer->mandelbrotConstants.zoomMultScreenRatio =
-      _renderer->mandelbrotConstants.zoom * _screenRatio;
+    _gfxAssets->mandelbrotConstants.zoomMultScreenRatio =
+      _gfxAssets->mandelbrotConstants.zoom * _screenRatio;
     if (addOffsetZoomIn) {
-        _renderer->mandelbrotConstants.offsetX += computeMouseOffset(
+        _gfxAssets->mandelbrotConstants.offsetX += computeMouseOffset(
           ioEvents.mousePosition.x,
           fbSize.x,
-          _renderer->mandelbrotConstants.zoomMultScreenRatio);
-        _renderer->mandelbrotConstants.offsetY +=
+          _gfxAssets->mandelbrotConstants.zoomMultScreenRatio);
+        _gfxAssets->mandelbrotConstants.offsetY +=
           computeMouseOffset(ioEvents.mousePosition.y,
                              fbSize.y,
-                             _renderer->mandelbrotConstants.zoom);
+                             _gfxAssets->mandelbrotConstants.zoom);
     }
 }
 
@@ -341,14 +352,14 @@ void
 EventHandler::keyboardMvtHandling()
 {
     if (_keyboardMvt.x) {
-        _renderer->mandelbrotConstants.offsetX +=
+        _gfxAssets->mandelbrotConstants.offsetX +=
           _keyboardMvt.x * (_keyboardMvtStepValue / _zoomVal);
-        _renderer->mandelbrotComputeDone = false;
+        _gfxAssets->mandelbrotComputeDone = false;
     }
     if (_keyboardMvt.y) {
-        _renderer->mandelbrotConstants.offsetY -=
+        _gfxAssets->mandelbrotConstants.offsetY -=
           _keyboardMvt.y * (_keyboardMvtStepValue / _zoomVal);
-        _renderer->mandelbrotComputeDone = false;
+        _gfxAssets->mandelbrotComputeDone = false;
     }
 }
 
@@ -358,15 +369,16 @@ EventHandler::recreateSwapchain()
     if (_recreateSwapchain || _ioManager->wasResized()) {
         auto fbSize = _ioManager->getFramebufferSize();
 
-        _renderer->resize(
-          fbSize.x,
-          fbSize.y,
-          _ui->rendererScaleSelection
-            .INDEX_VALUES[_ui->rendererScaleSelection.activeIndex],
-          _ui->vsync);
+        _renderer->resize(fbSize.x, fbSize.y, _ui->vsync);
+        _gfxAssets->resize(_renderer->swapChain.swapChainExtent.width,
+                           _renderer->swapChain.swapChainExtent.height,
+                           _renderer->swapChain.swapChainImageViews,
+                           _renderer->swapChain.swapChainImageFormat,
+                           UiMenuBarRendererScaleSelection::INDEX_VALUES
+                             [_ui->rendererScaleSelection.activeIndex]);
         _screenRatio =
           static_cast<double>(fbSize.x) / static_cast<double>(fbSize.y);
-        _renderer->mandelbrotComputeDone = false;
+        _gfxAssets->mandelbrotComputeDone = false;
     }
 }
 
@@ -423,19 +435,19 @@ EventHandler::processUiEvents(UiEvents const &uiEvents)
 void
 EventHandler::setUiInfoValues()
 {
-    _ui->infoOverview.maxIteration = _renderer->mandelbrotConstants.maxIter;
-    _ui->infoOverview.zoom = _renderer->mandelbrotConstants.zoom;
-    _ui->infoOverview.cameraPos = { _renderer->mandelbrotConstants.offsetX,
-                                    _renderer->mandelbrotConstants.offsetY };
-    _ui->infoOverview.rendererW = _renderer->mandelbrotConstants.fbW;
-    _ui->infoOverview.rendererH = _renderer->mandelbrotConstants.fbH;
+    _ui->infoOverview.maxIteration = _gfxAssets->mandelbrotConstants.maxIter;
+    _ui->infoOverview.zoom = _gfxAssets->mandelbrotConstants.zoom;
+    _ui->infoOverview.cameraPos = { _gfxAssets->mandelbrotConstants.offsetX,
+                                    _gfxAssets->mandelbrotConstants.offsetY };
+    _ui->infoOverview.rendererW = _gfxAssets->mandelbrotConstants.fbW;
+    _ui->infoOverview.rendererH = _gfxAssets->mandelbrotConstants.fbH;
 }
 
 void
 EventHandler::screenshotHandling()
 {
     if (_saveScreenshotTofile) {
-        auto screenshot = _renderer->generateScreenshot();
+        auto screenshot = _gfxAssets->capturedFrame.generateScreenshot();
         auto filepath = generateScrenshotName(".");
 
         _screenshotsResults.emplace_back(

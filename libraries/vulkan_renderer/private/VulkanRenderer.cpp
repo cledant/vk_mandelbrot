@@ -8,7 +8,7 @@
 #include "utils/VulkanImageUtils.hpp"
 
 void
-VulkanRenderer::init(VulkanInstance vkInstance,
+VulkanRenderer::init(VulkanInstance const &vkInstance,
                      uint32_t winW,
                      uint32_t winH,
                      bool vsync)
@@ -17,7 +17,7 @@ VulkanRenderer::init(VulkanInstance vkInstance,
     _queues = vkInstance.queues;
     _cmdPools = vkInstance.cmdPools;
 
-    _swapChain.init(vkInstance, winW, winH, vsync);
+    swapChain.init(vkInstance, winW, winH, vsync);
     _sync.init(vkInstance);
 
     allocateCommandBuffers(_devices.device,
@@ -37,7 +37,7 @@ VulkanRenderer::resize(uint32_t winW, uint32_t winH, bool vsync)
     for (auto &it : _renderCommandBuffers) {
         vkResetCommandBuffer(it, 0);
     }
-    _swapChain.resize(winW, winH, vsync);
+    swapChain.resize(winW, winH, vsync);
 }
 
 void
@@ -45,7 +45,7 @@ VulkanRenderer::clear()
 {
     vkDeviceWaitIdle(_devices.device);
     _sync.clear();
-    _swapChain.clear();
+    swapChain.clear();
     _devices = {};
     _cmdPools = {};
 }
@@ -68,7 +68,7 @@ VulkanRenderer::acquireImage(VkCommandBuffer &cmdBuffer, uint32_t &imgIndex)
     {
         auto acquireResult =
           vkAcquireNextImageKHR(_devices.device,
-                                _swapChain.swapChain,
+                                swapChain.swapChain,
                                 UINT64_MAX,
                                 _sync.imageAvailableSem[_sync.currentFrame],
                                 VK_NULL_HANDLE,
@@ -89,7 +89,7 @@ VulkanRenderer::presentImage(uint32_t imgIndex,
 {
     emitDrawCmds(_renderCommandBuffers[_sync.currentFrame]);
 
-    VkSwapchainKHR swapChains[] = { _swapChain.swapChain };
+    VkSwapchainKHR swapChains[] = { swapChain.swapChain };
     VkSemaphore presentWaitSems[] = {
         _sync.allRenderFinishedSem[_sync.currentFrame],
     };

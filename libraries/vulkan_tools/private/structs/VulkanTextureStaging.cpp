@@ -166,3 +166,29 @@ VulkanTextureStaging::clear()
     mipLevel = 0;
     isCubemap = false;
 }
+
+VulkanScreenshot
+VulkanTextureStaging::generateScreenshot() const
+{
+    VulkanScreenshot screenshot{};
+
+    if (!width) {
+        return (screenshot);
+    }
+
+    screenshot.width = width;
+    screenshot.height = height;
+    screenshot.nbChannel = nbChannel;
+    screenshot.data.reset(new uint8_t[width * height * nbChannel]);
+
+    void *data;
+    vkMapMemory(stagingBuffer._devices.device,
+                stagingBuffer.memory,
+                0,
+                stagingBuffer.size,
+                0,
+                &data);
+    memcpy(screenshot.data.get(), data, stagingBuffer.size);
+    vkUnmapMemory(stagingBuffer._devices.device, stagingBuffer.memory);
+    return (screenshot);
+}

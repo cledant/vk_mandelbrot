@@ -40,7 +40,7 @@ class VulkanInstance final
                         std::vector<char const *> &&requiredExtensions);
     void createResources(VkSurfaceKHR windowSurface,
                          VulkanInstanceOptions const &options);
-    void clearAll();
+    void clear();
 
   private:
     std::string _appName;
