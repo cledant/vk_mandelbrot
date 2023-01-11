@@ -28,6 +28,12 @@ EventHandler::setVkRenderer(VulkanRenderer *renderer)
 }
 
 void
+EventHandler::setSwapChain(VulkanSwapChain *swapChain)
+{
+    _swapChain = swapChain;
+}
+
+void
 EventHandler::setUi(Ui *ui)
 {
     _ui = ui;
@@ -44,6 +50,7 @@ EventHandler::processEvents()
 {
     assert(_ioManager);
     assert(_renderer);
+    assert(_swapChain);
     assert(_ui);
     assert(_gfxAssets);
 
@@ -369,16 +376,16 @@ EventHandler::recreateSwapchain()
     if (_recreateSwapchain || _ioManager->wasResized()) {
         auto fbSize = _ioManager->getFramebufferSize();
 
-        _renderer->resize(fbSize.x, fbSize.y, _ui->vsync);
-        _gfxAssets->resize(_renderer->swapChain.swapChainExtent.width,
-                           _renderer->swapChain.swapChainExtent.height,
-                           _renderer->swapChain.swapChainImageViews,
-                           _renderer->swapChain.swapChainImageFormat,
+        _swapChain->resize(fbSize.x, fbSize.y, _ui->vsync);
+        _renderer->resize();
+        _gfxAssets->resize(_swapChain->swapChainExtent.width,
+                           _swapChain->swapChainExtent.height,
+                           _swapChain->swapChainImageViews,
+                           _swapChain->swapChainImageFormat,
                            UiMenuBarRendererScaleSelection::INDEX_VALUES
                              [_ui->rendererScaleSelection.activeIndex]);
         _screenRatio =
           static_cast<double>(fbSize.x) / static_cast<double>(fbSize.y);
-        _gfxAssets->mandelbrotComputeDone = false;
     }
 }
 

@@ -3,7 +3,6 @@ project(lib_vulkan_renderer)
 
 add_library(vulkan_renderer STATIC
         private/VulkanRenderer.cpp
-        private/VulkanSwapChain.cpp
         private/VulkanSync.cpp)
 target_include_directories(vulkan_renderer
         PUBLIC

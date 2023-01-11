@@ -24,6 +24,7 @@ class Engine final
   private:
     IOManager _ioManager;
     VulkanInstance _vkInstance;
+    VulkanSwapChain _swapChain;
     VulkanRenderer _vkRenderer;
     GfxAssets _gfxAssets;
     Ui _ui;

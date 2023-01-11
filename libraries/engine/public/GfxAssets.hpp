@@ -47,7 +47,7 @@ struct GfxAssets final
     VulkanMandelbrotPipeline mandelbrotFirst;
     VulkanMandelbrotPipeline mandelbrotMultiple;
     VulkanToScreenPipeline toScreen;
-    VulkanUiPipeline vkUi;
+    VulkanUiPipeline ui;
 
     // Push Constants
     mandelbrotPushConstants mandelbrotConstants{};

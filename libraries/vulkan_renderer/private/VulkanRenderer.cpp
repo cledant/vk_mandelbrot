@@ -8,16 +8,12 @@
 #include "utils/VulkanImageUtils.hpp"
 
 void
-VulkanRenderer::init(VulkanInstance const &vkInstance,
-                     uint32_t winW,
-                     uint32_t winH,
-                     bool vsync)
+VulkanRenderer::init(VulkanInstance const &vkInstance)
 {
     _devices = vkInstance.devices;
     _queues = vkInstance.queues;
     _cmdPools = vkInstance.cmdPools;
 
-    swapChain.init(vkInstance, winW, winH, vsync);
     _sync.init(vkInstance);
 
     allocateCommandBuffers(_devices.device,
@@ -27,17 +23,13 @@ VulkanRenderer::init(VulkanInstance const &vkInstance,
 }
 
 void
-VulkanRenderer::resize(uint32_t winW, uint32_t winH, bool vsync)
+VulkanRenderer::resize()
 {
     vkDeviceWaitIdle(_devices.device);
-    if (winW <= 0 || winH <= 0) {
-        return;
-    }
 
     for (auto &it : _renderCommandBuffers) {
         vkResetCommandBuffer(it, 0);
     }
-    swapChain.resize(winW, winH, vsync);
 }
 
 void
@@ -45,13 +37,14 @@ VulkanRenderer::clear()
 {
     vkDeviceWaitIdle(_devices.device);
     _sync.clear();
-    swapChain.clear();
     _devices = {};
     _cmdPools = {};
 }
 
 void
-VulkanRenderer::acquireImage(VkCommandBuffer &cmdBuffer, uint32_t &imgIndex)
+VulkanRenderer::acquireImage(VkSwapchainKHR swapChain,
+                             VkCommandBuffer &cmdBuffer,
+                             uint32_t &imgIndex)
 {
     {
         auto waitResult =
@@ -68,7 +61,7 @@ VulkanRenderer::acquireImage(VkCommandBuffer &cmdBuffer, uint32_t &imgIndex)
     {
         auto acquireResult =
           vkAcquireNextImageKHR(_devices.device,
-                                swapChain.swapChain,
+                                swapChain,
                                 UINT64_MAX,
                                 _sync.imageAvailableSem[_sync.currentFrame],
                                 VK_NULL_HANDLE,
@@ -83,13 +76,14 @@ VulkanRenderer::acquireImage(VkCommandBuffer &cmdBuffer, uint32_t &imgIndex)
 }
 
 void
-VulkanRenderer::presentImage(uint32_t imgIndex,
+VulkanRenderer::presentImage(VkSwapchainKHR swapChain,
                              VulkanDefaultImageTexture &framebuffer,
-                             VulkanTextureStaging &capturedFrame)
+                             VulkanTextureStaging &capturedFrame,
+                             uint32_t imgIndex)
 {
     emitDrawCmds(_renderCommandBuffers[_sync.currentFrame]);
 
-    VkSwapchainKHR swapChains[] = { swapChain.swapChain };
+    VkSwapchainKHR swapChains[] = { swapChain };
     VkSemaphore presentWaitSems[] = {
         _sync.allRenderFinishedSem[_sync.currentFrame],
     };

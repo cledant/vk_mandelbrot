@@ -54,7 +54,7 @@ GfxAssets::init(VulkanInstance const &vkInstance,
 
     uiRenderPass.init(
       vkInstance, swapChainImageViews, swapChainImageFormat, winW, winH);
-    vkUi.init(vkInstance, uiRenderPass.renderPass, swapChainImageViews.size());
+    ui.init(vkInstance, uiRenderPass.renderPass, swapChainImageViews.size());
 }
 
 void
@@ -105,14 +105,16 @@ GfxAssets::resize(uint32_t winW,
       mandelbrotMultipleRenderPass.renderPass, rendererW, rendererH);
 
     uiRenderPass.resize(swapChainImageViews, swapChainImageFormat, winW, winH);
-    vkUi.resize(uiRenderPass.renderPass, swapChainImageViews.size());
+    ui.resize(uiRenderPass.renderPass, swapChainImageViews.size());
+
+    mandelbrotComputeDone = false;
 }
 
 void
 GfxAssets::clear()
 {
     vkDeviceWaitIdle(_devices.device);
-    vkUi.clear();
+    ui.clear();
     uiRenderPass.clear();
     mandelbrotFirst.clear();
     mandelbrotFirstRenderPass.clear();
@@ -271,7 +273,7 @@ GfxAssets::recordUiRenderCmd(VkCommandBuffer cmdBuffer,
     rp_begin_info.pClearValues = clear_vals.data();
 
     vkCmdBeginRenderPass(cmdBuffer, &rp_begin_info, VK_SUBPASS_CONTENTS_INLINE);
-    vkUi.generateCommands(cmdBuffer);
+    ui.generateCommands(cmdBuffer);
     vkCmdEndRenderPass(cmdBuffer);
 }
 

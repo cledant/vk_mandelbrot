@@ -3,7 +3,8 @@ project(lib_vulkan_instance)
 
 add_library(vulkan_instance STATIC
         private/VulkanDebug.cpp
-        private/VulkanInstance.cpp)
+        private/VulkanInstance.cpp
+        private/VulkanSwapChain.cpp)
 target_include_directories(vulkan_instance
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/public

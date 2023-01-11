@@ -29,6 +29,8 @@ VulkanSwapChain::resize(uint32_t fbW, uint32_t fbH, bool vsync)
 void
 VulkanSwapChain::clean()
 {
+    vkDeviceWaitIdle(_devices.device);
+
     for (auto iv : swapChainImageViews) {
         iv.clearSwapchainTexture();
     }

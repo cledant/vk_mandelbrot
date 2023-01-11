@@ -4,7 +4,6 @@
 #include <vulkan/vulkan.h>
 
 #include "VulkanInstance.hpp"
-#include "VulkanSwapChain.hpp"
 #include "VulkanSync.hpp"
 #include "imageTextures/VulkanDefaultImageTexture.hpp"
 
@@ -27,20 +26,19 @@ class VulkanRenderer final
 
     // Public values
     bool saveNextFrame{};
-    VulkanSwapChain swapChain;
 
-    void init(VulkanInstance const &vkInstance,
-              uint32_t winW,
-              uint32_t winH,
-              bool vsync);
-    void resize(uint32_t winW, uint32_t winH, bool vsync);
+    void init(VulkanInstance const &vkInstance);
+    void resize();
     void clear();
 
     // Render related
-    void acquireImage(VkCommandBuffer &cmdBuffer, uint32_t &imgIndex);
-    void presentImage(uint32_t imgIndex,
+    void acquireImage(VkSwapchainKHR swapChain,
+                      VkCommandBuffer &cmdBuffer,
+                      uint32_t &imgIndex);
+    void presentImage(VkSwapchainKHR swapChain,
                       VulkanDefaultImageTexture &framebuffer,
-                      VulkanTextureStaging &capturedFrame);
+                      VulkanTextureStaging &capturedFrame,
+                      uint32_t imgIndex);
 
   private:
     // Vulkan related

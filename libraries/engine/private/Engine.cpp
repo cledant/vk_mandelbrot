@@ -29,18 +29,20 @@ Engine::init()
       _ioManager.createVulkanSurface(_vkInstance.instance),
       VulkanInstance::DEFAULT_INSTANCE_OPTIONS);
     auto fb_size = _ioManager.getFramebufferSize();
-    _vkRenderer.init(_vkInstance,
-                     fb_size.x,
-                     fb_size.y,
-                     VulkanInstance::DEFAULT_INSTANCE_OPTIONS.vsync);
+    _swapChain.init(_vkInstance,
+                    fb_size.x,
+                    fb_size.y,
+                    VulkanInstance::DEFAULT_INSTANCE_OPTIONS.vsync);
+    _vkRenderer.init(_vkInstance);
     _gfxAssets.init(_vkInstance,
-                    _vkRenderer.swapChain.swapChainExtent.width,
-                    _vkRenderer.swapChain.swapChainExtent.height,
-                    _vkRenderer.swapChain.swapChainImageViews,
-                    _vkRenderer.swapChain.swapChainImageFormat,
+                    _swapChain.swapChainExtent.width,
+                    _swapChain.swapChainExtent.height,
+                    _swapChain.swapChainImageViews,
+                    _swapChain.swapChainImageFormat,
                     VulkanInstance::DEFAULT_INSTANCE_OPTIONS.rendererScale);
 
     _eventHandler.setIOManager(&_ioManager);
+    _eventHandler.setSwapChain(&_swapChain);
     _eventHandler.setVkRenderer(&_vkRenderer);
     _eventHandler.setGfxAssets(&_gfxAssets);
     _eventHandler.setUi(&_ui);
@@ -55,16 +57,19 @@ Engine::run()
     while (!_ioManager.shouldClose()) {
         _eventHandler.processEvents();
         _ui.draw();
-        _vkRenderer.acquireImage(cmdBuffer, imgIndex);
+        _vkRenderer.acquireImage(_swapChain.swapChain, cmdBuffer, imgIndex);
         _gfxAssets.recordDrawCmds(cmdBuffer,
                                   imgIndex,
                                   VulkanRenderer::DEFAULT_CLEAR_COLOR,
                                   VulkanRenderer::DEFAULT_CLEAR_DEPTH_STENCIL);
-        _vkRenderer.presentImage(
-          imgIndex, _gfxAssets.imageMandelbrot, _gfxAssets.capturedFrame);
+        _vkRenderer.presentImage(_swapChain.swapChain,
+                                 _gfxAssets.imageMandelbrot,
+                                 _gfxAssets.capturedFrame,
+                                 imgIndex);
     }
     _gfxAssets.clear();
     _vkRenderer.clear();
+    _swapChain.clear();
     _vkInstance.clear();
     _ui.clear();
     _ioManager.deleteWindow();

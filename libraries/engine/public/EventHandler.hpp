@@ -7,6 +7,7 @@
 #include "IOEvents.hpp"
 #include "IOManager.hpp"
 #include "VulkanRenderer.hpp"
+#include "VulkanSwapChain.hpp"
 #include "Ui.hpp"
 #include "GfxAssets.hpp"
 
@@ -22,6 +23,7 @@ class EventHandler final
 
     void setIOManager(IOManager *ioManager);
     void setVkRenderer(VulkanRenderer *renderer);
+    void setSwapChain(VulkanSwapChain *swapChain);
     void setUi(Ui *ui);
     void setGfxAssets(GfxAssets *gfxAssets);
 
@@ -122,6 +124,7 @@ class EventHandler final
     // Pointers to managers
     IOManager *_ioManager{};
     VulkanRenderer *_renderer{};
+    VulkanSwapChain *_swapChain{};
     Ui *_ui{};
     GfxAssets *_gfxAssets{};
 
