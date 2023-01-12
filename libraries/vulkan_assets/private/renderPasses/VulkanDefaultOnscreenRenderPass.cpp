@@ -23,7 +23,6 @@ VulkanDefaultOnscreenRenderPass::implResize(
   std::vector<VulkanTexture> const &swapChainImageViews,
   VkFormat swapChainImageFormat)
 {
-    clean();
     defaultCreateRenderPass(swapChainImageFormat,
                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                             VK_IMAGE_LAYOUT_UNDEFINED,
@@ -43,5 +42,4 @@ VulkanDefaultOnscreenRenderPass::implClean()
 void
 VulkanDefaultOnscreenRenderPass::implClear()
 {
-    clean();
 }

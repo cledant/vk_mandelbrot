@@ -15,8 +15,8 @@ class VulkanUiPipeline final
 
     void init(VulkanInstance const &vkInstance,
               VkRenderPass renderPass,
-              uint32_t nbImgSwapchain);
-    void resize(VkRenderPass renderPass, uint32_t nbImgSwapchain);
+              uint32_t nbImgSwapChain);
+    void resize(VkRenderPass renderPass, uint32_t nbImgSwapChain);
     void clear();
 
     void generateCommands(VkCommandBuffer cmdBuffer);
@@ -31,7 +31,7 @@ class VulkanUiPipeline final
     // Global
     VkDescriptorPool _descriptorPool{};
 
-    inline void initImgui(VkRenderPass renderPass, uint32_t nbImgSwapchain);
+    inline void initImgui(VkRenderPass renderPass, uint32_t nbImgSwapChain);
     inline void loadFonts() const;
 };
 

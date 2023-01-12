@@ -50,8 +50,9 @@ VulkanMandelbrotPipeline::clear()
     _queues = VulkanQueues{};
     _pipelineDescription.clear();
     _gfxPipeline = nullptr;
-    _descriptorPool = nullptr;
     _pipelineData.clear();
+    _descriptorSets.clear();
+    _descriptorPool = nullptr;
 }
 
 void

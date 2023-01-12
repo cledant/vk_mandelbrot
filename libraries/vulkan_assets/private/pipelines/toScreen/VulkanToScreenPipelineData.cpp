@@ -67,6 +67,5 @@ VulkanToScreenPipelineData::clear()
     verticesSize = 0;
     indicesSize = 0;
     indicesOffset = 0;
-    verticesSize = 0;
     indicesDrawNb = 0;
 }

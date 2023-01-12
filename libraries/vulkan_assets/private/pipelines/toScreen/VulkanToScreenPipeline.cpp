@@ -51,15 +51,15 @@ VulkanToScreenPipeline::clear()
 {
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
     vkDestroyPipeline(_devices.device, _gfxPipeline, nullptr);
-    _toDisplayImageInfo = {};
-    _pipelineDescription.clear();
     _devices = VulkanDevices{};
     _cmdPools = VulkanCommandPools{};
     _queues = VulkanQueues{};
+    _toDisplayImageInfo = {};
     _pipelineDescription.clear();
     _gfxPipeline = nullptr;
-    _descriptorPool = nullptr;
     _pipelineData.clear();
+    _descriptorSets.clear();
+    _descriptorPool = nullptr;
 }
 
 void

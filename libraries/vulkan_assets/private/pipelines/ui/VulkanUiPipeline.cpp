@@ -9,24 +9,24 @@
 void
 VulkanUiPipeline::init(VulkanInstance const &vkInstance,
                        VkRenderPass renderPass,
-                       uint32_t nbImgSwapchain)
+                       uint32_t nbImgSwapChain)
 {
     _instance = vkInstance.instance;
     _devices = vkInstance.devices;
     _queues = vkInstance.queues;
     _cmdPools = vkInstance.cmdPools;
 
-    initImgui(renderPass, nbImgSwapchain);
+    initImgui(renderPass, nbImgSwapChain);
     loadFonts();
 }
 
 void
-VulkanUiPipeline::resize(VkRenderPass renderPass, uint32_t nbImgSwapchain)
+VulkanUiPipeline::resize(VkRenderPass renderPass, uint32_t nbImgSwapChain)
 {
     vkDeviceWaitIdle(_devices.device);
     ImGui_ImplVulkan_Shutdown();
     vkDestroyDescriptorPool(_devices.device, _descriptorPool, nullptr);
-    initImgui(renderPass, nbImgSwapchain);
+    initImgui(renderPass, nbImgSwapChain);
     loadFonts();
 }
 
@@ -39,6 +39,8 @@ VulkanUiPipeline::clear()
     _instance = nullptr;
     _devices = VulkanDevices{};
     _queues = VulkanQueues{};
+    _cmdPools = {};
+    _descriptorPool = nullptr;
 }
 
 void
@@ -48,7 +50,7 @@ VulkanUiPipeline::generateCommands(VkCommandBuffer cmdBuffer)
 }
 
 void
-VulkanUiPipeline::initImgui(VkRenderPass renderPass, uint32_t nbImgSwapchain)
+VulkanUiPipeline::initImgui(VkRenderPass renderPass, uint32_t nbImgSwapChain)
 {
     ImGui_ImplVulkan_InitInfo init_info = {};
     VkDescriptorPoolSize pool_sizes[] = {
@@ -85,7 +87,7 @@ VulkanUiPipeline::initImgui(VkRenderPass renderPass, uint32_t nbImgSwapchain)
     init_info.PipelineCache = VK_NULL_HANDLE;
     init_info.Allocator = VK_NULL_HANDLE;
     init_info.MinImageCount = 2;
-    init_info.ImageCount = nbImgSwapchain;
+    init_info.ImageCount = nbImgSwapChain;
     init_info.CheckVkResultFn = [](VkResult err) {
         if (err != VK_SUCCESS) {
             throw std::runtime_error("Imgui: Vulkan operation failed");

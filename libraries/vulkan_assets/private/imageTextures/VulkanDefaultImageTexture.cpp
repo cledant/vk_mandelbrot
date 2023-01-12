@@ -19,8 +19,6 @@ VulkanDefaultImageTexture::implResize(VkFormat colorImageFormat,
                                       int32_t imgW,
                                       int32_t imgH)
 {
-    clean();
-
     defaultCreateColorResources(colorImageFormat, imgW, imgH);
     defaultCreateDepthResources(depthImageFormat, imgW, imgH);
     descriptorImage.sampler = colorTex.textureSampler;

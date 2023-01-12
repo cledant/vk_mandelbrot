@@ -90,6 +90,8 @@ AVulkanOnscreenRenderPass<Child>::resize(
   int32_t swapChainImgW,
   int32_t swapChainImgH)
 {
+    clean();
+
     renderPassExtent = { static_cast<uint32_t>(swapChainImgW),
                          static_cast<uint32_t>(swapChainImgH) };
     static_cast<Child &>(*this).implResize(swapChainImageViews,
@@ -101,6 +103,7 @@ void
 AVulkanOnscreenRenderPass<Child>::clear()
 {
     static_cast<Child &>(*this).implClear();
+    clean();
     framebuffers.clear();
     depthTex = VulkanTexture{};
     renderPass = nullptr;

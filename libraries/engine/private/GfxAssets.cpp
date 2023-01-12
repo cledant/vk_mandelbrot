@@ -125,6 +125,7 @@ GfxAssets::clear()
     capturedFrame.clear();
     imageMandelbrot.clear();
     mandelbrotComputeDone = false;
+    mandelbrotConstants = {};
     _devices = {};
     _depthFormat = {};
 }

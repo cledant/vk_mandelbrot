@@ -45,6 +45,7 @@ AVulkanPipelineDescription<Child>::clear()
     vkDestroyDescriptorSetLayout(_devices.device, descriptorSetLayout, nullptr);
     descriptorSetLayout = nullptr;
     pipelineLayout = nullptr;
+    pushConstantRange = {};
 }
 
 #endif // VK_MANDELBROT_AVULKANPIPELINEDESCRIPTION_HPP

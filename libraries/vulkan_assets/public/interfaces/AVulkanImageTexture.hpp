@@ -97,6 +97,8 @@ AVulkanImageTexture<Child>::resize(VkFormat colorImageFormat,
                                    int32_t imgW,
                                    int32_t imgH)
 {
+    clean();
+
     static_cast<Child &>(*this).implResize(
       colorImageFormat, depthFormat, imgW, imgH);
 }

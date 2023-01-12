@@ -88,6 +88,8 @@ AVulkanOffscreenRenderPass<Child>::resize(VkFormat colorImageFormat,
                                           int32_t imgW,
                                           int32_t imgH)
 {
+    clean();
+
     renderPassExtent = { static_cast<uint32_t>(imgW),
                          static_cast<uint32_t>(imgH) };
     static_cast<Child &>(*this).implResize(
