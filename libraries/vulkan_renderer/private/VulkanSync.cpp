@@ -41,4 +41,8 @@ VulkanSync::clear()
         vkDestroyFence(_devices.device, inflightFence[i], nullptr);
     }
     _devices = VulkanDevices{};
+    imageAvailableSem.clear();
+    allRenderFinishedSem.clear();
+    inflightFence.clear();
+    currentFrame = 0;
 }

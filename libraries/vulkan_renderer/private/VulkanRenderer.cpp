@@ -36,9 +36,13 @@ void
 VulkanRenderer::clear()
 {
     vkDeviceWaitIdle(_devices.device);
+
+    saveNextFrame = false;
+    _renderCommandBuffers.clear();
     _sync.clear();
     _devices = {};
     _cmdPools = {};
+    _queues = {};
 }
 
 void

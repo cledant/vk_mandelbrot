@@ -95,13 +95,19 @@ VulkanInstance::clear()
     }
     vkDestroySurfaceKHR(instance, surface, nullptr);
     vkDestroyInstance(instance, nullptr);
+    memset(deviceName, 0, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
+
     instance = nullptr;
     surface = nullptr;
-    _debugMessenger = nullptr;
     devices = VulkanDevices{};
     queues = VulkanQueues{};
     cmdPools = VulkanCommandPools{};
     depthFormat = {};
+    _appName.clear();
+    _engineName.clear();
+    _appVersion = 0;
+    _engineVersion = 0;
+    _debugMessenger = nullptr;
 }
 
 void

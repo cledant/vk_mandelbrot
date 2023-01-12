@@ -43,6 +43,12 @@ VulkanSwapChain::clear()
     clean();
     _devices = VulkanDevices{};
     _surface = nullptr;
+    currentSwapChainNbImg = 0;
+    swapChain = nullptr;
+    swapChainImageFormat = {};
+    swapChainExtent = {};
+    swapChainImages.clear();
+    swapChainImageViews.clear();
 }
 
 void
