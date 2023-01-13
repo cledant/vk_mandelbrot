@@ -4,7 +4,7 @@
 
 #include "backends/imgui_impl_vulkan.h"
 
-#include "utils/VulkanCommandBuffer.hpp"
+#include "utils/VulkanCommandBufferUtils.hpp"
 
 void
 VulkanUiPipeline::init(VulkanInstance const &vkInstance,

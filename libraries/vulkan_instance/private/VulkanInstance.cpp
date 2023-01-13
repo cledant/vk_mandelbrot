@@ -7,8 +7,8 @@
 #include "fmt/core.h"
 
 #include "VulkanDebug.hpp"
-#include "utils/VulkanPhysicalDevice.hpp"
-#include "utils/VulkanCommandBuffer.hpp"
+#include "utils/VulkanPhysicalDeviceUtils.hpp"
+#include "utils/VulkanCommandBufferUtils.hpp"
 #include "utils/VulkanImageUtils.hpp"
 
 void

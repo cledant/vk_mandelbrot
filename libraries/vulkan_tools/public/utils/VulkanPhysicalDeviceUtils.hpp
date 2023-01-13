@@ -1,26 +1,12 @@
-#ifndef VK_MANDELBROT_VULKANPHYSICALDEVICE_HPP
-#define VK_MANDELBROT_VULKANPHYSICALDEVICE_HPP
+#ifndef VK_MANDELBROT_VULKANPHYSICALDEVICEUTILS_HPP
+#define VK_MANDELBROT_VULKANPHYSICALDEVICEUTILS_HPP
 
-#include <cstdint>
 #include <vector>
-#include <optional>
 #include <array>
 
 #include <vulkan/vulkan.h>
 
-#include "structs/VulkanInstanceOptions.hpp"
-
-struct DeviceRequirement final
-{
-    std::optional<uint32_t> graphicFamilyIndex;
-    std::optional<uint32_t> presentFamilyIndex;
-    std::optional<uint32_t> computeFamilyIndex;
-    VkBool32 allExtensionSupported{};
-    VulkanInstanceOptions options{};
-
-    [[nodiscard]] bool isValid(
-      VulkanInstanceOptions const &requiredOptions) const;
-};
+#include "structs/DeviceRequirement.hpp"
 
 [[maybe_unused]] constexpr std::array const DEVICE_EXTENSIONS{
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
@@ -45,4 +31,4 @@ VkDeviceSize getMinUniformBufferOffsetAlignment(VkPhysicalDevice device);
 bool getLinearBlittingSupport(VkPhysicalDevice device, VkFormat imgFormat);
 VkPhysicalDeviceProperties getPhysicalDeviceProperties(VkPhysicalDevice device);
 
-#endif // VK_MANDELBROT_VULKANPHYSICALDEVICE_HPP
+#endif // VK_MANDELBROT_VULKANPHYSICALDEVICEUTILS_HPP

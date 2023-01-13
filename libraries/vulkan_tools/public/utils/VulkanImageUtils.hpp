@@ -5,7 +5,8 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-#include "structs/VulkanCommonStruct.hpp"
+#include "structs/VulkanBasicStructs.hpp"
+#include "structs/VulkanTexture.hpp"
 
 void createImage(VkDevice device,
                  VulkanTexture &texture,

@@ -2,8 +2,8 @@
 
 #include <stdexcept>
 
-#include "utils/VulkanShader.hpp"
-#include "utils/VulkanMemory.hpp"
+#include "utils/VulkanShaderUtils.hpp"
+#include "utils/VulkanMemoryUtils.hpp"
 #include "utils/VulkanDescriptorUtils.hpp"
 
 void

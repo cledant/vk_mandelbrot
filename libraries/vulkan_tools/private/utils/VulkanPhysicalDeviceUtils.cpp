@@ -1,4 +1,4 @@
-#include "utils/VulkanPhysicalDevice.hpp"
+#include "utils/VulkanPhysicalDeviceUtils.hpp"
 
 #include <map>
 #include <cstring>
@@ -7,15 +7,6 @@
 #include <string>
 
 #include "utils/VulkanSwapChainUtils.hpp"
-
-bool
-DeviceRequirement::isValid(VulkanInstanceOptions const &requiredOptions) const
-{
-    return (graphicFamilyIndex.has_value() && presentFamilyIndex.has_value() &&
-            computeFamilyIndex.has_value() &&
-            requiredOptions.hasRequiredOptions(options) &&
-            allExtensionSupported);
-}
 
 VkPhysicalDevice
 selectBestDevice(std::vector<VkPhysicalDevice> const &devices,

@@ -1,6 +1,6 @@
 #include "pipelines/toScreen/VulkanToScreenPipelineData.hpp"
 
-#include "utils/VulkanMemory.hpp"
+#include "utils/VulkanMemoryUtils.hpp"
 
 void
 VulkanToScreenPipelineData::init(VulkanDevices const &devices,

@@ -1,9 +1,9 @@
-#include "structs/VulkanCommonStruct.hpp"
+#include "structs/VulkanBasicStructs.hpp"
 
 #include "utils/VulkanImageUtils.hpp"
 #include "utils/VulkanTextureUtils.hpp"
-#include "utils/VulkanTransitionLayout.hpp"
-#include "utils/VulkanCommandBuffer.hpp"
+#include "utils/VulkanTransitionLayoutUtils.hpp"
+#include "utils/VulkanCommandBufferUtils.hpp"
 
 void
 VulkanTexture::loadTextureOnDevice(VulkanDevices const &devices,

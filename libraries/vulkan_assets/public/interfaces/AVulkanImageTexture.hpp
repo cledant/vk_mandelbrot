@@ -10,7 +10,7 @@
 #include "utils/VulkanImageUtils.hpp"
 #include "utils/VulkanTextureUtils.hpp"
 #include "utils/VulkanFrameBufferUtils.hpp"
-#include "utils/VulkanTransitionLayout.hpp"
+#include "utils/VulkanTransitionLayoutUtils.hpp"
 
 #include "interfaces/AVulkanImageTexture.hpp"
 

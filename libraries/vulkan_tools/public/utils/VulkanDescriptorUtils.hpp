@@ -7,7 +7,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "structs/VulkanCommonStruct.hpp"
+#include "structs/VulkanBasicStructs.hpp"
 
 template<size_t SIZE>
 VkDescriptorSetLayout

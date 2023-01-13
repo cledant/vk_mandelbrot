@@ -6,7 +6,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "structs/VulkanCommonStruct.hpp"
+#include "structs/VulkanBasicStructs.hpp"
 #include "structs/VulkanInstanceOptions.hpp"
 
 class VulkanInstance final

@@ -6,6 +6,7 @@
 #include <vulkan/vulkan.h>
 
 #include "VulkanInstance.hpp"
+#include "structs/VulkanTexture.hpp"
 
 class VulkanSwapChain final
 {

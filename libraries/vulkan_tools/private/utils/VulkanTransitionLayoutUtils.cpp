@@ -1,8 +1,8 @@
-#include "utils/VulkanTransitionLayout.hpp"
+#include "utils/VulkanTransitionLayoutUtils.hpp"
 
 #include <stdexcept>
 
-#include "utils/VulkanCommandBuffer.hpp"
+#include "utils/VulkanCommandBufferUtils.hpp"
 #include "utils/VulkanImageUtils.hpp"
 
 static void

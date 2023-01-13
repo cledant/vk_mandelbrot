@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include "utils/VulkanCommandBuffer.hpp"
-#include "utils/VulkanMemory.hpp"
+#include "utils/VulkanCommandBufferUtils.hpp"
+#include "utils/VulkanMemoryUtils.hpp"
 #include "utils/VulkanImageUtils.hpp"
 
 void

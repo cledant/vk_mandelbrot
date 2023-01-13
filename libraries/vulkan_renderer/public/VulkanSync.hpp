@@ -7,7 +7,7 @@
 
 #include "VulkanInstance.hpp"
 #include "VulkanSwapChain.hpp"
-#include "structs/VulkanCommonStruct.hpp"
+#include "structs/VulkanBasicStructs.hpp"
 
 class VulkanSync final
 {

@@ -3,8 +3,8 @@
 #include <cstring>
 #include <stdexcept>
 
-#include "utils/VulkanCommandBuffer.hpp"
-#include "utils/VulkanPhysicalDevice.hpp"
+#include "utils/VulkanCommandBufferUtils.hpp"
+#include "utils/VulkanPhysicalDeviceUtils.hpp"
 
 void
 generateMipmapsSingleCmd(VulkanDevices const &devices,

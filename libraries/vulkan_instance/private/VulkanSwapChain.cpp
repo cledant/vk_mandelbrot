@@ -4,7 +4,7 @@
 
 #include "utils/VulkanImageUtils.hpp"
 #include "utils/VulkanSwapChainUtils.hpp"
-#include "utils/VulkanPhysicalDevice.hpp"
+#include "utils/VulkanPhysicalDeviceUtils.hpp"
 
 void
 VulkanSwapChain::init(VulkanInstance const &vkInstance,

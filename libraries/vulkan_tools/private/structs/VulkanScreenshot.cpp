@@ -1,4 +1,4 @@
-#include "structs/VulkanCommonStruct.hpp"
+#include "structs/VulkanScreenshot.hpp"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"

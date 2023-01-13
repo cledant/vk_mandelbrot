@@ -1,6 +1,6 @@
-#include "structs/VulkanCommonStruct.hpp"
+#include "structs/VulkanBuffer.hpp"
 
-#include "utils/VulkanMemory.hpp"
+#include "utils/VulkanMemoryUtils.hpp"
 
 void
 VulkanBuffer::allocate(VulkanDevices const &devices,

@@ -1,6 +1,6 @@
 #include "pipelines/mandelbrot/VulkanMandelbrotPipelineData.hpp"
 
-#include "utils/VulkanMemory.hpp"
+#include "utils/VulkanMemoryUtils.hpp"
 
 void
 VulkanMandelbrotPipelineData::init(VulkanDevices const &devices,

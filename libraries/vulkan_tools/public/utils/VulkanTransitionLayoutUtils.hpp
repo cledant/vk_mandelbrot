@@ -1,9 +1,10 @@
-#ifndef VK_MANDELBROT_VULKANTRANSITIONLAYOUT_HPP
-#define VK_MANDELBROT_VULKANTRANSITIONLAYOUT_HPP
+#ifndef VK_MANDELBROT_VULKANTRANSITIONLAYOUTUTILS_HPP
+#define VK_MANDELBROT_VULKANTRANSITIONLAYOUTUTILS_HPP
 
 #include <vulkan/vulkan.h>
 
-#include "structs/VulkanCommonStruct.hpp"
+#include "structs/VulkanBasicStructs.hpp"
+#include "structs/VulkanTexture.hpp"
 
 void transitionImageLayoutSingleCmd(VulkanDevices const &devices,
                                     VulkanCommandPools const &cmdPools,
@@ -16,4 +17,4 @@ void transitionImageLayout(VkCommandBuffer cmdBuffer,
                            VkImageLayout oldLayout,
                            VkImageLayout newLayout);
 
-#endif // VK_MANDELBROT_VULKANTRANSITIONLAYOUT_HPP
+#endif // VK_MANDELBROT_VULKANTRANSITIONLAYOUTUTILS_HPP
