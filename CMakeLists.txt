@@ -4,8 +4,8 @@ project(vk_mandelbrot)
 #App info
 set(APP_BINARY_NAME mandelbrot)
 set(APP_VERSION_MAJOR 1)
-set(APP_VERSION_MINOR 0)
-set(APP_VERSION_PATCH 1)
+set(APP_VERSION_MINOR 1)
+set(APP_VERSION_PATCH 0)
 
 #Detecting + setting global LTO
 include(CheckIPOSupported)
